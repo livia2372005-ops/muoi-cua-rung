@@ -1,0 +1,349 @@
+/* ==================== 3D FLIPBOOK STAGE ==================== */
+.book-stage {
+  width: min(1160px, 95vw);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.book-frame {
+  position: relative;
+  width: 100%;
+  height: clamp(560px, calc(100vh - 155px), 740px);
+  perspective: 2500px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.book {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: transform 0.75s cubic-bezier(0.22, 0.72, 0.24, 1);
+}
+
+/* Center front cover when closed (state 0) and back cover when finished (state 4) */
+body.view-3d .book[data-state='0'] {
+  transform: translateX(-25%);
+}
+
+body.view-3d .book[data-state='4'] {
+  transform: translateX(25%);
+}
+
+/* Central book spine crease */
+body.view-3d .book::before {
+  content: '';
+  position: absolute;
+  top: 6px;
+  bottom: 6px;
+  left: 50%;
+  width: 24px;
+  transform: translateX(-50%);
+  background: linear-gradient(
+    to right,
+    rgba(0, 0, 0, 0) 0%,
+    rgba(0, 0, 0, 0.22) 45%,
+    rgba(0, 0, 0, 0.34) 50%,
+    rgba(0, 0, 0, 0.22) 55%,
+    rgba(0, 0, 0, 0) 100%
+  );
+  z-index: 30;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+body.view-3d .book[data-state='1']::before,
+body.view-3d .book[data-state='2']::before,
+body.view-3d .book[data-state='3']::before {
+  opacity: 1;
+}
+
+/* ==================== PHYSICAL SHEETS ==================== */
+.sheet {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 50%;
+  height: 100%;
+  transform-origin: left center;
+  transform-style: preserve-3d;
+  transition: transform 0.85s cubic-bezier(0.645, 0.045, 0.355, 1);
+  pointer-events: none;
+}
+
+.sheet.is-flipped {
+  transform: rotateY(-180deg);
+}
+
+.page-face {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  border-radius: 4px 14px 14px 4px;
+  overflow: hidden;
+  pointer-events: none;
+  box-shadow: var(--shadow-book);
+  scroll-margin-top: 84px;
+}
+
+.page-back {
+  transform: rotateY(180deg);
+  border-radius: 14px 4px 4px 14px;
+}
+
+/* Only the currently exposed faces accept clicks/scrolls */
+body.view-3d .sheet.is-top-right .page-front,
+body.view-3d .sheet.is-top-left .page-back {
+  pointer-events: auto;
+}
+
+/* Paper aesthetic */
+.page-paper {
+  background:
+    radial-gradient(circle at 80% 10%, rgba(255, 255, 255, 0.5), transparent 55%),
+    linear-gradient(180deg, var(--paper-ivory) 0%, var(--paper-warm) 100%);
+  color: var(--ink-primary);
+  border: 1px solid #d5cab2;
+}
+
+/* Subtle gutter shadow near spine */
+.page-right::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 26px;
+  background: linear-gradient(to right, rgba(42, 34, 22, 0.14), rgba(42, 34, 22, 0));
+  pointer-events: none;
+}
+
+.page-left::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  width: 26px;
+  background: linear-gradient(to left, rgba(42, 34, 22, 0.14), rgba(42, 34, 22, 0));
+  pointer-events: none;
+}
+
+.page-inner {
+  position: relative;
+  z-index: 2;
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: clamp(18px, 2.2vw, 30px) clamp(20px, 2.5vw, 32px);
+  scrollbar-width: thin;
+  scrollbar-color: rgba(184, 140, 62, 0.5) transparent;
+}
+
+.page-inner::-webkit-scrollbar {
+  width: 6px;
+}
+
+.page-inner::-webkit-scrollbar-thumb {
+  background: rgba(184, 140, 62, 0.45);
+  border-radius: 999px;
+}
+
+/* ==================== BOTTOM NAVIGATION BAR ==================== */
+.book-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 14px;
+  padding: 10px 18px;
+  border-radius: var(--radius-pill);
+  background: rgba(10, 24, 18, 0.85);
+  border: 1px solid rgba(224, 186, 108, 0.25);
+  backdrop-filter: blur(10px);
+}
+
+.nav-arrow-btn {
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: var(--radius-pill);
+  border: 1px solid rgba(248, 244, 234, 0.22);
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--paper-ivory);
+  font-family: var(--font-sans);
+  font-size: 0.84rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.nav-arrow-btn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.16);
+  border-color: var(--gold-bright);
+}
+
+.nav-arrow-btn--primary {
+  background: linear-gradient(135deg, #d7ae5b, #a4792d);
+  color: #101c16;
+  border-color: transparent;
+  font-weight: 600;
+}
+
+.nav-arrow-btn--primary:hover:not(:disabled) {
+  background: linear-gradient(135deg, #e7c275, #b88835);
+}
+
+.nav-arrow-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.spread-indicators {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.dot-btn {
+  appearance: none;
+  width: 10px;
+  height: 10px;
+  padding: 0;
+  border-radius: 50%;
+  border: 1px solid rgba(224, 186, 108, 0.65);
+  background: transparent;
+  cursor: pointer;
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.dot-btn.is-active {
+  background: var(--gold-bright);
+  transform: scale(1.25);
+}
+
+.page-counter {
+  font-size: 0.82rem;
+  color: rgba(248, 244, 234, 0.85);
+  min-width: 120px;
+  text-align: center;
+}
+
+/* ==================== SCROLL / MOBILE VIEW MODE ==================== */
+body.view-scroll .book-frame,
+body.view-scroll .book {
+  height: auto;
+  perspective: none;
+  transform: none !important;
+  transition: none;
+}
+
+body.view-scroll .book {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: min(860px, 100%);
+}
+
+body.view-scroll .book::before,
+body.view-scroll .book-controls {
+  display: none;
+}
+
+body.view-scroll .sheet {
+  position: static;
+  left: auto;
+  width: 100%;
+  height: auto;
+  transform: none !important;
+  transform-style: flat;
+  transition: none;
+  pointer-events: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+body.view-scroll .page-face {
+  position: relative;
+  inset: auto;
+  width: 100%;
+  transform: none !important;
+  backface-visibility: visible;
+  pointer-events: auto !important;
+  border-radius: 16px;
+  min-height: 420px;
+}
+
+body.view-scroll .page-cover {
+  min-height: 580px;
+}
+
+body.view-scroll .page-inner {
+  overflow-y: visible;
+  height: auto;
+}
+
+@media (max-width: 920px) {
+  .book-frame,
+  .book {
+    height: auto;
+    perspective: none;
+    transform: none !important;
+    transition: none;
+  }
+
+  .book {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: 100%;
+  }
+
+  .book::before,
+  .book-controls {
+    display: none;
+  }
+
+  .sheet {
+    position: static;
+    left: auto;
+    width: 100%;
+    height: auto;
+    transform: none !important;
+    transform-style: flat;
+    transition: none;
+    pointer-events: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .page-face {
+    position: relative;
+    inset: auto;
+    width: 100%;
+    transform: none !important;
+    backface-visibility: visible;
+    pointer-events: auto !important;
+    border-radius: 14px;
+  }
+
+  .page-cover {
+    min-height: 520px;
+  }
+
+  .page-inner {
+    height: auto;
+    overflow-y: visible;
+    padding: 18px 16px;
+  }
+}

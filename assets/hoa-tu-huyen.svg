@@ -1,0 +1,121 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 560" width="800" height="560" role="img" aria-label="Minh họa hoa tử huyền trắng muốt giữa mưa xuân rừng đá">
+  <defs>
+    <linearGradient id="bgMoss" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0d2119" />
+      <stop offset="50%" stop-color="#1b3a2e" />
+      <stop offset="100%" stop-color="#0a1812" />
+    </linearGradient>
+    <radialGradient id="bokehLight1" cx="68%" cy="30%" r="42%">
+      <stop offset="0%" stop-color="#f2d68d" stop-opacity="0.34" />
+      <stop offset="55%" stop-color="#4e7a62" stop-opacity="0.16" />
+      <stop offset="100%" stop-color="#0d2119" stop-opacity="0" />
+    </radialGradient>
+    <radialGradient id="bokehLight2" cx="25%" cy="68%" r="36%">
+      <stop offset="0%" stop-color="#a7cab6" stop-opacity="0.22" />
+      <stop offset="100%" stop-color="#0d2119" stop-opacity="0" />
+    </radialGradient>
+    <linearGradient id="petalIvory" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ffffff" />
+      <stop offset="70%" stop-color="#faf5e8" />
+      <stop offset="100%" stop-color="#e5dcc5" />
+    </linearGradient>
+    <radialGradient id="flowerHalo" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#fffef9" stop-opacity="0.7" />
+      <stop offset="55%" stop-color="#eed698" stop-opacity="0.18" />
+      <stop offset="100%" stop-color="#eed698" stop-opacity="0" />
+    </radialGradient>
+    <filter id="softBokeh" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="16" />
+    </filter>
+    <filter id="dropShadow" x="-25%" y="-25%" width="150%" height="150%">
+      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#050e0a" flood-opacity="0.45" />
+    </filter>
+    <g id="heroFlower">
+      <circle cx="0" cy="0" r="64" fill="url(#flowerHalo)" />
+      <g filter="url(#dropShadow)">
+        <path d="M0,-6 C-14,-22 -18,-44 0,-54 C18,-44 14,-22 0,-6 Z" fill="url(#petalIvory)" />
+        <path d="M0,-6 C-14,-22 -18,-44 0,-54 C18,-44 14,-22 0,-6 Z" fill="url(#petalIvory)" transform="rotate(72)" />
+        <path d="M0,-6 C-14,-22 -18,-44 0,-54 C18,-44 14,-22 0,-6 Z" fill="url(#petalIvory)" transform="rotate(144)" />
+        <path d="M0,-6 C-14,-22 -18,-44 0,-54 C18,-44 14,-22 0,-6 Z" fill="url(#petalIvory)" transform="rotate(216)" />
+        <path d="M0,-6 C-14,-22 -18,-44 0,-54 C18,-44 14,-22 0,-6 Z" fill="url(#petalIvory)" transform="rotate(288)" />
+        <!-- Subtle petal midrib lines -->
+        <g stroke="#d6ccb4" stroke-width="1.1" opacity="0.65">
+          <line x1="0" y1="-10" x2="0" y2="-38" />
+          <line x1="0" y1="-10" x2="0" y2="-38" transform="rotate(72)" />
+          <line x1="0" y1="-10" x2="0" y2="-38" transform="rotate(144)" />
+          <line x1="0" y1="-10" x2="0" y2="-38" transform="rotate(216)" />
+          <line x1="0" y1="-10" x2="0" y2="-38" transform="rotate(288)" />
+        </g>
+        <!-- Golden stamens -->
+        <circle cx="0" cy="0" r="10.5" fill="#4f6d43" />
+        <circle cx="0" cy="0" r="7.2" fill="#cfa247" />
+        <circle cx="-4" cy="-5" r="2" fill="#ffe799" />
+        <circle cx="5" cy="-4" r="2" fill="#ffe799" />
+        <circle cx="6" cy="4" r="1.9" fill="#ffe799" />
+        <circle cx="-3" cy="6" r="1.9" fill="#ffe799" />
+        <circle cx="0" cy="0" r="3" fill="#fff7d6" />
+      </g>
+    </g>
+  </defs>
+
+  <rect width="800" height="560" fill="url(#bgMoss)" />
+  <rect width="800" height="560" fill="url(#bokehLight1)" />
+  <rect width="800" height="560" fill="url(#bokehLight2)" />
+
+  <!-- Soft distant bokeh dots -->
+  <g filter="url(#softBokeh)">
+    <circle cx="590" cy="145" r="46" fill="#e8cf90" opacity="0.22" />
+    <circle cx="170" cy="120" r="38" fill="#89b89c" opacity="0.18" />
+    <circle cx="680" cy="360" r="54" fill="#639679" opacity="0.16" />
+    <circle cx="290" cy="420" r="42" fill="#dcebe2" opacity="0.12" />
+  </g>
+
+  <!-- Moss-covered dark rock shelf at bottom -->
+  <path d="M0,450 Q160,395 340,445 T680,425 Q745,418 800,442 L800,560 L0,560 Z" fill="#091510" />
+  <path d="M0,490 Q240,450 470,495 T800,478 L800,560 L0,560 Z" fill="#132b1f" opacity="0.72" />
+
+  <!-- Slender dark woody branch with moss leaves -->
+  <path d="M-15,375 C135,345 275,275 415,248 C535,225 655,240 775,205 C655,256 540,248 425,270 C285,296 145,368 -15,402 Z" fill="#1a1814" />
+  <path d="M295,280 C340,210 405,155 485,120 C425,165 365,218 320,285 Z" fill="#1e1b16" />
+  <path d="M485,255 C540,305 605,340 685,355 C602,350 532,320 468,262 Z" fill="#1c1914" />
+
+  <!-- Mossy leaves -->
+  <g fill="#26503b">
+    <path d="M200,320 C175,288 190,260 228,272 C245,292 225,318 200,320 Z" />
+    <path d="M350,255 C330,220 355,195 388,215 C398,238 375,256 350,255 Z" />
+    <path d="M555,240 C550,202 582,190 605,215 C602,240 578,248 555,240 Z" />
+    <path d="M445,278 C465,312 442,338 415,322 C408,298 424,282 445,278 Z" />
+    <path d="M625,340 C655,368 640,398 612,385 C602,364 610,346 625,340 Z" />
+  </g>
+
+  <!-- Cluster of luminous white Hoa Tử Huyền blossoms -->
+  <use href="#heroFlower" transform="translate(260, 295) scale(1.02) rotate(-12)" />
+  <use href="#heroFlower" transform="translate(425, 222) scale(1.24) rotate(8)" />
+  <use href="#heroFlower" transform="translate(505, 132) scale(0.84) rotate(24)" />
+  <use href="#heroFlower" transform="translate(570, 275) scale(0.96) rotate(-18)" />
+  <use href="#heroFlower" transform="translate(692, 208) scale(0.78) rotate(14)" />
+
+  <!-- Small delicate white flower buds -->
+  <g fill="#faf4e4" stroke="#476643" stroke-width="1.5">
+    <ellipse cx="352" cy="182" rx="7" ry="12" transform="rotate(-28 352 182)" />
+    <ellipse cx="645" cy="338" rx="6.5" ry="11" transform="rotate(35 645 338)" />
+    <ellipse cx="165" cy="348" rx="6" ry="10.5" transform="rotate(-15 165 348)" />
+  </g>
+
+  <!-- Glistening spring rain droplets & gentle mist highlights -->
+  <g stroke="#e9f3ed" stroke-width="1.2" stroke-linecap="round" opacity="0.22">
+    <line x1="95" y1="65" x2="82" y2="125" />
+    <line x1="310" y1="45" x2="296" y2="108" />
+    <line x1="560" y1="55" x2="546" y2="112" />
+    <line x1="720" y1="85" x2="705" y2="148" />
+    <line x1="185" y1="400" x2="172" y2="462" />
+    <line x1="540" y1="390" x2="528" y2="445" />
+  </g>
+  <g fill="#ffffff" opacity="0.55">
+    <circle cx="410" cy="198" r="2.5" />
+    <circle cx="242" cy="272" r="2" />
+    <circle cx="584" cy="255" r="2.2" />
+    <circle cx="485" cy="295" r="1.8" />
+    <circle cx="325" cy="355" r="1.9" />
+  </g>
+</svg>
