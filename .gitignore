@@ -1,0 +1,8 @@
+# Keep high-res original artworks locally; deploy compressed assets/images/*.jpg on GitHub Pages
+/Titlebook_*.png
+/Khởi_hành_*.jpg
+/Dò_theo_*.png
+/Băng_bó_*.png
+/Cao_trào_*.png
+.DS_Store
+Thumbs.db
