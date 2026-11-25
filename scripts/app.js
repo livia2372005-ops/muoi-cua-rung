@@ -1,389 +1,363 @@
-import {
-  BOOK_CONFIG,
-  AUTHOR_WORK_INFO,
-  SUMMARY_NODES,
-  HUNTING_STAGES,
-  SYMBOLS_LIST,
-} from './data.js';
-import { FlipbookController } from './flipbook.js';
-import { NarrationController } from './audio-player.js';
+(function () {
+  var data = window.MuoiCuaRung.DATA;
+  var NarrationController = window.MuoiCuaRung.NarrationController;
 
-let activeSummaryIndex = 0;
-let activeHuntIndex = 0;
-let toastTimer = null;
+  var pageFlip = null;
+  var narration = null;
+  var soundEnabled = true;
+  var audioCtx = null;
+  var toastTimer = null;
+  var activeNodeIdx = 0;
 
-function showToast(message) {
-  const toastEl = document.getElementById('toast');
-  if (!toastEl) return;
-  toastEl.textContent = message;
-  toastEl.classList.add('is-visible');
-  if (toastTimer) clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => {
-    toastEl.classList.remove('is-visible');
-  }, 2600);
-}
+  function showToast(msg) {
+    var toast = document.getElementById('toast');
+    if (!toast) return;
+    toast.textContent = msg;
+    toast.classList.add('is-visible');
+    if (toastTimer) clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () {
+      toast.classList.remove('is-visible');
+    }, 2600);
+  }
 
-function populateAuthorInfo() {
-  document.getElementById('author-name').textContent = AUTHOR_WORK_INFO.authorName;
-  document.getElementById('author-bio').textContent = AUTHOR_WORK_INFO.authorBio;
-  document.getElementById('work-origin').textContent = AUTHOR_WORK_INFO.workOrigin;
-  document.getElementById('narrative-view').textContent = AUTHOR_WORK_INFO.narrativeView;
-  document.getElementById('core-message').textContent = `“${AUTHOR_WORK_INFO.coreMessage}”`;
-}
+  function playPaperRustle() {
+    if (!soundEnabled) return;
+    try {
+      var Ctx = window.AudioContext || window.webkitAudioContext;
+      if (!Ctx) return;
+      if (!audioCtx) audioCtx = new Ctx();
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume().catch(function () {});
+      }
 
-function createFlowNodeButton(node, index, onSelect) {
-  const btn = document.createElement('button');
-  btn.type = 'button';
-  btn.className = 'flow-node';
-  btn.dataset.nodeIndex = String(index);
-  btn.innerHTML = `
-    <span class="flow-step-num">${node.step}</span>
-    <span class="flow-node-body">
-      <span class="flow-phase">${node.phase}</span>
-      <h4>${node.title}</h4>
-      <p>${node.shortText}</p>
-    </span>
-  `;
-  btn.addEventListener('click', () => onSelect(index));
-  return btn;
-}
+      var duration = 0.16;
+      var len = Math.floor(audioCtx.sampleRate * duration);
+      var buffer = audioCtx.createBuffer(1, len, audioCtx.sampleRate);
+      var channel = buffer.getChannelData(0);
+      for (var i = 0; i < len; i++) {
+        var env = Math.sin((i / len) * Math.PI);
+        channel[i] = (Math.random() * 2 - 1) * env * 0.09;
+      }
 
-function renderFlowchart(onSelectNode) {
-  const leftContainer = document.getElementById('flowchart-left');
-  const rightContainer = document.getElementById('flowchart-right');
-  leftContainer.innerHTML = '';
-  rightContainer.innerHTML = '';
+      var src = audioCtx.createBufferSource();
+      src.buffer = buffer;
 
-  SUMMARY_NODES.forEach((node, idx) => {
-    const target = idx < 3 ? leftContainer : rightContainer;
-    target.appendChild(createFlowNodeButton(node, idx, onSelectNode));
+      var filter = audioCtx.createBiquadFilter();
+      filter.type = 'bandpass';
+      filter.frequency.value = 1550;
+      filter.Q.value = 0.8;
 
-    const isLastInLeft = idx === 2;
-    const isLastOverall = idx === SUMMARY_NODES.length - 1;
-    if (!isLastInLeft && !isLastOverall) {
-      const arrow = document.createElement('div');
-      arrow.className = 'flow-connector';
-      arrow.setAttribute('aria-hidden', 'true');
-      arrow.textContent = '↓';
-      target.appendChild(arrow);
+      var gain = audioCtx.createGain();
+      gain.gain.value = 0.26;
+
+      src.connect(filter);
+      filter.connect(gain);
+      gain.connect(audioCtx.destination);
+      src.start();
+    } catch (e) {}
+  }
+
+  function isolateNoFlipControls() {
+    var els = document.querySelectorAll('[data-no-flip]');
+    var evts = ['mousedown', 'touchstart', 'pointerdown', 'mouseup', 'touchend', 'click'];
+    els.forEach(function (el) {
+      evts.forEach(function (name) {
+        el.addEventListener(name, function (e) {
+          e.stopPropagation();
+        });
+      });
+    });
+  }
+
+  function updateActiveNodeUI(index) {
+    activeNodeIdx = index;
+    var node = data.nodes[index];
+
+    document.querySelectorAll('.mindmap-node').forEach(function (btn) {
+      btn.classList.toggle('is-active', Number(btn.dataset.node) === index);
+    });
+
+    document.querySelectorAll('.modal-node-card').forEach(function (card) {
+      card.classList.toggle('is-active', Number(card.dataset.node) === index);
+    });
+
+    var badge = document.getElementById('caption-badge');
+    var scriptText = document.getElementById('caption-script-text');
+    if (badge) badge.textContent = 'Đang chọn: Chặng ' + node.step + ' • ' + node.phase;
+    if (scriptText) scriptText.textContent = '“' + node.voiceScript + '”';
+  }
+
+  function populateModals() {
+    var diagramGrid = document.getElementById('modal-diagram-grid');
+    if (diagramGrid) {
+      diagramGrid.innerHTML = data.nodes
+        .map(function (node, idx) {
+          return (
+            '<article class="modal-node-card ' +
+            (idx === activeNodeIdx ? 'is-active' : '') +
+            '" data-node="' +
+            idx +
+            '">' +
+            '<img src="' +
+            node.image +
+            '" alt="' +
+            node.title +
+            '" />' +
+            '<span class="node-step">Chặng ' +
+            node.step +
+            ' • ' +
+            node.phase +
+            '</span>' +
+            '<h4>' +
+            node.title +
+            '</h4>' +
+            '<p>' +
+            node.detailText +
+            '</p>' +
+            '<button type="button" class="paper-pill-btn modal-play-node" data-node="' +
+            idx +
+            '">🔊 Nghe chặng ' +
+            node.step +
+            '</button>' +
+            '</article>'
+          );
+        })
+        .join('');
+
+      diagramGrid.querySelectorAll('.modal-play-node').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          var idx = Number(btn.dataset.node);
+          updateActiveNodeUI(idx);
+          if (narration) narration.playNode(idx);
+        });
+      });
     }
-  });
-}
 
-function updateFlowchartSelection(index) {
-  activeSummaryIndex = index;
-  const node = SUMMARY_NODES[index];
+    var scriptCards = document.getElementById('modal-script-cards');
+    if (scriptCards) {
+      scriptCards.innerHTML = data.nodes
+        .map(function (node) {
+          return (
+            '<div class="script-card-item">' +
+            '<strong>Chặng ' +
+            node.step +
+            ': ' +
+            node.title +
+            '</strong>' +
+            '<p>' +
+            node.voiceScript +
+            '</p>' +
+            '</div>'
+          );
+        })
+        .join('');
+    }
+  }
 
-  document.querySelectorAll('.flow-node').forEach((el) => {
-    el.classList.toggle('is-active', Number(el.dataset.nodeIndex) === index);
-  });
-
-  document.querySelectorAll('.modal-flow-card').forEach((el) => {
-    el.classList.toggle('is-active', Number(el.dataset.nodeIndex) === index);
-  });
-
-  document.getElementById('detail-phase-badge').textContent = `Chặng ${node.step} • ${node.phase}`;
-  document.getElementById('detail-node-title').textContent = node.title;
-  document.getElementById('detail-node-text').textContent = node.detailText;
-  document.getElementById('detail-node-quote').textContent = node.quote;
-  document.getElementById('detail-node-script').textContent = node.voiceScript;
-}
-
-function renderModalFlowchart(narration) {
-  const container = document.getElementById('modal-diagram-canvas');
-  container.innerHTML = '';
-
-  const grid = document.createElement('div');
-  grid.className = 'modal-diagram-grid';
-
-  SUMMARY_NODES.forEach((node, idx) => {
-    const card = document.createElement('article');
-    card.className = `modal-flow-card ${idx === activeSummaryIndex ? 'is-active' : ''}`;
-    card.dataset.nodeIndex = String(idx);
-    card.innerHTML = `
-      <span class="flow-phase">Chặng ${node.step} • ${node.phase}</span>
-      <h4>${node.title}</h4>
-      <p>${node.detailText}</p>
-      <blockquote class="inspector-quote">${node.quote}</blockquote>
-      <button type="button" class="mini-tool-btn">🔊 Nghe chặng ${node.step}</button>
-    `;
-    card.querySelector('button').addEventListener('click', () => {
-      updateFlowchartSelection(idx);
-      narration.playNode(idx);
-    });
-    grid.appendChild(card);
-  });
-
-  container.appendChild(grid);
-}
-
-function renderHuntingTrail() {
-  const nav = document.getElementById('hunting-trail-nav');
-  nav.innerHTML = '';
-
-  HUNTING_STAGES.forEach((item, idx) => {
-    const btn = document.createElement('button');
-    btn.type = 'button';
-    btn.className = 'trail-btn';
-    btn.role = 'tab';
-    btn.dataset.stageIndex = String(idx);
-    btn.textContent = item.shortLabel;
-    btn.addEventListener('click', () => selectHuntingStage(idx));
-    nav.appendChild(btn);
-  });
-}
-
-function renderPsychologyChart() {
-  const wrap = document.getElementById('psychology-chart');
-  const width = 460;
-  const height = 210;
-  const padL = 36;
-  const padR = 24;
-  const padT = 22;
-  const padB = 34;
-  const plotW = width - padL - padR;
-  const plotH = height - padT - padB;
-
-  const getX = (i) => padL + (i / (HUNTING_STAGES.length - 1)) * plotW;
-  const getY = (score) => padT + ((100 - score) / 100) * plotH;
-
-  const arrogancePoints = HUNTING_STAGES.map((s, i) => `${getX(i)},${getY(s.arroganceScore)}`).join(' ');
-  const humanityPoints = HUNTING_STAGES.map((s, i) => `${getX(i)},${getY(s.humanityScore)}`).join(' ');
-
-  const gridLines = [0, 25, 50, 75, 100]
-    .map((val) => {
-      const y = getY(val);
-      return `
-        <line x1="${padL}" y1="${y}" x2="${width - padR}" y2="${y}" stroke="rgba(26,36,31,0.12)" stroke-dasharray="3,3" />
-        <text x="${padL - 8}" y="${y + 4}" text-anchor="end" font-size="10" fill="#697970">${val}</text>
-      `;
-    })
-    .join('');
-
-  const pointsMarkup = HUNTING_STAGES.map((s, i) => {
-    const cx = getX(i);
-    const cyA = getY(s.arroganceScore);
-    const cyH = getY(s.humanityScore);
-    const isActive = i === activeHuntIndex;
-    return `
-      <g class="chart-point-hit" data-stage-index="${i}">
-        <line x1="${cx}" y1="${padT}" x2="${cx}" y2="${height - padB}" stroke="${isActive ? '#b88c3e' : 'transparent'}" stroke-width="1.5" stroke-dasharray="3,3" />
-        <circle cx="${cx}" cy="${cyA}" r="${isActive ? 7 : 5}" fill="#9c3b2c" stroke="#fff" stroke-width="2" />
-        <circle cx="${cx}" cy="${cyH}" r="${isActive ? 7 : 5}" fill="#275e44" stroke="#fff" stroke-width="2" />
-        <text x="${cx}" y="${height - 10}" text-anchor="middle" font-size="10.5" font-weight="${isActive ? '700' : '500'}" fill="${isActive ? '#132820' : '#697970'}">Chặng ${i + 1}</text>
-      </g>
-    `;
-  }).join('');
-
-  wrap.innerHTML = `
-    <svg viewBox="0 0 ${width} ${height}" role="img" aria-label="Biểu đồ chuyển biến tâm lý ông Diểu qua 5 chặng">
-      ${gridLines}
-      <polyline fill="none" stroke="#9c3b2c" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" points="${arrogancePoints}" />
-      <polyline fill="none" stroke="#275e44" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" points="${humanityPoints}" />
-      ${pointsMarkup}
-    </svg>
-  `;
-
-  wrap.querySelectorAll('.chart-point-hit').forEach((g) => {
-    g.addEventListener('click', () => {
-      selectHuntingStage(Number(g.dataset.stageIndex));
-    });
-  });
-}
-
-function selectHuntingStage(index) {
-  activeHuntIndex = Math.max(0, Math.min(HUNTING_STAGES.length - 1, index));
-  const data = HUNTING_STAGES[activeHuntIndex];
-
-  document.querySelectorAll('.trail-btn').forEach((btn) => {
-    const active = Number(btn.dataset.stageIndex) === activeHuntIndex;
-    btn.classList.toggle('is-active', active);
-    btn.setAttribute('aria-selected', String(active));
-  });
-
-  document.getElementById('hunt-stage-chip').textContent = `Chặng ${data.stage} / ${HUNTING_STAGES.length}`;
-  document.getElementById('hunt-stage-loc').textContent = `📍 ${data.location}`;
-  document.getElementById('hunt-stage-title').textContent = data.title;
-  document.getElementById('hunt-stage-quote').textContent = data.quote;
-  document.getElementById('hunt-outer-action').textContent = data.outerAction;
-  document.getElementById('hunt-stripped').textContent = data.strippedAway;
-  document.getElementById('hunt-inner-psych').textContent = data.innerPsychology;
-
-  document.getElementById('bar-arrogance').style.width = `${data.arroganceScore}%`;
-  document.getElementById('bar-humanity').style.width = `${data.humanityScore}%`;
-
-  document.getElementById('hunt-prev-btn').disabled = activeHuntIndex === 0;
-  document.getElementById('hunt-next-btn').disabled = activeHuntIndex === HUNTING_STAGES.length - 1;
-
-  renderPsychologyChart();
-}
-
-function renderSymbols() {
-  const grid = document.getElementById('symbols-grid');
-  grid.innerHTML = SYMBOLS_LIST.map(
-    (sym) => `
-      <article class="symbol-card">
-        <span class="symbol-tag">${sym.tag}</span>
-        <h4>${sym.title}</h4>
-        <p>${sym.meaning}</p>
-      </article>
-    `,
-  ).join('');
-}
-
-function populateScriptModal() {
-  const container = document.getElementById('modal-script-list');
-  container.innerHTML = SUMMARY_NODES.map(
-    (node) => `
-      <div class="script-item">
-        <strong>Chặng ${node.step}: ${node.title}</strong>
-        <p>${node.voiceScript}</p>
-      </div>
-    `,
-  ).join('');
-}
-
-function setupModals() {
-  const openModal = (id) => {
-    const el = document.getElementById(id);
-    if (el) el.hidden = false;
-  };
-  const closeModal = (id) => {
-    const el = document.getElementById(id);
-    if (el) el.hidden = true;
-  };
-
-  document.getElementById('open-diagram-btn')?.addEventListener('click', () => openModal('diagram-modal'));
-  document.getElementById('open-script-btn')?.addEventListener('click', () => openModal('script-modal'));
-
-  document.querySelectorAll('[data-close-modal]').forEach((btn) => {
-    btn.addEventListener('click', () => closeModal(btn.dataset.closeModal));
-  });
-
-  document.querySelectorAll('.modal-backdrop').forEach((backdrop) => {
-    backdrop.addEventListener('click', (event) => {
-      if (event.target === backdrop) backdrop.hidden = true;
-    });
-  });
-
-  document.addEventListener('keydown', (event) => {
-    if (event.key === 'Escape') {
-      document.querySelectorAll('.modal-backdrop').forEach((m) => {
+  function setupModals() {
+    function openModal(id) {
+      var el = document.getElementById(id);
+      if (el) el.hidden = false;
+    }
+    function closeAllModals() {
+      document.querySelectorAll('.modal-backdrop').forEach(function (m) {
         m.hidden = true;
       });
     }
-  });
-}
 
-function setupShareAndCopy() {
-  const copyLink = async () => {
-    const url = window.location.href;
-    try {
-      await navigator.clipboard.writeText(url);
-      showToast('Đã sao chép đường link sách điện tử để gửi nhóm lớp!');
-    } catch {
-      showToast(`Link trang web: ${url}`);
+    document.getElementById('btn-toc')?.addEventListener('click', function () {
+      openModal('modal-toc');
+    });
+    document.getElementById('btn-script')?.addEventListener('click', function () {
+      openModal('modal-script');
+    });
+    document.getElementById('btn-back-script')?.addEventListener('click', function () {
+      openModal('modal-script');
+    });
+    document.getElementById('btn-diagram')?.addEventListener('click', function () {
+      openModal('modal-diagram');
+    });
+    document.getElementById('btn-diagram-inline')?.addEventListener('click', function () {
+      openModal('modal-diagram');
+    });
+
+    document.querySelectorAll('[data-close]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var el = document.getElementById(btn.dataset.close);
+        if (el) el.hidden = true;
+      });
+    });
+
+    document.querySelectorAll('.modal-backdrop').forEach(function (bd) {
+      bd.addEventListener('click', function (e) {
+        if (e.target === bd) bd.hidden = true;
+      });
+    });
+
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') closeAllModals();
+    });
+
+    document.querySelectorAll('.toc-jump').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var targetPage = Number(btn.dataset.page);
+        closeAllModals();
+        if (pageFlip) {
+          pageFlip.turnToPage(targetPage);
+        }
+      });
+    });
+  }
+
+  function updatePagerUI(currentPage, totalPages) {
+    var readout = document.getElementById('page-readout');
+    var scrub = document.getElementById('page-scrub');
+    var prevBtn = document.getElementById('btn-prev');
+    var nextBtn = document.getElementById('btn-next');
+
+    if (readout) {
+      readout.textContent = 'Trang ' + (currentPage + 1) + ' / ' + totalPages;
     }
-  };
-
-  document.getElementById('copy-link-btn')?.addEventListener('click', copyLink);
-  document.getElementById('back-copy-link-btn')?.addEventListener('click', copyLink);
-
-  document.getElementById('copy-script-btn')?.addEventListener('click', async () => {
-    const fullText = SUMMARY_NODES.map((n) => n.voiceScript).join('\n\n');
-    try {
-      await navigator.clipboard.writeText(fullText);
-      showToast('Đã sao chép toàn bộ kịch bản 5 chặng!');
-    } catch {
-      showToast('Không thể truy cập clipboard, hãy bôi đen đoạn văn để sao chép.');
+    if (scrub) {
+      scrub.max = String(totalPages - 1);
+      scrub.value = String(currentPage);
     }
-  });
-}
+    if (prevBtn) prevBtn.disabled = currentPage <= 0;
+    if (nextBtn) nextBtn.disabled = currentPage >= totalPages - 1;
+  }
 
-function initPetalAtmosphere() {
-  const canvas = document.getElementById('petal-canvas');
-  if (!canvas || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-  const ctx = canvas.getContext('2d');
-  if (!ctx) return;
+  function initBook() {
+    var container = document.getElementById('flipbook-container');
+    var pages = container.querySelectorAll('.page');
 
-  const resize = () => {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-  };
-  resize();
-  window.addEventListener('resize', resize);
+    pageFlip = new window.St.PageFlip(container, {
+      width: 495,
+      height: 700,
+      size: 'stretch',
+      minWidth: 290,
+      maxWidth: 530,
+      minHeight: 410,
+      maxHeight: 740,
+      maxShadowOpacity: 0.48,
+      showCover: true,
+      showPageCorners: true,
+      usePortrait: true,
+      mobileScrollSupport: false,
+      flippingTime: 780,
+    });
 
-  const particles = Array.from({ length: 24 }, () => ({
-    x: Math.random() * canvas.width,
-    y: Math.random() * canvas.height,
-    r: 1.5 + Math.random() * 2.4,
-    vx: -0.2 + Math.random() * 0.45,
-    vy: 0.28 + Math.random() * 0.48,
-    alpha: 0.16 + Math.random() * 0.3,
-  }));
+    pageFlip.loadFromHTML(pages);
 
-  const tick = () => {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    for (const p of particles) {
-      p.x += p.vx;
-      p.y += p.vy;
-      if (p.y > canvas.height + 10) {
-        p.y = -10;
-        p.x = Math.random() * canvas.width;
+    pageFlip.on('init', function (e) {
+      updatePagerUI(e.data.page, pageFlip.getPageCount());
+    });
+
+    pageFlip.on('flip', function (e) {
+      playPaperRustle();
+      updatePagerUI(e.data, pageFlip.getPageCount());
+    });
+
+    document.getElementById('btn-prev')?.addEventListener('click', function () {
+      pageFlip.flipPrev('top');
+    });
+
+    document.getElementById('btn-next')?.addEventListener('click', function () {
+      pageFlip.flipNext('top');
+    });
+
+    document.getElementById('btn-start-read')?.addEventListener('click', function () {
+      pageFlip.flipNext('top');
+    });
+
+    document.getElementById('btn-restart')?.addEventListener('click', function () {
+      pageFlip.turnToPage(0);
+    });
+
+    var scrub = document.getElementById('page-scrub');
+    if (scrub) {
+      scrub.addEventListener('change', function () {
+        pageFlip.turnToPage(Number(scrub.value));
+      });
+      scrub.addEventListener('input', function () {
+        var readout = document.getElementById('page-readout');
+        if (readout) {
+          readout.textContent = 'Trang ' + (Number(scrub.value) + 1) + ' / ' + pageFlip.getPageCount();
+        }
+      });
+    }
+
+    document.addEventListener('keydown', function (e) {
+      if (e.target instanceof HTMLInputElement) return;
+      if (document.querySelector('.modal-backdrop:not([hidden])')) return;
+      if (e.key === 'ArrowRight') pageFlip.flipNext('top');
+      else if (e.key === 'ArrowLeft') pageFlip.flipPrev('top');
+    });
+  }
+
+  function setupToolbarActions() {
+    var soundBtn = document.getElementById('btn-sound');
+    var soundIcon = document.getElementById('sound-icon');
+    soundBtn?.addEventListener('click', function () {
+      soundEnabled = !soundEnabled;
+      soundBtn.setAttribute('aria-pressed', String(soundEnabled));
+      if (soundIcon) soundIcon.textContent = soundEnabled ? '🔊' : '🔇';
+      showToast(soundEnabled ? 'Đã bật tiếng lật trang' : 'Đã tắt tiếng lật trang');
+    });
+
+    function shareLink() {
+      var url = window.location.href;
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard
+          .writeText(url)
+          .then(function () {
+            showToast('Đã sao chép link sách điện tử để gửi nhóm lớp!');
+          })
+          .catch(function () {
+            showToast('Link trang web: ' + url);
+          });
+      } else {
+        showToast('Link trang web: ' + url);
       }
-      if (p.x < -10) p.x = canvas.width + 10;
-      if (p.x > canvas.width + 10) p.x = -10;
-
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-      ctx.fillStyle = `rgba(255, 250, 236, ${p.alpha})`;
-      ctx.fill();
     }
-    requestAnimationFrame(tick);
-  };
-  requestAnimationFrame(tick);
-}
 
-function bootstrap() {
-  populateAuthorInfo();
-  renderSymbols();
-  populateScriptModal();
-  setupModals();
-  setupShareAndCopy();
-  initPetalAtmosphere();
+    document.getElementById('btn-share')?.addEventListener('click', shareLink);
+    document.getElementById('btn-back-share')?.addEventListener('click', shareLink);
 
-  const narration = new NarrationController({
-    nodes: SUMMARY_NODES,
-    candidatePaths: BOOK_CONFIG.audioPaths,
-    onNodeChange: (idx) => {
-      updateFlowchartSelection(idx);
-    },
+    document.getElementById('btn-copy-script')?.addEventListener('click', function () {
+      var text = data.nodes
+        .map(function (n) {
+          return n.voiceScript;
+        })
+        .join('\n\n');
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(function () {
+          showToast('Đã sao chép toàn bộ kịch bản 5 chặng!');
+        });
+      }
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', function () {
+    isolateNoFlipControls();
+    initBook();
+
+    narration = new NarrationController({
+      nodes: data.nodes,
+      candidatePaths: data.audioPaths,
+      onNodeChange: updateActiveNodeUI,
+    });
+
+    document.querySelectorAll('.mindmap-node').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var idx = Number(btn.dataset.node);
+        updateActiveNodeUI(idx);
+        narration.playNode(idx);
+      });
+    });
+
+    updateActiveNodeUI(0);
+    populateModals();
+    setupModals();
+    setupToolbarActions();
   });
-
-  renderFlowchart((idx) => {
-    updateFlowchartSelection(idx);
-  });
-  updateFlowchartSelection(0);
-  renderModalFlowchart(narration);
-
-  document.getElementById('play-node-btn')?.addEventListener('click', () => {
-    narration.playNode(activeSummaryIndex);
-  });
-
-  renderHuntingTrail();
-  selectHuntingStage(0);
-
-  document.getElementById('hunt-prev-btn')?.addEventListener('click', () => {
-    selectHuntingStage(activeHuntIndex - 1);
-  });
-  document.getElementById('hunt-next-btn')?.addEventListener('click', () => {
-    selectHuntingStage(activeHuntIndex + 1);
-  });
-
-  new FlipbookController({
-    bookEl: document.getElementById('flipbook'),
-    stageEl: document.getElementById('book-stage'),
-  });
-}
-
-document.addEventListener('DOMContentLoaded', bootstrap);
+})();

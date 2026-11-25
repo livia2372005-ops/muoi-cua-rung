@@ -1,0 +1,110 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 850" width="600" height="850" role="img" aria-label="Bìa minh họa rừng xuân và hoa tử huyền">
+  <defs>
+    <linearGradient id="cSky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#69d4cf" />
+      <stop offset="42%" stop-color="#a8ebd4" />
+      <stop offset="78%" stop-color="#e5f6cf" />
+      <stop offset="100%" stop-color="#cde9b2" />
+    </linearGradient>
+    <radialGradient id="cSun" cx="72%" cy="28%" r="36%">
+      <stop offset="0%" stop-color="#fffbe0" stop-opacity="0.95" />
+      <stop offset="45%" stop-color="#ffe799" stop-opacity="0.45" />
+      <stop offset="100%" stop-color="#ffe799" stop-opacity="0" />
+    </radialGradient>
+    <linearGradient id="hillFar" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#76b89e" />
+      <stop offset="100%" stop-color="#5a9e84" />
+    </linearGradient>
+    <linearGradient id="hillMid" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#5ca874" />
+      <stop offset="100%" stop-color="#3e8659" />
+    </linearGradient>
+    <linearGradient id="hillNear" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#75bc56" />
+      <stop offset="100%" stop-color="#488d3a" />
+    </linearGradient>
+    <g id="coverFlower">
+      <circle cx="0" cy="0" r="20" fill="#ffffff" opacity="0.28" />
+      <ellipse cx="0" cy="-9" rx="4.2" ry="8" fill="#ffffff" />
+      <ellipse cx="0" cy="-9" rx="4.2" ry="8" fill="#fffdf6" transform="rotate(72)" />
+      <ellipse cx="0" cy="-9" rx="4.2" ry="8" fill="#fffdf6" transform="rotate(144)" />
+      <ellipse cx="0" cy="-9" rx="4.2" ry="8" fill="#ffffff" transform="rotate(216)" />
+      <ellipse cx="0" cy="-9" rx="4.2" ry="8" fill="#ffffff" transform="rotate(288)" />
+      <circle cx="0" cy="0" r="3.6" fill="#f3b63a" />
+      <circle cx="0" cy="0" r="1.4" fill="#fff6d0" />
+    </g>
+  </defs>
+
+  <!-- Bright spring sky -->
+  <rect width="600" height="850" fill="url(#cSky)" />
+  <rect width="600" height="850" fill="url(#cSun)" />
+
+  <!-- Soft storybook clouds -->
+  <g fill="#ffffff" opacity="0.72">
+    <ellipse cx="120" cy="180" rx="74" ry="22" />
+    <ellipse cx="156" cy="168" rx="45" ry="20" />
+    <ellipse cx="470" cy="210" rx="68" ry="20" />
+    <ellipse cx="435" cy="198" rx="38" ry="18" />
+  </g>
+
+  <!-- Birds in flight -->
+  <g fill="none" stroke="#ffffff" stroke-width="2.4" stroke-linecap="round" opacity="0.9">
+    <path d="M115,245 Q125,235 135,245 Q145,235 155,245" />
+    <path d="M460,262 Q468,254 476,262 Q484,254 492,262" />
+    <path d="M495,282 Q501,276 507,282 Q513,276 519,282" />
+  </g>
+
+  <!-- Distant misty limestone karst mountains -->
+  <path d="M-10,540 L65,395 L135,438 L215,325 L295,418 L378,310 L468,402 L548,342 L615,425 L615,850 L-10,850 Z" fill="url(#hillFar)" opacity="0.72" />
+
+  <!-- Soft spring mist ribbon -->
+  <path d="M0,480 Q180,445 330,485 T600,470 L600,535 Q420,515 260,545 T0,525 Z" fill="#ffffff" opacity="0.48" />
+
+  <!-- Lush green hills -->
+  <path d="M-10,575 Q140,485 310,565 T610,535 L610,850 L-10,850 Z" fill="url(#hillMid)" />
+
+  <!-- Storybook lush Dau Da tree -->
+  <g>
+    <path d="M290,680 C295,605 292,555 280,500 L316,500 C306,558 310,610 322,680 Z" fill="#7c563a" />
+    <path d="M298,530 C268,498 248,478 232,462" stroke="#7c563a" stroke-width="9" stroke-linecap="round" fill="none" />
+    <path d="M304,522 C336,492 356,472 374,458" stroke="#7c563a" stroke-width="8" stroke-linecap="round" fill="none" />
+    <circle cx="242" cy="445" r="68" fill="#5fb47d" />
+    <circle cx="354" cy="446" r="64" fill="#53a772" />
+    <circle cx="300" cy="396" r="80" fill="#6ac086" />
+    <circle cx="272" cy="415" r="54" fill="#7bd093" opacity="0.55" />
+    <circle cx="326" cy="422" r="46" fill="#469664" opacity="0.4" />
+  </g>
+
+  <!-- Winding forest clearing path -->
+  <path d="M-10,675 Q175,610 330,665 T610,645 L610,850 L-10,850 Z" fill="url(#hillNear)" />
+  <path d="M245,850 C252,780 300,742 352,710 C385,688 370,660 328,645 C360,662 365,686 322,708 C258,742 204,784 195,850 Z" fill="#ebd69d" opacity="0.88" />
+
+  <!-- Foreground rounded green bushes -->
+  <g fill="#3f8743">
+    <circle cx="45" cy="795" r="76" />
+    <circle cx="122" cy="828" r="58" />
+    <circle cx="555" cy="800" r="80" />
+    <circle cx="478" cy="832" r="56" />
+  </g>
+  <g fill="#59a64d" opacity="0.72">
+    <circle cx="38" cy="810" r="52" />
+    <circle cx="560" cy="816" r="54" />
+  </g>
+
+  <!-- Blooming Hoa Tử Huyền (Muối của rừng) in foreground -->
+  <use href="#coverFlower" transform="translate(86, 738) scale(1.1)" />
+  <use href="#coverFlower" transform="translate(132, 768) scale(0.82)" />
+  <use href="#coverFlower" transform="translate(54, 782) scale(0.9)" />
+  <use href="#coverFlower" transform="translate(502, 742) scale(1.15)" />
+  <use href="#coverFlower" transform="translate(548, 766) scale(0.84)" />
+  <use href="#coverFlower" transform="translate(468, 786) scale(0.76)" />
+  <use href="#coverFlower" transform="translate(274, 412) scale(0.68)" />
+  <use href="#coverFlower" transform="translate(332, 434) scale(0.62)" />
+
+  <!-- Tiny yellow & coral spring wildflowers -->
+  <g fill="#ffe885">
+    <circle cx="176" cy="762" r="4" />
+    <circle cx="425" cy="756" r="4.2" />
+    <circle cx="395" cy="798" r="3.6" />
+  </g>
+</svg>

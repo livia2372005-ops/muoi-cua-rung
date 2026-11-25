@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 360" width="480" height="360" role="img" aria-label="Băng bó vết thương cho khỉ đực và tổ mối đùn dưới chân núi">
+  <defs>
+    <linearGradient id="rsBg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#f7ebd2" />
+      <stop offset="65%" stop-color="#dcedcb" />
+      <stop offset="100%" stop-color="#87b971" />
+    </linearGradient>
+  </defs>
+  <rect width="480" height="360" fill="url(#rsBg)" />
+
+  <!-- Soft sun warmth -->
+  <circle cx="370" cy="82" r="56" fill="#fff6c7" opacity="0.8" />
+
+  <!-- Mossy ground & rocks -->
+  <path d="M0,252 Q180,224 340,256 T480,240 L480,360 L0,360 Z" fill="#639f54" />
+  <path d="M40,295 Q110,210 198,290 Z" fill="#6e7a72" />
+
+  <!-- Termite mound (Tổ mối đùn) on right -->
+  <path d="M300,292 C315,232 342,202 365,200 C392,202 415,236 428,292 Z" fill="#9a6443" />
+  <path d="M326,292 C336,246 355,222 368,220 C382,222 398,250 406,292 Z" fill="#b37852" />
+
+  <!-- Resting wounded monkey gently bandaged in soft white cloth -->
+  <g transform="translate(132, 232)">
+    <ellipse cx="0" cy="18" rx="28" ry="18" fill="#7c5642" />
+    <!-- White cloth bandage -->
+    <rect x="-12" y="2" width="22" height="30" rx="5" fill="#fffdf8" stroke="#d5cab4" stroke-width="1.5" />
+    <circle cx="-26" cy="4" r="13" fill="#7c5642" />
+    <circle cx="-28" cy="6" r="8" fill="#e5be9e" />
+    <!-- Gentle caring eyes -->
+    <circle cx="-30" cy="4" r="1.5" fill="#2b1e17" />
+  </g>
+
+  <!-- Green healing leaves & spring sprouts -->
+  <g fill="#3f874a">
+    <ellipse cx="242" cy="285" rx="18" ry="7" transform="rotate(-24 242 285)" />
+    <ellipse cx="262" cy="282" rx="18" ry="7" transform="rotate(20 262 282)" />
+    <ellipse cx="436" cy="272" rx="16" ry="6" transform="rotate(-18 436 272)" />
+  </g>
+</svg>

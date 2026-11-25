@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 360" width="480" height="360" role="img" aria-label="Ông Diểu mang súng hai nòng bước vào rừng dâu da mùa xuân">
+  <defs>
+    <linearGradient id="hBg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#c9edd9" />
+      <stop offset="65%" stop-color="#e5f4d3" />
+      <stop offset="100%" stop-color="#87be73" />
+    </linearGradient>
+  </defs>
+  <rect width="480" height="360" fill="url(#hBg)" />
+  <!-- Misty peaks -->
+  <path d="M0,220 L85,130 L175,185 L270,105 L360,175 L480,125 L480,360 L0,360 Z" fill="#89be9f" opacity="0.65" />
+  <!-- Dau da foliage -->
+  <circle cx="85" cy="95" r="78" fill="#5aa875" opacity="0.85" />
+  <circle cx="405" cy="110" r="82" fill="#4c9967" opacity="0.85" />
+  <path d="M0,255 Q180,215 340,255 T480,242 L480,360 L0,360 Z" fill="#64a957" />
+  <path d="M160,360 C190,305 255,275 345,252 C295,282 252,316 240,360 Z" fill="#e9d39d" />
+
+  <!-- Distant monkey silhouette on high branch -->
+  <path d="M335,165 Q395,152 465,166" stroke="#3c5e44" stroke-width="5" fill="none" stroke-linecap="round" />
+  <circle cx="385" cy="148" r="8" fill="#4f3d33" />
+  <ellipse cx="386" cy="160" rx="8" ry="11" fill="#4f3d33" />
+
+  <!-- Ông Diểu silhouette in coat & fur cap with double-barreled rifle -->
+  <g transform="translate(175, 198)">
+    <!-- Legs -->
+    <rect x="-12" y="64" width="10" height="44" rx="4" fill="#3a4b3f" />
+    <rect x="4" y="64" width="10" height="44" rx="4" fill="#2d3b31" />
+    <!-- Warm coat -->
+    <path d="M-20,24 Q0,16 22,24 L26,72 L-22,72 Z" fill="#687a52" />
+    <!-- Fur cap & head -->
+    <circle cx="1" cy="6" r="13" fill="#f0c7a4" />
+    <path d="M-13,4 Q1,-15 15,4 Q15,10 9,10 L-7,10 Q-13,10 -13,4 Z" fill="#5b4331" />
+    <!-- Double-barreled rifle over shoulder -->
+    <line x1="-18" y1="42" x2="48" y2="-16" stroke="#372d27" stroke-width="5.5" stroke-linecap="round" />
+    <line x1="-16" y1="45" x2="50" y2="-13" stroke="#7d868c" stroke-width="2.2" stroke-linecap="round" />
+  </g>
+</svg>
