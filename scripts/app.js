@@ -1,28 +1,17 @@
 (function () {
   var data = window.MuoiCuaRung.DATA;
-  var NarrationController = window.MuoiCuaRung.NarrationController;
+  var ChapterAudioController = window.MuoiCuaRung.ChapterAudioController;
 
   var pageFlip = null;
-  var narration = null;
+  var chapterAudio = null;
   var soundEnabled = true;
   var rainSoundEnabled = false;
   var audioCtx = null;
   var rainGainNode = null;
   var rainSourceNode = null;
   var toastTimer = null;
-  var activeNodeIdx = 0;
   var currentPageIndex = 0;
   var lastModalTrigger = null;
-
-  var FLOWER_SVG =
-    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">' +
-    '<circle cx="12" cy="12" r="1.7" fill="currentColor" stroke="none"/>' +
-    '<path d="M12 3.2C13.6 6 13.6 8.6 12 10.4C10.4 8.6 10.4 6 12 3.2Z"/>' +
-    '<path d="M20.4 9.3C18.2 11.7 15.7 12.5 13.5 11.5C14.7 9.4 17.2 8.6 20.4 9.3Z"/>' +
-    '<path d="M17.2 19.2C14.3 17.8 12.8 15.7 13 13.3C15.3 13.8 16.9 15.9 17.2 19.2Z"/>' +
-    '<path d="M6.8 19.2C7.1 15.9 8.7 13.8 11 13.3C11.2 15.7 9.7 17.8 6.8 19.2Z"/>' +
-    '<path d="M3.6 9.3C6.8 8.6 9.3 9.4 10.5 11.5C8.3 12.5 5.8 11.7 3.6 9.3Z"/>' +
-    '</svg>';
 
   function showToast(msg) {
     var toast = document.getElementById('toast');
@@ -32,7 +21,7 @@
     if (toastTimer) clearTimeout(toastTimer);
     toastTimer = setTimeout(function () {
       toast.classList.remove('is-visible');
-    }, 2700);
+    }, 2600);
   }
 
   function ensureAudioCtx() {
@@ -56,7 +45,7 @@
       var channel = buffer.getChannelData(0);
       for (var i = 0; i < len; i++) {
         var env = Math.sin((i / len) * Math.PI);
-        channel[i] = (Math.random() * 2 - 1) * env * 0.085;
+        channel[i] = (Math.random() * 2 - 1) * env * 0.08;
       }
       var src = ctx.createBufferSource();
       src.buffer = buffer;
@@ -67,7 +56,7 @@
       filter.Q.value = 0.85;
 
       var gain = ctx.createGain();
-      gain.gain.value = 0.24;
+      gain.gain.value = 0.22;
 
       src.connect(filter);
       filter.connect(gain);
@@ -101,7 +90,6 @@
       var lastOut = 0;
       for (var i = 0; i < bufLen; i++) {
         var white = Math.random() * 2 - 1;
-        // Soft pink-ish spring drizzle filter
         ch[i] = (lastOut + 0.04 * white) / 1.04;
         lastOut = ch[i];
       }
@@ -116,7 +104,7 @@
       filter.Q.value = 0.55;
 
       var gain = ctx.createGain();
-      gain.gain.value = narration && narration.isPlaying ? 0.05 : 0.14;
+      gain.gain.value = chapterAudio && chapterAudio.isPlaying ? 0.05 : 0.14;
 
       src.connect(filter);
       filter.connect(gain);
@@ -153,77 +141,26 @@
     });
   }
 
-  function updateActiveNodeUI(index, fromPlayback) {
-    activeNodeIdx = index;
-    var node = data.nodes[index];
+  function ensurePageVisible(targetPageIdx) {
+    if (!pageFlip) return;
+    var total = pageFlip.getPageCount();
+    var cur = pageFlip.getCurrentPageIndex();
+    var orientation = pageFlip.getOrientation();
 
-    document.querySelectorAll('.trail-station').forEach(function (btn) {
-      btn.classList.toggle('is-active', Number(btn.dataset.node) === index);
-    });
-
-    document.querySelectorAll('.modal-node-card').forEach(function (card) {
-      card.classList.toggle('is-active', Number(card.dataset.node) === index);
-    });
-
-    var badge = document.getElementById('caption-badge');
-    var scriptText = document.getElementById('caption-script-text');
-    var inlineCap = document.getElementById('inline-live-caption');
-    var miniStatus = document.getElementById('mini-sync-status');
-
-    if (badge) badge.textContent = 'Lời đọc • Chặng ' + node.step + ' (' + node.phase + ')';
-    if (scriptText) scriptText.textContent = '“' + node.voiceScript + '”';
-    if (inlineCap) inlineCap.textContent = '“' + node.voiceScript + '”';
-    if (miniStatus) miniStatus.textContent = 'Đang chọn: Chặng ' + node.step + ' / 5';
-
-    // Auto-flip from Page 4 (idx 3) to Page 5 (idx 4) when reaching Station 4 on mobile portrait
-    if (fromPlayback && pageFlip && pageFlip.getOrientation() === 'portrait') {
-      var cur = pageFlip.getCurrentPageIndex();
-      if (index >= 3 && cur === 3) {
-        pageFlip.flip(4, 'top');
-      } else if (index < 3 && cur === 4) {
-        pageFlip.flip(3, 'top');
+    if (orientation === 'landscape') {
+      // Check if targetPageIdx is already shown on current open spread
+      if (cur === 0 && targetPageIdx === 0) return;
+      if (cur >= total - 1 && targetPageIdx >= total - 1) return;
+      if (cur > 0 && cur < total - 1) {
+        var leftIdx = cur % 2 === 1 ? cur : cur - 1;
+        if (targetPageIdx === leftIdx || targetPageIdx === leftIdx + 1) return;
       }
-    }
-  }
-
-  function renderCompassStage(stageIdx) {
-    var stages = data.compassStages;
-    var item = stages[stageIdx];
-    if (!item) return;
-
-    document.querySelectorAll('.compass-tab').forEach(function (btn) {
-      btn.classList.toggle('is-active', Number(btn.dataset.stage) === stageIdx);
-    });
-
-    var locEl = document.getElementById('compass-loc');
-    var modeEl = document.getElementById('compass-mode');
-    var outerEl = document.getElementById('compass-outer-note');
-    var innerEl = document.getElementById('compass-inner-note');
-    var quoteEl = document.getElementById('compass-quote');
-    var meterEl = document.getElementById('blossom-meter');
-
-    if (locEl) locEl.textContent = item.location;
-    if (modeEl) modeEl.textContent = item.modeLabel;
-    if (outerEl) outerEl.textContent = item.outerNote;
-    if (innerEl) innerEl.textContent = item.innerNote;
-    if (quoteEl) quoteEl.textContent = item.quote;
-
-    document.querySelectorAll('.artifact-token').forEach(function (tok) {
-      var idx = Number(tok.dataset.idx);
-      tok.classList.toggle('is-lost', Boolean(item.lostTokens[idx]));
-    });
-
-    if (meterEl) {
-      var html = '';
-      for (var i = 0; i < 5; i++) {
-        html +=
-          '<span style="opacity:' +
-          (i < item.humanityLevel ? '1' : '0.22') +
-          '">' +
-          FLOWER_SVG +
-          '</span>';
-      }
-      meterEl.innerHTML = html;
+      if (Math.abs(targetPageIdx - cur) <= 2) pageFlip.flip(targetPageIdx, 'top');
+      else pageFlip.turnToPage(targetPageIdx);
+    } else {
+      if (cur === targetPageIdx) return;
+      if (Math.abs(targetPageIdx - cur) <= 1) pageFlip.flip(targetPageIdx, 'top');
+      else pageFlip.turnToPage(targetPageIdx);
     }
   }
 
@@ -233,9 +170,7 @@
       diagramGrid.innerHTML = data.nodes
         .map(function (node, idx) {
           return (
-            '<article class="modal-node-card ' +
-            (idx === activeNodeIdx ? 'is-active' : '') +
-            '" data-node="' +
+            '<article class="modal-node-card" data-node="' +
             idx +
             '">' +
             '<img src="' +
@@ -243,10 +178,10 @@
             '" alt="' +
             node.title +
             '" loading="lazy" decoding="async" />' +
-            '<span class="station-tag">0' +
+            '<span class="station-roman">CHẶNG ' +
             node.step +
             ' • ' +
-            node.phase +
+            node.phase.toUpperCase() +
             '</span>' +
             '<h4>' +
             node.title +
@@ -267,33 +202,67 @@
       diagramGrid.querySelectorAll('.modal-play-node').forEach(function (btn) {
         btn.addEventListener('click', function () {
           var idx = Number(btn.dataset.node);
-          updateActiveNodeUI(idx, false);
-          if (narration) narration.playNode(idx);
+          if (chapterAudio) chapterAudio.playTrack('tom-tat', idx);
         });
       });
     }
 
-    var scriptCards = document.getElementById('modal-script-cards');
-    if (scriptCards) {
-      scriptCards.innerHTML = data.nodes
-        .map(function (node) {
+    var trackList = document.getElementById('track-manager-list');
+    if (trackList) {
+      trackList.innerHTML = data.tracks
+        .map(function (tr) {
           return (
-            '<div class="script-card-item">' +
-            '<strong>Chặng ' +
-            node.step +
-            ': ' +
-            node.title +
+            '<div class="track-row" data-track-row="' +
+            tr.id +
+            '">' +
+            '<div class="track-row-meta">' +
+            '<strong>' +
+            tr.shortTitle +
             '</strong>' +
-            '<em class="script-tone">Gợi ý ngữ điệu: ' +
-            node.toneGuide +
-            '</em>' +
-            '<p>' +
-            node.voiceScript +
-            '</p>' +
+            '<span>' +
+            tr.pageLabel +
+            ' • File: <code>audio/' +
+            tr.id +
+            '.mp3</code></span>' +
+            '</div>' +
+            '<div class="track-row-actions">' +
+            '<button type="button" class="jacket-btn modal-track-play" data-track="' +
+            tr.id +
+            '">▶ Nghe</button>' +
+            '<label class="jacket-btn jacket-btn--primary">' +
+            '<input type="file" class="track-file-input" data-track="' +
+            tr.id +
+            '" accept="audio/*" hidden />' +
+            'Gắn file' +
+            '</label>' +
+            '</div>' +
             '</div>'
           );
         })
         .join('');
+
+      trackList.querySelectorAll('.modal-track-play').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          var trId = btn.dataset.track;
+          var tr = data.tracks.find(function (t) { return t.id === trId; });
+          if (tr) ensurePageVisible(tr.pageStart);
+          if (chapterAudio) chapterAudio.toggleTrack(trId);
+        });
+      });
+
+      trackList.querySelectorAll('.track-file-input').forEach(function (input) {
+        input.addEventListener('change', function (e) {
+          var file = e.target.files && e.target.files[0];
+          if (!file) return;
+          var trId = input.dataset.track;
+          var tr = data.tracks.find(function (t) { return t.id === trId; });
+          if (tr) ensurePageVisible(tr.pageStart);
+          if (chapterAudio) {
+            chapterAudio.setCustomFile(trId, file);
+            showToast('Đã gắn "' + file.name + '" cho ' + (tr ? tr.shortTitle : trId));
+          }
+        });
+      });
     }
   }
 
@@ -323,17 +292,11 @@
     document.getElementById('btn-script')?.addEventListener('click', function () {
       openModal('modal-script', this);
     });
-    document.getElementById('btn-back-script')?.addEventListener('click', function () {
-      openModal('modal-script', this);
-    });
     document.getElementById('btn-diagram')?.addEventListener('click', function () {
       openModal('modal-diagram', this);
     });
-    document.getElementById('btn-diagram-inline')?.addEventListener('click', function () {
-      openModal('modal-diagram', this);
-    });
 
-    function openShareModal(triggerEl) {
+    document.getElementById('btn-share')?.addEventListener('click', function () {
       var urlHint = document.getElementById('share-url-hint');
       var fileWarn = document.getElementById('share-file-warning');
       var nativeBtn = document.getElementById('btn-native-share');
@@ -341,14 +304,7 @@
       if (urlHint) urlHint.textContent = window.location.href;
       if (fileWarn) fileWarn.hidden = !isFile;
       if (nativeBtn) nativeBtn.hidden = !navigator.share || isFile;
-      openModal('modal-share', triggerEl);
-    }
-
-    document.getElementById('btn-share')?.addEventListener('click', function () {
-      openShareModal(this);
-    });
-    document.getElementById('btn-back-share')?.addEventListener('click', function () {
-      openShareModal(this);
+      openModal('modal-share', this);
     });
 
     document.querySelectorAll('[data-close]').forEach(function (btn) {
@@ -414,7 +370,6 @@
     if (prevMob) prevMob.disabled = pageIdx <= 0;
     if (nextMob) nextMob.disabled = pageIdx >= totalPages - 1;
 
-    // Highlight active TOC item
     var tocBtns = document.querySelectorAll('.toc-jump');
     var activeToc = 0;
     tocBtns.forEach(function (b, idx) {
@@ -545,12 +500,12 @@
     document.getElementById('btn-copy-script')?.addEventListener('click', function () {
       var text = data.nodes
         .map(function (n) {
-          return 'Chặng ' + n.step + ' (' + n.title + '):\n' + n.voiceScript;
+          return n.voiceScript;
         })
         .join('\n\n');
       if (navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard.writeText(text).then(function () {
-          showToast('Đã sao chép kịch bản 5 chặng!');
+          showToast('Đã sao chép kịch bản tóm tắt 5 chặng!');
         });
       }
     });
@@ -569,7 +524,7 @@
     resize();
     window.addEventListener('resize', resize);
 
-    var drops = Array.from({ length: 26 }, function () {
+    var drops = Array.from({ length: 24 }, function () {
       return {
         x: Math.random() * canvas.width,
         y: Math.random() * canvas.height,
@@ -582,7 +537,7 @@
     function frame() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       var showAtmosphere =
-        rainSoundEnabled || currentPageIndex === 0 || currentPageIndex >= 11;
+        rainSoundEnabled || currentPageIndex === 0 || currentPageIndex >= 15;
 
       if (showAtmosphere) {
         ctx.lineWidth = 1;
@@ -611,31 +566,27 @@
     initBook();
     initSpringRainCanvas();
 
-    narration = new NarrationController({
-      nodes: data.nodes,
-      candidatePaths: data.audioPaths,
-      onNodeChange: updateActiveNodeUI,
+    chapterAudio = new ChapterAudioController({
+      tracks: data.tracks,
+      onEnsurePageVisible: ensurePageVisible,
+      onSegmentChange: function (trackId, segIdx) {
+        if (trackId === 'tom-tat') {
+          document.querySelectorAll('.modal-node-card').forEach(function (card) {
+            card.classList.toggle('is-active', Number(card.dataset.node) === segIdx);
+          });
+        }
+      },
       onPlayStateChange: function (playing) {
         if (rainGainNode && audioCtx) {
           rainGainNode.gain.setTargetAtTime(playing ? 0.05 : 0.14, audioCtx.currentTime, 0.25);
         }
+        var hintEl = document.querySelector('.footer-hint');
+        if (hintEl && window.innerWidth > 820) {
+          hintEl.hidden = Boolean(chapterAudio && chapterAudio.activeTrackId);
+        }
       },
     });
 
-    document.querySelectorAll('.trail-station').forEach(function (btn) {
-      btn.addEventListener('click', function () {
-        narration.playNode(Number(btn.dataset.node));
-      });
-    });
-
-    document.querySelectorAll('.compass-tab').forEach(function (btn) {
-      btn.addEventListener('click', function () {
-        renderCompassStage(Number(btn.dataset.stage));
-      });
-    });
-
-    renderCompassStage(0);
-    updateActiveNodeUI(0, false);
     populateModals();
     setupModals();
     setupToolbarActions();

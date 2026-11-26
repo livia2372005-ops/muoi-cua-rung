@@ -3,50 +3,55 @@ window.MuoiCuaRung = window.MuoiCuaRung || {};
 (function () {
   var SPEEDS = [0.85, 1.0, 1.15, 1.3];
 
-  function formatTime(seconds) {
-    if (!Number.isFinite(seconds) || seconds < 0) return '00:00';
-    var mins = Math.floor(seconds / 60);
-    var secs = Math.floor(seconds % 60);
-    return String(mins).padStart(2, '0') + ':' + String(secs).padStart(2, '0');
+  function splitSentences(text) {
+    var cleaned = text.replace(/\s+/g, ' ').trim();
+    if (!cleaned) return [];
+    var parts = cleaned.match(/[^.!?…]+[.!?…]*\s*/g);
+    if (!parts) return [cleaned];
+    return parts.map(function (s) {
+      return s.trim();
+    }).filter(Boolean);
   }
 
-  function NarrationController(options) {
-    this.nodes = options.nodes;
-    this.candidatePaths = options.candidatePaths;
-    this.onNodeChange = options.onNodeChange;
+  function ChapterAudioController(options) {
+    this.tracks = options.tracks;
+    this.onEnsurePageVisible = options.onEnsurePageVisible;
     this.onPlayStateChange = options.onPlayStateChange;
+    this.onSegmentChange = options.onSegmentChange;
 
-    this.mode = 'demo';
+    this.trackMap = {};
+    for (var i = 0; i < this.tracks.length; i++) {
+      this.trackMap[this.tracks[i].id] = this.tracks[i];
+    }
+
+    this.customFiles = {}; // trackId -> { url, name }
+    this.resolvedHosted = {}; // trackId -> string | false
+
+    this.activeTrackId = null;
+    this.activeSegIdx = 0;
     this.isPlaying = false;
     this.speedIndex = 1;
-    this.activeNodeIndex = 0;
-    this.objectUrl = null;
-    this.demoDuration = 82;
-    this.demoElapsed = 0;
-    this.demoTimer = null;
+    this.mode = 'idle'; // 'audio' | 'tts' | 'timer' | 'idle'
     this.hasViVoice = false;
-    this.ttsActive = false;
+    this.timerId = null;
+    this.ttsToken = 0;
 
     this.audio = new Audio();
     this.audio.preload = 'metadata';
 
-    this.playBtn = document.getElementById('audio-play-btn');
-    this.miniPlayBtn = document.getElementById('mini-play-btn');
+    this.footerPill = document.getElementById('footer-audio-pill');
+    this.pillPlayBtn = document.getElementById('pill-play-btn');
+    this.pillNameEl = document.getElementById('pill-track-name');
+    this.pillSpeedBtn = document.getElementById('pill-speed-btn');
+    this.pillStopBtn = document.getElementById('pill-stop-btn');
     this.modalPlayBtn = document.getElementById('modal-play-btn');
-    this.playSvg = document.getElementById('play-svg-icon');
-    this.inkWave = document.getElementById('ink-wave');
-    this.seekInput = document.getElementById('audio-seek');
-    this.clockEl = document.getElementById('audio-clock');
-    this.statusEl = document.getElementById('audio-status-text');
     this.modalStatusEl = document.getElementById('modal-audio-status');
-    this.speedBtn = document.getElementById('audio-speed-btn');
 
-    this.bindEvents();
     this.detectVietnameseVoice();
-    this.probeAudioCandidates(0);
+    this.bindEvents();
   }
 
-  NarrationController.prototype.detectVietnameseVoice = function () {
+  ChapterAudioController.prototype.detectVietnameseVoice = function () {
     var self = this;
     if (!('speechSynthesis' in window)) return;
     function scan() {
@@ -63,223 +68,193 @@ window.MuoiCuaRung = window.MuoiCuaRung || {};
     }
   };
 
-  NarrationController.prototype.bindEvents = function () {
+  ChapterAudioController.prototype.bindEvents = function () {
     var self = this;
 
-    function togglePlay() {
-      if (self.isPlaying) self.pause();
-      else self.play();
+    document.querySelectorAll('[data-play-track]').forEach(function (btn) {
+      if (!btn.dataset.defaultLabel) {
+        var span = btn.querySelector('span');
+        btn.dataset.defaultLabel = span ? span.textContent : btn.textContent;
+      }
+      btn.addEventListener('click', function () {
+        self.toggleTrack(btn.dataset.playTrack);
+      });
+    });
+
+    if (this.pillPlayBtn) {
+      this.pillPlayBtn.addEventListener('click', function () {
+        if (self.isPlaying) self.pause();
+        else if (self.activeTrackId) self.resume();
+      });
     }
 
-    if (this.playBtn) this.playBtn.addEventListener('click', togglePlay);
-    if (this.miniPlayBtn) this.miniPlayBtn.addEventListener('click', togglePlay);
-    if (this.modalPlayBtn) this.modalPlayBtn.addEventListener('click', togglePlay);
+    if (this.pillStopBtn) {
+      this.pillStopBtn.addEventListener('click', function () {
+        self.stop();
+      });
+    }
 
-    if (this.speedBtn) {
-      this.speedBtn.addEventListener('click', function () {
+    if (this.pillSpeedBtn) {
+      this.pillSpeedBtn.addEventListener('click', function () {
         self.speedIndex = (self.speedIndex + 1) % SPEEDS.length;
         var rate = SPEEDS[self.speedIndex];
         self.audio.playbackRate = rate;
-        self.speedBtn.textContent = (rate === 1 ? '1' : String(rate)) + 'x';
+        self.pillSpeedBtn.textContent = (rate === 1 ? '1' : String(rate)) + 'x';
       });
     }
 
-    if (this.seekInput) {
-      this.seekInput.addEventListener('input', function () {
-        var ratio = Number(self.seekInput.value) / 1000;
-        if (self.mode === 'audio' && Number.isFinite(self.audio.duration) && self.audio.duration > 0) {
-          self.audio.currentTime = ratio * self.audio.duration;
-          self.syncNodeFromRatio(ratio);
-        } else {
-          self.demoElapsed = ratio * self.demoDuration;
-          self.updateClockUI(self.demoElapsed, self.demoDuration);
-          var nodeIdx = self.syncNodeFromRatio(ratio);
-          if (self.isPlaying) self.playNode(nodeIdx);
-        }
-      });
-    }
-
-    var modalFileInput = document.getElementById('modal-audio-input');
-    if (modalFileInput) {
-      modalFileInput.addEventListener('change', function (e) {
-        var file = e.target.files && e.target.files[0];
-        if (file) self.loadLocalFile(file);
+    if (this.modalPlayBtn) {
+      this.modalPlayBtn.addEventListener('click', function () {
+        self.toggleTrack('tom-tat');
       });
     }
 
     this.audio.addEventListener('timeupdate', function () {
-      if (self.mode !== 'audio' || !self.audio.duration) return;
+      if (self.mode !== 'audio' || !self.audio.duration || self.activeTrackId !== 'tom-tat') return;
+      var segs = self.getSegments('tom-tat');
+      if (!segs.length) return;
       var ratio = self.audio.currentTime / self.audio.duration;
-      if (self.seekInput) self.seekInput.value = String(Math.round(ratio * 1000));
-      self.updateClockUI(self.audio.currentTime, self.audio.duration);
-      self.syncNodeFromRatio(ratio);
+      var idx = Math.min(segs.length - 1, Math.floor(ratio * segs.length));
+      if (idx !== self.activeSegIdx) {
+        self.highlightSegment('tom-tat', idx);
+      }
     });
 
     this.audio.addEventListener('ended', function () {
-      self.isPlaying = false;
-      self.updatePlayUI();
+      self.stop();
     });
   };
 
-  NarrationController.prototype.probeAudioCandidates = function (index) {
+  ChapterAudioController.prototype.getSegments = function (trackId) {
+    return Array.from(document.querySelectorAll('[data-track-seg="' + trackId + '"]'));
+  };
+
+  ChapterAudioController.prototype.setCustomFile = function (trackId, file) {
+    if (this.customFiles[trackId]) {
+      URL.revokeObjectURL(this.customFiles[trackId].url);
+    }
+    this.customFiles[trackId] = {
+      url: URL.createObjectURL(file),
+      name: file.name,
+    };
+    this.playTrack(trackId, 0);
+  };
+
+  ChapterAudioController.prototype.toggleTrack = function (trackId) {
+    if (this.activeTrackId === trackId) {
+      if (this.isPlaying) this.pause();
+      else this.resume();
+    } else {
+      this.playTrack(trackId, 0);
+    }
+  };
+
+  ChapterAudioController.prototype.playTrack = function (trackId, startSegIdx) {
     var self = this;
-    if (index >= this.candidatePaths.length) {
-      this.mode = 'demo';
-      this.updateClockUI(0, this.demoDuration);
-      this.setStatus('Giọng đọc tóm tắt — Nhóm 3');
+    var track = this.trackMap[trackId];
+    if (!track) return;
+
+    this.stop(true);
+    this.activeTrackId = trackId;
+    this.activeSegIdx = startSegIdx || 0;
+    this.isPlaying = true;
+    this.updateAllUI();
+
+    if (this.customFiles[trackId]) {
+      this.startHtmlAudio(trackId, this.customFiles[trackId].url);
       return;
     }
 
-    var testAudio = new Audio();
-    var candidate = this.candidatePaths[index];
-    var settled = false;
+    // Check cache or lazily probe ./audio/<trackId>.mp3 / .m4a on demand
+    if (this.resolvedHosted[trackId]) {
+      this.startHtmlAudio(trackId, this.resolvedHosted[trackId]);
+      return;
+    }
 
-    function cleanup() {
+    if (this.resolvedHosted[trackId] === false) {
+      this.startDomNarration(trackId, this.activeSegIdx);
+      return;
+    }
+
+    this.probeTrackFiles(trackId, 0, function (foundSrc) {
+      if (!self.isPlaying || self.activeTrackId !== trackId) return;
+      if (foundSrc) {
+        self.resolvedHosted[trackId] = foundSrc;
+        self.startHtmlAudio(trackId, foundSrc);
+      } else {
+        self.resolvedHosted[trackId] = false;
+        self.startDomNarration(trackId, self.activeSegIdx);
+      }
+    });
+  };
+
+  ChapterAudioController.prototype.probeTrackFiles = function (trackId, idx, cb) {
+    var track = this.trackMap[trackId];
+    if (!track || idx >= track.audioCandidates.length) {
+      cb(null);
+      return;
+    }
+    var self = this;
+    var testAudio = new Audio();
+    var src = track.audioCandidates[idx];
+    var done = false;
+
+    function finish(ok) {
+      if (done) return;
+      done = true;
       testAudio.removeEventListener('loadedmetadata', onOk);
       testAudio.removeEventListener('error', onErr);
+      if (ok) cb(src);
+      else self.probeTrackFiles(trackId, idx + 1, cb);
     }
-    function onOk() {
-      if (settled) return;
-      settled = true;
-      cleanup();
-      self.activateAudioSource(candidate, 'Giọng đọc Nhóm 3 (' + candidate.replace('./audio/', '') + ')');
-    }
-    function onErr() {
-      if (settled) return;
-      settled = true;
-      cleanup();
-      self.probeAudioCandidates(index + 1);
-    }
+    function onOk() { finish(true); }
+    function onErr() { finish(false); }
 
     testAudio.preload = 'metadata';
     testAudio.addEventListener('loadedmetadata', onOk);
     testAudio.addEventListener('error', onErr);
-    testAudio.src = candidate;
+    testAudio.src = src;
   };
 
-  NarrationController.prototype.loadLocalFile = function (file) {
-    this.pause();
-    if (this.objectUrl) URL.revokeObjectURL(this.objectUrl);
-    this.objectUrl = URL.createObjectURL(file);
-    this.activateAudioSource(this.objectUrl, 'Bản thu Nhóm 3: ' + file.name);
-    this.play();
-  };
-
-  NarrationController.prototype.activateAudioSource = function (src, label) {
-    var self = this;
+  ChapterAudioController.prototype.startHtmlAudio = function (trackId, src) {
     this.mode = 'audio';
     this.audio.src = src;
     this.audio.playbackRate = SPEEDS[this.speedIndex];
-    function onMeta() {
-      self.updateClockUI(0, self.audio.duration || 0);
-      self.setStatus(label);
-      self.audio.removeEventListener('loadedmetadata', onMeta);
-    }
-    this.audio.addEventListener('loadedmetadata', onMeta);
-    this.audio.load();
+    this.highlightSegment(trackId, this.activeSegIdx);
+    this.audio.play().catch(function () {});
   };
 
-  NarrationController.prototype.play = function () {
-    var self = this;
-    if (this.mode === 'audio') {
-      this.audio
-        .play()
-        .then(function () {
-          self.isPlaying = true;
-          self.updatePlayUI();
-        })
-        .catch(function () {
-          self.setStatus('Bấm ▶ để bật âm thanh');
-        });
+  ChapterAudioController.prototype.startDomNarration = function (trackId, segIdx) {
+    var segs = this.getSegments(trackId);
+    if (!segs.length || segIdx >= segs.length) {
+      this.stop();
       return;
     }
 
-    this.isPlaying = true;
-    this.updatePlayUI();
+    this.highlightSegment(trackId, segIdx);
+    var segEl = segs[segIdx];
+    var text = segEl.innerText.replace(/\s+/g, ' ').trim();
 
     if (this.hasViVoice && 'speechSynthesis' in window) {
-      this.setStatus('Đang phát thuyết minh tóm tắt...');
-      this.speakChainFrom(this.activeNodeIndex);
+      this.mode = 'tts';
+      this.speakSentences(trackId, segIdx, splitSentences(text), 0, ++this.ttsToken);
     } else {
-      this.setStatus('Đang trình chiếu phụ đề 5 chặng');
-      this.startTimerFallback();
+      this.mode = 'timer';
+      this.startSegmentTimer(trackId, segIdx, text.length);
     }
   };
 
-  NarrationController.prototype.pause = function () {
-    this.isPlaying = false;
-    this.ttsActive = false;
-    if (this.mode === 'audio') {
-      this.audio.pause();
-    } else {
-      if (this.demoTimer) {
-        clearInterval(this.demoTimer);
-        this.demoTimer = null;
-      }
-      if ('speechSynthesis' in window) {
-        try {
-          window.speechSynthesis.cancel();
-        } catch (e) {}
-      }
-      this.setStatus('Giọng đọc tóm tắt — Nhóm 3');
-    }
-    this.updatePlayUI();
-  };
-
-  NarrationController.prototype.playNode = function (index) {
-    var clamped = Math.max(0, Math.min(this.nodes.length - 1, index));
-    var node = this.nodes[clamped];
-    this.activeNodeIndex = clamped;
-    if (this.onNodeChange) this.onNodeChange(clamped, true);
-
-    if (this.mode === 'audio' && Number.isFinite(this.audio.duration) && this.audio.duration > 0) {
-      this.audio.currentTime = node.startRatio * this.audio.duration;
-      this.play();
-      return;
-    }
-
-    this.demoElapsed = node.startRatio * this.demoDuration;
-    if (this.seekInput) this.seekInput.value = String(Math.round(node.startRatio * 1000));
-    this.updateClockUI(this.demoElapsed, this.demoDuration);
-
-    if (this.demoTimer) {
-      clearInterval(this.demoTimer);
-      this.demoTimer = null;
-    }
-    this.isPlaying = true;
-    this.updatePlayUI();
-    if (this.hasViVoice && 'speechSynthesis' in window) {
-      this.setStatus('Đang đọc Chặng ' + (clamped + 1) + '...');
-      this.speakChainFrom(clamped);
-    } else {
-      this.setStatus('Đang trình chiếu Chặng ' + (clamped + 1) + ' / 5');
-      this.startTimerFallback();
-    }
-  };
-
-  // Chain full sentences cleanly using utterance.onend so speech never cuts mid-word
-  NarrationController.prototype.speakChainFrom = function (index) {
+  ChapterAudioController.prototype.speakSentences = function (trackId, segIdx, sentences, sIdx, token) {
     var self = this;
-    if (!this.isPlaying || index >= this.nodes.length) {
-      this.demoElapsed = 0;
-      if (this.seekInput) this.seekInput.value = '0';
-      this.updateClockUI(0, this.demoDuration);
-      this.pause();
+    if (!this.isPlaying || token !== this.ttsToken) return;
+    if (sIdx >= sentences.length) {
+      this.startDomNarration(trackId, segIdx + 1);
       return;
     }
-
-    this.activeNodeIndex = index;
-    if (this.onNodeChange) this.onNodeChange(index, true);
-
-    var node = this.nodes[index];
-    this.demoElapsed = node.startRatio * this.demoDuration;
-    if (this.seekInput) this.seekInput.value = String(Math.round(node.startRatio * 1000));
-    this.updateClockUI(this.demoElapsed, this.demoDuration);
 
     try {
       window.speechSynthesis.cancel();
-      this.ttsActive = true;
-      var utter = new SpeechSynthesisUtterance(node.voiceScript);
+      var utter = new SpeechSynthesisUtterance(sentences[sIdx]);
       utter.lang = 'vi-VN';
       utter.rate = SPEEDS[this.speedIndex];
       var voices = window.speechSynthesis.getVoices();
@@ -290,73 +265,159 @@ window.MuoiCuaRung = window.MuoiCuaRung || {};
         }
       }
       utter.onend = function () {
-        if (!self.isPlaying || !self.ttsActive) return;
-        self.speakChainFrom(index + 1);
+        if (!self.isPlaying || token !== self.ttsToken) return;
+        self.speakSentences(trackId, segIdx, sentences, sIdx + 1, token);
       };
       utter.onerror = function () {
-        if (self.isPlaying) self.startTimerFallback();
+        if (!self.isPlaying || token !== self.ttsToken) return;
+        self.startSegmentTimer(trackId, segIdx, sentences.join(' ').length);
       };
       window.speechSynthesis.speak(utter);
     } catch (e) {
-      this.startTimerFallback();
+      this.startSegmentTimer(trackId, segIdx, sentences.join(' ').length);
     }
   };
 
-  NarrationController.prototype.startTimerFallback = function () {
+  ChapterAudioController.prototype.startSegmentTimer = function (trackId, segIdx, charCount) {
     var self = this;
-    if (this.demoTimer) clearInterval(this.demoTimer);
-    this.demoTimer = setInterval(function () {
-      var rate = SPEEDS[self.speedIndex];
-      self.demoElapsed += 0.25 * rate;
-      if (self.demoElapsed >= self.demoDuration) {
-        self.demoElapsed = 0;
-        if (self.seekInput) self.seekInput.value = '0';
-        self.updateClockUI(0, self.demoDuration);
-        self.syncNodeFromRatio(0);
-        self.pause();
-        return;
+    if (this.timerId) clearTimeout(this.timerId);
+    var rate = SPEEDS[this.speedIndex];
+    var durationMs = Math.max(3600, Math.round((charCount * 54) / rate));
+    this.timerId = setTimeout(function () {
+      if (!self.isPlaying || self.activeTrackId !== trackId) return;
+      self.startDomNarration(trackId, segIdx + 1);
+    }, durationMs);
+  };
+
+  ChapterAudioController.prototype.highlightSegment = function (trackId, segIdx) {
+    this.activeSegIdx = segIdx;
+    document.querySelectorAll('.is-reading').forEach(function (el) {
+      el.classList.remove('is-reading');
+    });
+
+    var segs = this.getSegments(trackId);
+    var target = segs[segIdx];
+    if (target) {
+      target.classList.add('is-reading');
+      var targetPage = Number(target.dataset.segPage);
+      if (Number.isFinite(targetPage) && this.onEnsurePageVisible) {
+        this.onEnsurePageVisible(targetPage);
       }
-      var ratio = self.demoElapsed / self.demoDuration;
-      if (self.seekInput) self.seekInput.value = String(Math.round(ratio * 1000));
-      self.updateClockUI(self.demoElapsed, self.demoDuration);
-      self.syncNodeFromRatio(ratio);
-    }, 250);
-  };
-
-  NarrationController.prototype.syncNodeFromRatio = function (ratio) {
-    var matched = 0;
-    for (var i = 0; i < this.nodes.length; i++) {
-      if (ratio >= this.nodes[i].startRatio) matched = i;
     }
-    if (matched !== this.activeNodeIndex) {
-      this.activeNodeIndex = matched;
-      if (this.onNodeChange) this.onNodeChange(matched, this.isPlaying);
-    }
-    return matched;
-  };
 
-  NarrationController.prototype.updateClockUI = function (current, duration) {
-    if (this.clockEl) {
-      this.clockEl.textContent = formatTime(current) + ' / ' + formatTime(duration);
+    if (this.onSegmentChange) {
+      this.onSegmentChange(trackId, segIdx);
     }
   };
 
-  NarrationController.prototype.updatePlayUI = function () {
-    if (this.playSvg) {
-      this.playSvg.innerHTML = this.isPlaying
-        ? '<rect x="6.5" y="5" width="4" height="14" rx="1" fill="currentColor"/><rect x="13.5" y="5" width="4" height="14" rx="1" fill="currentColor"/>'
-        : '<path d="M7 5.5v13l11-6.5-11-6.5Z" fill="currentColor" stroke="none"/>';
+  ChapterAudioController.prototype.pause = function () {
+    this.isPlaying = false;
+    this.ttsToken++;
+    if (this.mode === 'audio') {
+      this.audio.pause();
+    } else {
+      if (this.timerId) {
+        clearTimeout(this.timerId);
+        this.timerId = null;
+      }
+      if ('speechSynthesis' in window) {
+        try {
+          window.speechSynthesis.cancel();
+        } catch (e) {}
+      }
     }
-    if (this.miniPlayBtn) this.miniPlayBtn.textContent = this.isPlaying ? '⏸' : '▶';
-    if (this.modalPlayBtn) this.modalPlayBtn.textContent = this.isPlaying ? '⏸ Tạm dừng tóm tắt' : '▶ Nghe toàn bộ tóm tắt';
-    if (this.inkWave) this.inkWave.classList.toggle('is-playing', this.isPlaying);
-    if (this.onPlayStateChange) this.onPlayStateChange(this.isPlaying);
+    this.updateAllUI();
   };
 
-  NarrationController.prototype.setStatus = function (text) {
-    if (this.statusEl) this.statusEl.textContent = text;
-    if (this.modalStatusEl) this.modalStatusEl.textContent = text;
+  ChapterAudioController.prototype.resume = function () {
+    if (!this.activeTrackId) return;
+    this.isPlaying = true;
+    this.updateAllUI();
+    if (this.mode === 'audio') {
+      this.audio.play().catch(function () {});
+    } else {
+      this.startDomNarration(this.activeTrackId, this.activeSegIdx);
+    }
   };
 
-  window.MuoiCuaRung.NarrationController = NarrationController;
+  ChapterAudioController.prototype.stop = function (silent) {
+    this.isPlaying = false;
+    this.ttsToken++;
+    if (this.timerId) {
+      clearTimeout(this.timerId);
+      this.timerId = null;
+    }
+    if (this.mode === 'audio') {
+      this.audio.pause();
+      this.audio.currentTime = 0;
+    }
+    if ('speechSynthesis' in window) {
+      try {
+        window.speechSynthesis.cancel();
+      } catch (e) {}
+    }
+    this.mode = 'idle';
+    document.querySelectorAll('.is-reading').forEach(function (el) {
+      el.classList.remove('is-reading');
+    });
+
+    if (!silent) {
+      this.activeTrackId = null;
+      this.activeSegIdx = 0;
+      this.updateAllUI();
+    }
+  };
+
+  ChapterAudioController.prototype.updateAllUI = function () {
+    var activeId = this.activeTrackId;
+    var playing = this.isPlaying;
+    var track = activeId ? this.trackMap[activeId] : null;
+
+    document.querySelectorAll('[data-play-track]').forEach(function (btn) {
+      var isThis = btn.dataset.playTrack === activeId;
+      var isThisPlaying = isThis && playing;
+      btn.classList.toggle('is-playing', isThisPlaying);
+      var span = btn.querySelector('span');
+      var svg = btn.querySelector('svg');
+      if (span) {
+        if (isThisPlaying) span.textContent = 'Tạm dừng đọc';
+        else if (isThis) span.textContent = 'Đọc tiếp';
+        else span.textContent = btn.dataset.defaultLabel;
+      }
+      if (svg) {
+        svg.innerHTML = isThisPlaying
+          ? '<rect x="6" y="5" width="4" height="14" rx="1" fill="currentColor"/><rect x="14" y="5" width="4" height="14" rx="1" fill="currentColor"/>'
+          : '<path d="M7 5.5v13l11-6.5-11-6.5Z" fill="currentColor" stroke="none"/>';
+      }
+    });
+
+    if (this.footerPill) {
+      this.footerPill.hidden = !track;
+      if (track) {
+        if (this.pillNameEl) {
+          this.pillNameEl.textContent = (playing ? 'Đang đọc: ' : 'Tạm dừng: ') + track.shortTitle;
+        }
+        if (this.pillPlayBtn) {
+          this.pillPlayBtn.textContent = playing ? '⏸' : '▶';
+        }
+      }
+    }
+
+    if (this.modalPlayBtn) {
+      var isMapPlaying = activeId === 'tom-tat' && playing;
+      this.modalPlayBtn.textContent = isMapPlaying ? '⏸ Tạm dừng tóm tắt' : '▶ Nghe tóm tắt 5 chặng';
+    }
+
+    if (this.modalStatusEl) {
+      this.modalStatusEl.textContent = track
+        ? (playing ? 'Đang đọc: ' : 'Tạm dừng: ') + track.shortTitle
+        : 'Bấm vào từng chặng để nghe giọng đọc hoặc lật tới chương tương ứng';
+    }
+
+    if (this.onPlayStateChange) {
+      this.onPlayStateChange(playing);
+    }
+  };
+
+  window.MuoiCuaRung.ChapterAudioController = ChapterAudioController;
 })();

@@ -1,19 +1,16 @@
 :root {
-  /* Collector's Reading Room Palette extracted from the 5 2K artworks */
   --studio-bg: radial-gradient(ellipse at 50% 44%, #2c3531 0%, #1d2421 58%, #121716 100%);
-  --paper-do: #f9f3e5;
-  --paper-vellum: #f1e8d6;
+  --paper-do: #faf5e9;
+  --paper-vellum: #f3ead7;
   --paper-mist: #eef3f1;
 
   --ink-woodblock: #182422;
   --ink-body: #2a2e2b;
-  --ink-muted: #5a625c;
+  --ink-muted: #5e6660;
   --terracotta: #9e533e;
   --terracotta-deep: #6e3324;
   --pine-deep: #243930;
-  --slate-hom-chet: #4a5b65;
   --brass-antique: #b88b4a;
-  --brass-soft: rgba(184, 139, 74, 0.34);
   --tu-huyen-white: #f6f8f4;
 
   --font-display: 'Playfair Display', Georgia, serif;
@@ -55,7 +52,7 @@ input:focus-visible {
   z-index: 35;
 }
 
-/* ==================== FLOATING TOOLBAR ==================== */
+/* ==================== EXTERNAL TOP-RIGHT TOOLBAR ==================== */
 .hz-toolbar {
   position: fixed;
   top: 12px;
@@ -160,13 +157,8 @@ input:focus-visible {
   stroke-linejoin: round;
 }
 
-.side-nav-prev {
-  left: 14px;
-}
-
-.side-nav-next {
-  right: 14px;
-}
+.side-nav-prev { left: 14px; }
+.side-nav-next { right: 14px; }
 
 .side-nav-btn:hover:not(:disabled) {
   background: rgba(36, 57, 48, 0.94);
@@ -178,7 +170,6 @@ input:focus-visible {
   cursor: default;
 }
 
-/* 5:8 book spread container (440x704 per single page -> 880x704 spread) */
 .book-wrapper {
   width: min(940px, calc(100vw - 136px));
   height: min(740px, calc(100vh - 104px));
@@ -189,7 +180,6 @@ input:focus-visible {
   transition: transform 0.55s cubic-bezier(0.22, 0.72, 0.24, 1);
 }
 
-/* Center front cover and back cover in landscape desktop mode */
 .book-wrapper.is-landscape[data-book-pos='cover'] {
   transform: translateX(-25%);
 }
@@ -216,39 +206,49 @@ input:focus-visible {
   color: var(--ink-body);
 }
 
-/* ==================== PAPER TEXTURES & LOCKED FOLIO GRID ==================== */
+/* ==================== PURE PRINTED-BOOK PAPER & SPINE GUTTER ==================== */
 .paper-do {
-  background:
-    radial-gradient(circle at 50% 45%, rgba(255, 255, 255, 0.35), transparent 72%),
-    linear-gradient(180deg, #faf5e9 0%, #f5ecda 100%);
+  background: linear-gradient(180deg, #fbf7ec 0%, #f5ecda 100%);
 }
 
 .paper-vellum {
-  background:
-    radial-gradient(circle at 50% 40%, rgba(255, 255, 255, 0.28), transparent 70%),
-    linear-gradient(180deg, #f5edd9 0%, #ece0c7 100%);
+  background: linear-gradient(180deg, #f6eedc 0%, #ede1c8 100%);
 }
 
 .paper-mist {
-  background: linear-gradient(180deg, #f3f6f4 0%, #e7efec 65%, #dde8e4 100%);
+  background: linear-gradient(180deg, #f3f6f4 0%, #e7efec 100%);
 }
 
-.paper-folio-frame::before {
+/* Soft central book-spine crease shadows */
+.page-even::after {
   content: '';
   position: absolute;
-  inset: 11px;
-  border: 1px solid rgba(184, 139, 74, 0.34);
-  outline: 1px solid rgba(184, 139, 74, 0.14);
-  outline-offset: -3px;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  width: 24px;
+  background: linear-gradient(to left, rgba(35, 29, 20, 0.13), transparent);
   pointer-events: none;
-  z-index: 1;
+  z-index: 4;
+}
+
+.page-odd::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 24px;
+  background: linear-gradient(to right, rgba(35, 29, 20, 0.13), transparent);
+  pointer-events: none;
+  z-index: 4;
 }
 
 .page-grid {
   position: relative;
   z-index: 2;
   height: 100%;
-  padding: 20px 24px 14px;
+  padding: 20px 26px 14px;
   display: grid;
   grid-template-rows: auto 1fr auto;
   gap: 8px;
@@ -257,9 +257,9 @@ input:focus-visible {
 .running-head {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   font-family: var(--font-sans);
-  font-size: 0.6rem;
+  font-size: 0.58rem;
   font-weight: 700;
   letter-spacing: 0.14em;
   color: var(--ink-muted);
@@ -269,7 +269,7 @@ input:focus-visible {
 .head-rule {
   flex: 1;
   height: 1px;
-  background: rgba(184, 139, 74, 0.35);
+  background: rgba(184, 139, 74, 0.26);
 }
 
 .page-body {
@@ -280,37 +280,28 @@ input:focus-visible {
   overflow: hidden;
 }
 
-.page-body--center-v {
-  justify-content: center;
-}
-
 .folio-foot {
   font-family: var(--font-serif);
-  font-size: 0.74rem;
+  font-size: 0.72rem;
   font-weight: 600;
   color: var(--ink-muted);
   letter-spacing: 0.08em;
 }
 
-.folio-foot--left {
-  text-align: left;
-}
-
-.folio-foot--right {
-  text-align: right;
-}
+.folio-foot--left { text-align: left; }
+.folio-foot--right { text-align: right; }
 
 .folio-foot--overlay {
   position: absolute;
   bottom: 12px;
-  left: 18px;
-  right: 18px;
-  z-index: 3;
-  color: rgba(246, 248, 244, 0.84);
+  left: 20px;
+  right: 20px;
+  z-index: 5;
+  color: rgba(246, 248, 244, 0.86);
   text-shadow: 0 1px 6px rgba(0, 0, 0, 0.65);
 }
 
-/* ==================== COVER (PAGE 1) & BACKCOVER (PAGE 16) ==================== */
+/* ==================== COVER (PAGE 1) & BACKCOVER (PAGE 22) ==================== */
 .page-cover,
 .page-art-plate,
 .page-backcover {
@@ -342,9 +333,9 @@ input:focus-visible {
 
 .cover-series {
   margin: 0 0 8px;
-  font-size: 0.6rem;
+  font-size: 0.58rem;
   font-weight: 700;
-  letter-spacing: 0.18em;
+  letter-spacing: 0.2em;
   color: #46574c;
 }
 
@@ -421,7 +412,7 @@ input:focus-visible {
 }
 
 .obi-kicker {
-  font-size: 0.58rem;
+  font-size: 0.56rem;
   letter-spacing: 0.16em;
   color: #d3b279;
 }
@@ -440,20 +431,17 @@ input:focus-visible {
   background: rgba(36, 57, 48, 0.86);
   color: #f9f3e5;
   font-family: var(--font-sans);
-  font-size: 0.73rem;
+  font-size: 0.72rem;
   font-weight: 600;
   cursor: pointer;
 }
 
-.obi-open-btn:hover {
-  background: #2c4a3e;
-}
+.obi-open-btn:hover { background: #2c4a3e; }
 
-/* Back cover */
 .backcover-scrim {
   position: absolute;
   inset: 0;
-  background: rgba(18, 28, 25, 0.64);
+  background: rgba(18, 28, 25, 0.68);
   pointer-events: none;
 }
 
@@ -461,7 +449,7 @@ input:focus-visible {
   position: relative;
   z-index: 2;
   height: 100%;
-  padding: 22px;
+  padding: 24px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -469,41 +457,38 @@ input:focus-visible {
 
 .backcover-jacket {
   width: 100%;
-  padding: 22px 18px;
-  background: rgba(249, 243, 229, 0.94);
-  border: 1px solid rgba(184, 139, 74, 0.6);
-  outline: 1px solid rgba(184, 139, 74, 0.28);
-  outline-offset: -4px;
+  padding: 24px 20px;
+  background: rgba(249, 243, 229, 0.95);
+  border: 1px solid rgba(184, 139, 74, 0.55);
   text-align: center;
   color: var(--ink-body);
 }
 
 .jacket-kicker {
   display: block;
-  font-size: 0.6rem;
+  font-size: 0.58rem;
   font-weight: 700;
   letter-spacing: 0.18em;
   color: var(--terracotta);
 }
 
 .backcover-jacket h2 {
-  margin: 4px 0 8px;
+  margin: 6px 0 10px;
   font-family: var(--font-display);
   font-size: 1.55rem;
   color: var(--ink-woodblock);
 }
 
 .jacket-blurb {
-  margin: 0 0 12px;
+  margin: 0 0 14px;
   font-family: var(--font-serif);
   font-style: italic;
   font-size: 0.77rem;
-  line-height: 1.55;
-  color: var(--ink-body);
+  line-height: 1.58;
 }
 
 .jacket-colophon {
-  padding: 8px 0 12px;
+  padding: 10px 0 12px;
   border-top: 1px solid rgba(184, 139, 74, 0.35);
   display: flex;
   flex-direction: column;
@@ -517,51 +502,35 @@ input:focus-visible {
   font-size: 0.76rem;
 }
 
-.jacket-actions {
-  display: grid;
-  gap: 7px;
-}
-
-.jacket-btn {
+.back-restart-link {
   appearance: none;
-  padding: 7px 12px;
-  border-radius: 4px;
-  border: 1px solid rgba(36, 57, 48, 0.3);
-  background: #fffdf8;
-  color: var(--pine-deep);
-  font-family: var(--font-sans);
-  font-size: 0.74rem;
-  font-weight: 600;
+  background: transparent;
+  border: none;
+  padding: 4px 8px;
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 0.76rem;
+  color: var(--terracotta);
   cursor: pointer;
 }
 
-.jacket-btn:hover {
-  background: #f1ead9;
+.back-restart-link:hover {
+  text-decoration: underline;
 }
 
-.jacket-btn--primary {
-  background: var(--pine-deep);
-  border-color: var(--pine-deep);
-  color: #f9f3e5;
-}
-
-.jacket-btn--primary:hover {
-  background: #1b2c24;
-}
-
-/* ==================== LITERARY PROSE PAGES ==================== */
+/* ==================== PRINTED BOOK CHAPTERS & PROSE ==================== */
 .chapter-head {
   margin-bottom: 10px;
 }
 
-.chapter-head--compact {
+.chapter-head--tight {
   margin-bottom: 6px;
 }
 
 .chapter-kicker {
   display: block;
   font-family: var(--font-sans);
-  font-size: 0.6rem;
+  font-size: 0.58rem;
   font-weight: 700;
   letter-spacing: 0.16em;
   color: var(--terracotta);
@@ -572,695 +541,263 @@ input:focus-visible {
   margin: 0;
   font-family: var(--font-display);
   font-size: clamp(1.22rem, 1.9vw, 1.48rem);
-  line-height: 1.22;
+  line-height: 1.2;
   color: var(--ink-woodblock);
 }
 
+/* Minimal inline chapter voice trigger */
+.chapter-listen-btn {
+  appearance: none;
+  margin-top: 6px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(158, 83, 62, 0.42);
+  background: transparent;
+  color: var(--terracotta);
+  font-family: var(--font-sans);
+  font-size: 0.64rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.18s ease, color 0.18s ease, border-color 0.18s ease;
+}
+
+.chapter-listen-btn svg {
+  width: 11px;
+  height: 11px;
+  flex-shrink: 0;
+}
+
+.chapter-listen-btn:hover {
+  background: rgba(158, 83, 62, 0.1);
+}
+
+.chapter-listen-btn.is-playing {
+  background: var(--terracotta);
+  border-color: var(--terracotta);
+  color: #fbf7ec;
+}
+
 .story-para {
-  margin: 0 0 10px;
+  margin: 0 0 8px;
+  padding: 2px 4px;
   font-family: var(--font-serif);
-  font-size: clamp(0.75rem, 1vw, 0.84rem);
+  font-size: clamp(0.73rem, 0.96vw, 0.81rem);
   line-height: 1.62;
+  text-align: justify;
   color: var(--ink-body);
+  border-radius: 2px;
+  transition: background 0.25s ease;
+}
+
+.story-para + .story-para:not(.story-para--dropcap) {
+  text-indent: 1.45em;
 }
 
 .story-para--dropcap::first-letter {
   float: left;
   font-family: var(--font-display);
-  font-size: 2.75rem;
+  font-size: 2.65rem;
   font-weight: 700;
   line-height: 0.82;
   padding: 3px 8px 0 0;
   color: var(--terracotta);
 }
 
-.preface-ornament {
-  margin-top: 8px;
-  display: flex;
-  justify-content: center;
-  color: var(--pine-deep);
-  opacity: 0.55;
+/* Soft paper glow when narration reads this paragraph */
+.story-para.is-reading,
+.prose-stanza.is-reading {
+  background: linear-gradient(90deg, rgba(158, 83, 62, 0.12) 0%, rgba(184, 139, 74, 0.06) 100%);
+  box-shadow: -3px 0 0 var(--terracotta);
 }
 
-.botanical-icon {
-  width: 24px;
-  height: 24px;
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 1.4;
-  stroke-linecap: round;
-  stroke-linejoin: round;
+.epigraph-open {
+  margin: 4px 0 8px;
+  padding: 0 10px;
 }
 
-.epigraph-verbatim {
-  margin: 4px 0 14px;
-  padding: 10px 12px;
-  border-top: 1px solid rgba(184, 139, 74, 0.45);
-  border-bottom: 1px solid rgba(184, 139, 74, 0.45);
-  background: rgba(255, 252, 245, 0.5);
-}
-
-.epigraph-verbatim p {
+.epigraph-open p {
   margin: 0 0 4px;
   font-family: var(--font-serif);
   font-style: italic;
-  font-size: 0.76rem;
-  line-height: 1.54;
+  font-size: 0.77rem;
+  line-height: 1.56;
   color: var(--ink-woodblock);
 }
 
-.epigraph-verbatim cite {
+.epigraph-open cite {
   display: block;
   text-align: right;
   font-family: var(--font-sans);
   font-style: normal;
-  font-size: 0.65rem;
+  font-size: 0.64rem;
   font-weight: 700;
   color: var(--terracotta);
 }
 
-.dossier-list {
-  display: grid;
-  gap: 10px;
-}
-
-.dossier-item {
-  padding-bottom: 9px;
-  border-bottom: 1px solid rgba(184, 139, 74, 0.24);
-}
-
-.dossier-item:last-child {
-  border-bottom: none;
-}
-
-.dossier-label {
-  display: inline-block;
-  font-size: 0.62rem;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--terracotta);
-  margin-bottom: 2px;
-}
-
-.dossier-item p {
-  margin: 0;
-  font-family: var(--font-serif);
-  font-size: 0.77rem;
-  line-height: 1.5;
-}
-
-.literary-pullquote {
-  margin: 10px 0 0;
-  padding: 9px 10px;
-  background: rgba(232, 221, 198, 0.52);
-  border-top: 1px solid rgba(158, 83, 62, 0.45);
-  border-bottom: 1px solid rgba(158, 83, 62, 0.45);
+.section-break {
+  margin: 8px 0;
   text-align: center;
-  font-family: var(--font-serif);
-  font-style: italic;
-  font-weight: 600;
-  font-size: 0.76rem;
-  line-height: 1.46;
-  color: var(--terracotta-deep);
-}
-
-/* ==================== FULL-BLEED ART PLATES (PAGES 6, 9, 10, 13) ==================== */
-.plate-mist-veil {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(180deg, rgba(249, 243, 229, 0.34) 0%, transparent 24%, transparent 82%, rgba(16, 24, 22, 0.42) 100%);
-  pointer-events: none;
-}
-
-.plate-sky-caption {
-  position: relative;
-  z-index: 2;
-  padding: 18px 20px;
-}
-
-.plate-roman {
-  display: inline-block;
-  font-size: 0.62rem;
-  font-weight: 700;
-  letter-spacing: 0.18em;
-  color: var(--terracotta-deep);
-  background: rgba(249, 243, 229, 0.82);
-  padding: 3px 8px;
-  border: 1px solid rgba(184, 139, 74, 0.45);
-}
-
-.plate-sub {
-  margin: 4px 0 0;
-  font-family: var(--font-serif);
-  font-style: italic;
   font-size: 0.78rem;
-  font-weight: 600;
-  color: var(--ink-woodblock);
-  text-shadow: 0 1px 6px rgba(249, 243, 229, 0.9);
-}
-
-/* ==================== PAGES 4-5: STORY MAP & AUDIO CONSOLE ==================== */
-.map-title {
-  margin: 0 0 6px;
-  font-family: var(--font-display);
-  font-size: 1.15rem;
+  letter-spacing: 0.3em;
   color: var(--terracotta);
+  opacity: 0.7;
 }
 
-.audio-console {
-  display: flex;
-  align-items: center;
-  gap: 9px;
-  padding: 8px 10px;
-  border-radius: 6px;
-  background: #1c2f25;
-  border: 1px solid rgba(184, 139, 74, 0.55);
-  color: #f6f2e8;
-  margin-bottom: 8px;
-}
-
-.console-play-btn {
-  appearance: none;
-  width: 34px;
-  height: 34px;
-  border-radius: 50%;
-  border: 1px solid rgba(184, 139, 74, 0.7);
-  background: #b88b4a;
-  color: #15211d;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  flex-shrink: 0;
-}
-
-.play-svg {
-  width: 15px;
-  height: 15px;
-}
-
-.console-main {
-  flex: 1;
-  min-width: 0;
-}
-
-.console-top {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-  margin-bottom: 4px;
-}
-
-.console-label {
-  font-size: 0.69rem;
-  font-weight: 600;
-  color: #efe5cf;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.ink-wave {
-  display: flex;
-  align-items: center;
-  gap: 2px;
-  height: 12px;
-}
-
-.ink-wave span {
-  width: 2px;
-  height: 4px;
-  border-radius: 1px;
-  background: #cfa76b;
-  transition: height 0.15s ease;
-}
-
-.ink-wave.is-playing span {
-  animation: wavePulse 0.75s ease-in-out infinite alternate;
-}
-
-.ink-wave.is-playing span:nth-child(2n) { animation-delay: 0.15s; }
-.ink-wave.is-playing span:nth-child(3n) { animation-delay: 0.3s; }
-.ink-wave.is-playing span:nth-child(5n) { animation-delay: 0.45s; }
-
-@keyframes wavePulse {
-  from { height: 3px; opacity: 0.6; }
-  to { height: 12px; opacity: 1; }
-}
-
-.console-controls {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.console-controls input[type='range'] {
-  flex: 1;
-  height: 4px;
-  accent-color: #d6ab66;
-  cursor: pointer;
-}
-
-.console-clock {
-  font-size: 0.64rem;
-  font-variant-numeric: tabular-nums;
-  color: #d8d0c0;
-}
-
-.console-speed-btn {
-  appearance: none;
-  padding: 2px 6px;
-  border-radius: 4px;
-  border: 1px solid rgba(184, 139, 74, 0.5);
-  background: transparent;
-  color: #f6e7c6;
-  font-size: 0.64rem;
-  font-weight: 700;
-  cursor: pointer;
-}
-
-.trail-map {
+/* ==================== PAGES 4-5: OPEN INK-TRAIL STORY MAP ==================== */
+.ink-trail-flow {
+  position: relative;
   display: flex;
   flex-direction: column;
-  gap: 3px;
+  gap: 5px;
 }
 
-.trail-station {
-  appearance: none;
+.trail-curve-bg {
+  position: absolute;
+  inset: 0;
   width: 100%;
-  text-align: left;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.map-station {
+  position: relative;
+  z-index: 1;
   display: flex;
   align-items: center;
-  gap: 9px;
-  padding: 6px 8px;
-  background: rgba(250, 246, 236, 0.88);
-  border: 1px solid rgba(184, 139, 74, 0.35);
-  border-radius: 4px;
-  cursor: pointer;
-  transition: border-color 0.18s ease, background 0.18s ease, box-shadow 0.18s ease;
+  gap: 10px;
+  padding: 4px 6px;
+  border-radius: 6px;
+  transition: background 0.25s ease;
 }
 
-.trail-station:hover {
-  border-color: var(--terracotta);
-  background: #fffdf8;
+.map-station--flip {
+  flex-direction: row-reverse;
+  text-align: right;
 }
 
-.trail-station.is-active {
-  border-color: var(--terracotta);
-  background: #fffdf8;
-  box-shadow: inset 3px 0 0 var(--terracotta), 0 4px 12px rgba(158, 83, 62, 0.14);
+.map-station.is-reading {
+  background: rgba(184, 139, 74, 0.16);
 }
 
-.station-arch {
-  width: 58px;
-  height: 48px;
-  border-radius: 26px 26px 4px 4px;
+.station-medallion {
+  width: 66px;
+  height: 82px;
+  border-radius: 33px;
   overflow: hidden;
-  border: 1px solid rgba(184, 139, 74, 0.55);
+  border: 1.5px solid var(--brass-antique);
+  box-shadow: 0 4px 12px rgba(24, 36, 34, 0.14);
   flex-shrink: 0;
 }
 
-.station-arch img {
+.station-medallion img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   display: block;
 }
 
-.station-info {
+.station-text {
   flex: 1;
   min-width: 0;
 }
 
-.station-tag {
+.station-roman {
   display: block;
-  font-size: 0.58rem;
+  font-family: var(--font-sans);
+  font-size: 0.56rem;
   font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  letter-spacing: 0.1em;
   color: var(--terracotta);
 }
 
-.station-info h4 {
+.station-text h4 {
   margin: 1px 0 2px;
   font-family: var(--font-display);
-  font-size: 0.79rem;
+  font-size: 0.84rem;
   line-height: 1.22;
   color: var(--ink-woodblock);
 }
 
-.station-info p {
+.station-text p {
   margin: 0;
-  font-size: 0.67rem;
-  line-height: 1.32;
-  color: var(--ink-muted);
-}
-
-.trail-causal {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 1px 0;
-}
-
-.causal-line {
-  width: 18px;
-  height: 1px;
-  background: rgba(158, 83, 62, 0.4);
-}
-
-.trail-causal em {
   font-family: var(--font-serif);
-  font-size: 0.62rem;
+  font-size: 0.7rem;
+  line-height: 1.4;
+  color: var(--ink-body);
+}
+
+.causal-bridge {
+  position: relative;
+  z-index: 1;
+  margin: 0;
+  text-align: center;
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 0.66rem;
   color: var(--terracotta-deep);
 }
 
-.inline-live-caption {
-  margin: auto 0 0;
-  padding: 5px 8px;
-  border-left: 2px solid var(--brass-antique);
-  background: rgba(255, 252, 245, 0.68);
-  font-family: var(--font-serif);
-  font-style: italic;
-  font-size: 0.68rem;
-  line-height: 1.36;
-  color: var(--ink-body);
+.causal-bridge--top {
+  margin-bottom: 6px;
 }
 
-.mini-sync-bar {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 5px 8px;
-  border-radius: 4px;
-  background: #22352c;
-  color: #f6efe0;
-  margin-bottom: 8px;
-}
-
-.mini-sync-play {
-  appearance: none;
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  border: none;
-  background: var(--brass-antique);
-  color: #16221d;
-  font-size: 0.72rem;
-  cursor: pointer;
-  flex-shrink: 0;
-}
-
-.mini-sync-status {
-  flex: 1;
-  font-size: 0.68rem;
-  font-weight: 600;
-}
-
-.mini-sync-zoom {
-  appearance: none;
-  padding: 3px 8px;
-  border-radius: 3px;
-  border: 1px solid rgba(184, 139, 74, 0.5);
-  background: transparent;
-  color: #f3e2bc;
-  font-size: 0.66rem;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.transcript-panel {
-  margin-top: 8px;
-  padding: 8px 10px;
-  background: rgba(255, 252, 245, 0.75);
-  border-left: 3px solid var(--terracotta);
-}
-
-.transcript-badge {
-  display: block;
-  font-size: 0.63rem;
-  font-weight: 700;
-  color: var(--terracotta);
-  margin-bottom: 2px;
-}
-
-.transcript-panel p {
-  margin: 0;
-  font-family: var(--font-serif);
-  font-style: italic;
-  font-size: 0.72rem;
-  line-height: 1.44;
-  color: var(--ink-body);
-}
-
-/* ==================== PAGE 12: INTERACTIVE TRANSFORMATION COMPASS ==================== */
-.compass-tabs {
+/* ==================== PAGES 18-19: UN-BOXED LITERARY STANZAS ==================== */
+.prose-stanza {
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: 4px;
-  margin-bottom: 8px;
-}
-
-.compass-tab {
-  appearance: none;
-  padding: 5px 3px;
-  border: 1px solid rgba(36, 57, 48, 0.25);
-  background: rgba(255, 252, 245, 0.75);
-  color: var(--ink-woodblock);
-  font-family: var(--font-sans);
-  font-size: 0.64rem;
-  font-weight: 700;
-  border-radius: 3px;
-  cursor: pointer;
-}
-
-.compass-tab.is-active {
-  background: var(--pine-deep);
-  border-color: var(--pine-deep);
-  color: #f9f3e5;
-}
-
-.compass-stage {
-  display: flex;
-  flex-direction: column;
-  gap: 9px;
-  padding: 12px 13px;
-  background: rgba(255, 252, 245, 0.85);
-  border: 1px solid rgba(184, 139, 74, 0.45);
-}
-
-.compass-meta {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+  grid-template-columns: 24px 1fr;
   gap: 6px;
-  padding-bottom: 6px;
-  border-bottom: 1px solid rgba(184, 139, 74, 0.28);
+  align-items: baseline;
+  padding: 4px;
+  margin-bottom: 7px;
+  border-radius: 2px;
+  transition: background 0.25s ease;
 }
 
-.compass-loc {
-  font-size: 0.66rem;
-  font-weight: 700;
-  color: var(--pine-deep);
-}
-
-.compass-mode {
-  font-size: 0.62rem;
-  font-weight: 700;
-  color: var(--terracotta);
-  text-transform: uppercase;
-}
-
-.compass-axis {
-  padding: 7px 9px;
-  background: rgba(239, 230, 210, 0.45);
-  border-left: 2px solid var(--terracotta);
-}
-
-.compass-axis--inner {
-  background: rgba(36, 57, 48, 0.06);
-  border-left-color: var(--pine-deep);
-}
-
-.axis-head-flex {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-}
-
-.axis-label {
-  display: block;
-  font-size: 0.62rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--ink-muted);
-  margin-bottom: 5px;
-}
-
-.artifact-row {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 4px;
-  margin-bottom: 5px;
-}
-
-.artifact-token {
-  padding: 4px 3px;
-  text-align: center;
-  font-size: 0.61rem;
-  font-weight: 700;
-  border: 1px solid rgba(36, 57, 48, 0.28);
-  background: #fffdf8;
-  color: var(--ink-woodblock);
-}
-
-.artifact-token.is-lost {
-  opacity: 0.42;
-  text-decoration: line-through;
-  border-style: dashed;
-  color: var(--terracotta);
-}
-
-.blossom-meter {
-  display: flex;
-  gap: 3px;
-  color: var(--terracotta);
-}
-
-.blossom-meter svg {
-  width: 14px;
-  height: 14px;
-}
-
-.axis-note {
-  margin: 0;
-  font-family: var(--font-serif);
-  font-size: 0.72rem;
-  line-height: 1.44;
-  color: var(--ink-body);
-}
-
-.compass-quote {
-  margin: 4px 0 0;
-  padding-top: 6px;
-  border-top: 1px dashed rgba(184, 139, 74, 0.35);
-  font-family: var(--font-serif);
-  font-style: italic;
-  font-size: 0.72rem;
-  line-height: 1.44;
-  color: var(--terracotta-deep);
-  text-align: center;
-}
-
-/* ==================== PAGES 14-15: SYMBOLS & ARCH VIGNETTE ==================== */
-.symbol-epigraph {
-  margin: 0 0 12px;
-  font-family: var(--font-serif);
-  font-style: italic;
-  font-size: 0.74rem;
-  line-height: 1.48;
-  color: var(--pine-deep);
-  text-align: center;
-}
-
-.cross-grid {
-  margin: auto 0;
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  border-top: 1px solid rgba(184, 139, 74, 0.4);
-  border-bottom: 1px solid rgba(184, 139, 74, 0.4);
-}
-
-.cross-cell {
-  padding: 16px 11px;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.cross-cell:nth-child(odd) {
-  border-right: 1px solid rgba(184, 139, 74, 0.35);
-}
-
-.cross-cell:nth-child(1),
-.cross-cell:nth-child(2) {
-  border-bottom: 1px solid rgba(184, 139, 74, 0.35);
-}
-
-.cross-cell .botanical-icon {
-  color: var(--terracotta);
-  width: 20px;
-  height: 20px;
-}
-
-.cross-cell h4 {
-  margin: 2px 0 0;
+.stanza-num {
   font-family: var(--font-display);
-  font-size: 0.78rem;
-  color: var(--ink-woodblock);
+  font-weight: 700;
+  font-size: 0.86rem;
+  color: var(--terracotta);
 }
 
-.cross-cell p {
+.prose-stanza p {
   margin: 0;
   font-family: var(--font-serif);
-  font-size: 0.69rem;
-  line-height: 1.42;
+  font-size: clamp(0.73rem, 0.95vw, 0.8rem);
+  line-height: 1.56;
+  text-align: justify;
   color: var(--ink-body);
 }
 
-.art-notes {
-  margin: 0 0 8px;
-  padding-left: 16px;
-  font-family: var(--font-serif);
-  font-size: 0.74rem;
-  line-height: 1.48;
-}
-
-.art-notes li + li {
-  margin-top: 4px;
-}
-
+/* ==================== PAGE 21: OVAL FLOWER PLATE ==================== */
 .arch-vignette {
-  margin: auto;
-  width: 204px;
+  margin: 8px auto 10px;
+  width: 196px;
   text-align: center;
 }
 
 .arch-vignette img {
-  width: 204px;
-  height: 126px;
+  width: 196px;
+  height: 120px;
   object-fit: cover;
-  border-radius: 102px 102px 4px 4px;
-  border: 1.5px solid var(--brass-antique);
+  border-radius: 98px 98px 4px 4px;
+  border: 1px solid rgba(184, 139, 74, 0.55);
   display: block;
 }
 
 .arch-vignette figcaption {
-  margin-top: 4px;
+  margin-top: 5px;
   font-family: var(--font-serif);
   font-style: italic;
   font-size: 0.66rem;
   color: var(--ink-muted);
 }
 
-.closing-verbatim {
-  margin: auto 0 0;
-  padding: 8px 10px;
-  border-top: 1px solid rgba(184, 139, 74, 0.4);
-  font-family: var(--font-serif);
-  font-style: italic;
-  font-size: 0.74rem;
-  line-height: 1.44;
-  text-align: center;
-  color: var(--pine-deep);
-}
-
-/* ==================== FOOTER SCRUB BAR ==================== */
+/* ==================== FOOTER SCRUB BAR + EXTERNAL MINI AUDIO PILL ==================== */
 .viewer-footer {
   position: fixed;
   bottom: 0;
@@ -1272,7 +809,7 @@ input:focus-visible {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 14px;
+  gap: 12px;
 }
 
 .footer-credit,
@@ -1287,7 +824,7 @@ input:focus-visible {
   display: flex;
   align-items: center;
   gap: 10px;
-  width: min(460px, 56vw);
+  width: min(440px, 50vw);
 }
 
 .hz-scrub-slider {
@@ -1319,6 +856,55 @@ input:focus-visible {
   cursor: pointer;
 }
 
+.footer-right-slot {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.footer-audio-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(24, 36, 34, 0.95);
+  border: 1px solid rgba(184, 139, 74, 0.55);
+  color: #f6efe0;
+  font-size: 0.7rem;
+}
+
+.footer-audio-pill[hidden] {
+  display: none;
+}
+
+.pill-play-btn,
+.pill-speed-btn,
+.pill-stop-btn {
+  appearance: none;
+  border: none;
+  background: rgba(255, 255, 255, 0.12);
+  color: #f6efe0;
+  border-radius: 999px;
+  padding: 2px 7px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.pill-play-btn {
+  background: var(--brass-antique);
+  color: #16221d;
+}
+
+.pill-track-name {
+  font-weight: 600;
+  max-width: 140px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 /* ==================== MODALS & TOAST ==================== */
 .modal-backdrop {
   position: fixed;
@@ -1332,9 +918,7 @@ input:focus-visible {
   padding: 16px;
 }
 
-.modal-backdrop[hidden] {
-  display: none;
-}
+.modal-backdrop[hidden] { display: none; }
 
 .modal-panel {
   width: min(680px, 95vw);
@@ -1349,13 +933,8 @@ input:focus-visible {
   overflow: hidden;
 }
 
-.modal-panel--compact {
-  width: min(440px, 95vw);
-}
-
-.modal-panel--wide {
-  width: min(1080px, 96vw);
-}
+.modal-panel--compact { width: min(440px, 95vw); }
+.modal-panel--wide { width: min(1080px, 96vw); }
 
 .modal-head {
   display: flex;
@@ -1391,10 +970,7 @@ input:focus-visible {
   overflow-y: auto;
 }
 
-.toc-list {
-  display: grid;
-  gap: 7px;
-}
+.toc-list { display: grid; gap: 7px; }
 
 .toc-jump {
   appearance: none;
@@ -1427,6 +1003,31 @@ input:focus-visible {
   font-size: 0.8rem;
   color: var(--ink-woodblock);
 }
+
+.jacket-btn {
+  appearance: none;
+  padding: 7px 12px;
+  border-radius: 4px;
+  border: 1px solid rgba(36, 57, 48, 0.3);
+  background: #fffdf8;
+  color: var(--pine-deep);
+  font-family: var(--font-sans);
+  font-size: 0.74rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.jacket-btn:hover { background: #f1ead9; }
+
+.jacket-btn--primary {
+  background: var(--pine-deep);
+  border-color: var(--pine-deep);
+  color: #f9f3e5;
+}
+
+.jacket-btn--primary:hover { background: #1b2c24; }
+
+.jacket-actions { display: grid; gap: 7px; }
 
 .panorama-console {
   display: flex;
@@ -1463,11 +1064,7 @@ input:focus-visible {
   box-shadow: 0 6px 18px rgba(158, 83, 62, 0.16);
 }
 
-.modal-node-card img {
-  width: 100%;
-  height: 92px;
-  object-fit: cover;
-}
+.modal-node-card img { width: 100%; height: 92px; object-fit: cover; }
 
 .modal-node-card h4 {
   margin: 0;
@@ -1507,45 +1104,40 @@ input:focus-visible {
 .script-guide-box p { margin: 0 0 6px; }
 .script-guide-box ul { margin: 0 0 10px; padding-left: 18px; }
 
-.modal-upload-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.script-cards {
+.track-manager-list {
   display: grid;
   gap: 8px;
 }
 
-.script-card-item {
-  padding: 10px 12px;
+.track-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 9px 12px;
   background: #fffdf8;
   border: 1px solid rgba(184, 139, 74, 0.35);
-  font-family: var(--font-serif);
-  font-size: 0.79rem;
-  line-height: 1.5;
 }
 
-.script-card-item strong {
+.track-row-meta strong {
   display: block;
-  font-family: var(--font-sans);
-  color: var(--pine-deep);
-  margin-bottom: 2px;
+  font-size: 0.82rem;
+  color: var(--ink-woodblock);
 }
 
-.script-tone {
-  display: block;
+.track-row-meta span {
   font-size: 0.7rem;
-  color: var(--terracotta);
-  margin-bottom: 4px;
+  color: var(--ink-muted);
 }
 
-.script-card-item p { margin: 0; }
-
-.share-bookplate {
-  text-align: center;
+.track-row-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
+
+.share-bookplate { text-align: center; }
 
 .share-bookplate h4 {
   margin: 4px 0 10px;
@@ -1637,25 +1229,41 @@ input:focus-visible {
     width: 100%;
   }
 
+  .footer-audio-pill {
+    position: fixed;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 52px;
+    z-index: 55;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4);
+  }
+
   .page-grid {
-    padding: 15px 16px 10px;
+    padding: 14px 16px 10px;
     gap: 6px;
   }
 
-  .story-para {
-    font-size: 0.72rem;
-    line-height: 1.5;
-    margin-bottom: 7px;
+  .story-para,
+  .prose-stanza p {
+    font-size: 0.69rem;
+    line-height: 1.48;
+    margin-bottom: 6px;
   }
 
   .story-para--dropcap::first-letter {
-    font-size: 2.25rem;
+    font-size: 2.1rem;
     padding-right: 6px;
   }
 
-  .panorama-grid {
-    grid-template-columns: 1fr;
+  .station-medallion {
+    width: 52px;
+    height: 66px;
   }
+
+  .station-text h4 { font-size: 0.76rem; }
+  .station-text p { font-size: 0.63rem; }
+
+  .panorama-grid { grid-template-columns: 1fr; }
 }
 
 @media (prefers-reduced-motion: reduce) {

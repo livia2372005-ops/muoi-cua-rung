@@ -1,135 +1,115 @@
 window.MuoiCuaRung = window.MuoiCuaRung || {};
 
 window.MuoiCuaRung.DATA = {
-  audioPaths: ['./audio/tom-tat.mp3', './audio/tom-tat.m4a'],
+  tracks: [
+    {
+      id: 'loi-mo-dau',
+      shortTitle: 'Lời mở đầu',
+      pageLabel: 'Trang 2',
+      pageStart: 1,
+      audioCandidates: ['./audio/loi-mo-dau.mp3', './audio/loi-mo-dau.m4a'],
+    },
+    {
+      id: 'tom-tat',
+      shortTitle: 'Sơ đồ tóm tắt (5 chặng)',
+      pageLabel: 'Trang 4–5',
+      pageStart: 3,
+      audioCandidates: ['./audio/tom-tat.mp3', './audio/tom-tat.m4a'],
+    },
+    {
+      id: 'chuong-1',
+      shortTitle: 'Chương I — Tâm thế kẻ chinh phục',
+      pageLabel: 'Trang 7–8',
+      pageStart: 6,
+      audioCandidates: ['./audio/chuong-1.mp3', './audio/chuong-1.m4a'],
+    },
+    {
+      id: 'chuong-2',
+      shortTitle: 'Chương II — Tiếng hú nơi bờ vực',
+      pageLabel: 'Trang 10–11',
+      pageStart: 9,
+      audioCandidates: ['./audio/chuong-2.mp3', './audio/chuong-2.m4a'],
+    },
+    {
+      id: 'chuong-3',
+      shortTitle: 'Chương III — Cỏ Lào & Phóng sinh',
+      pageLabel: 'Trang 13–15',
+      pageStart: 12,
+      audioCandidates: ['./audio/chuong-3.mp3', './audio/chuong-3.m4a'],
+    },
+    {
+      id: 'chuong-4',
+      shortTitle: 'Chương IV — Sắc trắng hoa tử huyền',
+      pageLabel: 'Trang 16',
+      pageStart: 15,
+      audioCandidates: ['./audio/chuong-4.mp3', './audio/chuong-4.m4a'],
+    },
+    {
+      id: 'chuong-5',
+      shortTitle: 'Chương V — Tước bỏ để tái sinh',
+      pageLabel: 'Trang 18–19',
+      pageStart: 17,
+      audioCandidates: ['./audio/chuong-5.mp3', './audio/chuong-5.m4a'],
+    },
+    {
+      id: 'ket-luan',
+      shortTitle: 'Biểu tượng & Dư âm thi pháp',
+      pageLabel: 'Trang 20–21',
+      pageStart: 19,
+      audioCandidates: ['./audio/ket-luan.mp3', './audio/ket-luan.m4a'],
+    },
+  ],
+
   nodes: [
     {
       step: 1,
       phase: 'Mở đầu',
       title: 'Vào rừng dâu da mùa xuân',
       image: './assets/images/plate-01-khoi-hanh.jpg',
-      causalNext: 'nổ súng sát sinh',
-      toneGuide: 'Giọng trong trẻo, thong thả, toát lên vẻ tự tin kiêu hãnh',
       detailText:
-        'Sau Tết một tháng, tiết mưa xuân ấm ẩm. Ông Diểu (60 tuổi) mang khẩu súng hai nòng con trai gửi từ nước ngoài, mặc áo ấm, đội mũ lông, đi giày cao cổ và mang nắm xôi tiến vào rừng dâu da săn khỉ.',
+        'Sau Tết một tháng, ông Diểu (60 tuổi) mang khẩu súng hai nòng con trai gửi từ nước ngoài, mặc áo ấm, đội mũ lông, đi giày cao cổ và mang nắm xôi tiến vào rừng dâu da săn khỉ.',
       voiceScript:
-        'Truyện ngắn Muối của rừng của nhà văn Nguyễn Huy Thiệp mở ra vào tiết mưa xuân một tháng sau Tết, giữa núi rừng Nam Xung xanh ngắt và ẩm ướt. Ở tuổi sáu mươi, ông Diểu mang theo khẩu súng hai nòng tối tân do con trai gửi biếu từ nước ngoài, mặc áo ấm, đội mũ lông, đi giày cao cổ và gói theo nắm xôi nếp, đầy kiêu hãnh tiến vào rừng dâu da săn khỉ.',
-      startRatio: 0.0,
+        'Chặng một, mở đầu: Vào tiết mưa xuân một tháng sau Tết, ông Diểu ở tuổi sáu mươi mang theo khẩu súng hai nòng tối tân, áo ấm, mũ lông, giày cao cổ và nắm xôi nếp tiến vào rừng dâu da săn khỉ với tâm thế kiêu hãnh.',
     },
     {
       step: 2,
       phase: 'Biến cố',
       title: 'Phát súng & Vực Hõm Chết',
       image: './assets/images/thumb-02-monkeys.jpg',
-      causalNext: 'chạm nỗi đau sinh linh',
-      toneGuide: 'Giọng dồn dập, kịch tính, nhấn mạnh cú rơi xuống vực',
       detailText:
-        'Ông bắn hạ khỉ đực đầu đàn; khỉ cái quay lại cứu chồng bị ông mắng là đồ gian dối. Con khỉ con bất ngờ túm dây đeo súng kéo lê chạy tới mép vực Hõm Chết rồi cùng rơi xuống vực sâu đầy sương mù.',
+        'Ông bắn hạ khỉ đực đầu đàn; khỉ cái quay lại cứu chồng bị ông mắng là đồ gian dối. Con khỉ con túm dây đeo súng kéo lê chạy tới mép vực Hõm Chết rồi cùng rơi xuống vực sương mù.',
       voiceScript:
-        'Bắt gặp gia đình khỉ trên vách đá, ông Diểu nổ súng bắn hạ con khỉ đực đầu đàn. Khi khỉ cái liều mình quay lại cứu chồng, ông hằn học mắng nó là đồ gian dối. Bất ngờ, con khỉ con lao tới túm lấy dây đeo súng kéo chạy rồi rơi thẳng xuống vực sâu Hõm Chết đầy sương mù, phát ra tiếng kêu thảm thiết khiến ông Diểu kinh hoàng bỏ chạy.',
-      startRatio: 0.19,
+        'Chặng hai, biến cố: Ông bắn ngã khỉ đực đầu đàn; khỉ cái liều mình cứu chồng bị ông mắng là giả dối. Bất ngờ khỉ con túm dây đeo súng kéo chạy rồi rơi thẳng xuống vực sâu Hõm Chết.',
     },
     {
       step: 3,
       phase: 'Bước ngoặt',
       title: 'Ánh mắt cầu xin trên mỏm đá',
       image: './assets/images/thumb-03-eyes.jpg',
-      causalNext: 'cứu chữa & buông bỏ',
-      toneGuide: 'Giọng lắng xuống, chậm rãi, xúc động trước ánh mắt con vật',
       detailText:
-        'Cay cú đuổi theo, ông cởi giày và áo ngoài vắt lên chạc cây duối để trèo lên mỏm đá. Khi chạm vào cơ thể nóng hầm hập và ánh mắt cầu xin của khỉ đực bị thương, lòng trắc ẩn trong ông bừng tỉnh.',
+        'Ông cởi giày và áo ngoài vắt lên chạc cây duối để leo vách đá bắt khỉ đực. Khi chạm vào cơ thể nóng hầm hập và đôi mắt run rẩy cầu khẩn của con vật, lòng trắc ẩn trong ông bừng tỉnh.',
       voiceScript:
-        'Dù mất súng, lòng cay cú vẫn thúc đẩy ông Diểu cởi giày và áo ngoài vắt lên chạc cây duối để trèo lên mỏm đá bắt khỉ đực. Thế nhưng, khi chạm vào cơ thể nóng hầm hập và bắt gặp đôi mắt đờ dại, run rẩy cầu xin của con vật bị thương, tham vọng săn bắt trong ông bỗng tan biến, nhường chỗ cho lòng trắc ẩn sâu xa.',
-      startRatio: 0.41,
+        'Chặng ba, bước ngoặt: Cởi giày và áo ngoài vắt lên chạc cây duối để trèo lên mỏm đá, ông Diểu sững sờ khi chạm vào cơ thể nóng hầm hập và ánh mắt cầu xin tha thiết của con khỉ bị thương.',
     },
     {
       step: 4,
       phase: 'Chuyển hóa',
       title: 'Nắm cỏ Lào, Núi lở & Phóng sinh',
       image: './assets/images/thumb-04-care.jpg',
-      causalNext: 'đất trời kết muối',
-      toneGuide: 'Giọng ấm áp, trầm tĩnh, giàu suy tư nhân bản',
       detailText:
-        'Ông nhai nắm cỏ Lào đắp thuốc, tự nguyện cởi chiếc quần lót duy nhất băng vết thương cho khỉ đực. Núi lở cuốn mất quần áo trên cây duối, đống mối đùn đất đỏ au lấp mũ xôi; cảm động trước khỉ cái bám theo, ông thả khỉ đực.',
+        'Ông nhai nắm cỏ Lào đắp cầm máu, tự nguyện cởi chiếc quần lót duy nhất băng vết thương cho khỉ đực. Núi lở cuốn mất quần áo trên cây duối, đống mối đùn lấp mũ xôi; cảm động trước khỉ cái bám theo, ông thả khỉ đực.',
       voiceScript:
-        'Ông Diểu vội nhai nắm cỏ Lào đắp cầm máu, rồi tự nguyện cởi nốt chiếc quần lót duy nhất trên người để băng vết thương cho khỉ đực. Đường xuống núi bất ngờ sạt lở cuốn phăng cây duối treo quần áo, còn mũ và nắm xôi dưới lùm cây cũng bị đống mối đùn lấp kín. Thấu cảm trước tình nghĩa của con khỉ cái kiên trì bám theo chồng, ông Diểu lặng lẽ buông tay phóng sinh khỉ đực về với đại ngàn.',
-      startRatio: 0.62,
+        'Chặng bốn, chuyển hóa: Ông nhai nắm cỏ Lào đắp thuốc và tự nguyện cởi chiếc quần lót duy nhất băng cho khỉ đực. Núi lở cuốn cây duối, đống mối đùn lấp mũ xôi; cảm động trước tình nghĩa khỉ cái, ông phóng sinh khỉ đực.',
     },
     {
       step: 5,
       phase: 'Kết tinh',
       title: 'Hoa tử huyền — “Muối của rừng”',
       image: './assets/images/detail-hoa-tu-huyen.jpg',
-      causalNext: '',
-      toneGuide: 'Giọng nhẹ nhàng, bâng khuâng, ngân vang ở câu kết',
       detailText:
-        'Trần truồng và cô đơn rẽ lối bụi gai giữa làn mưa xuân, ông bất ngờ gặp bạt ngàn hoa tử huyền trắng muốt ba mươi năm mới nở một lần — điềm báo đất nước thanh bình, mùa màng phong túc.',
+        'Trần truồng rẽ lối bụi gai tránh người giữa làn mưa xuân dịu hạt, ông Diểu bất ngờ gặp bạt ngàn hoa tử huyền trắng muốt ba mươi năm mới nở một lần — điềm báo đất nước thanh bình, mùa màng phong túc.',
       voiceScript:
-        'Trở về trần trụi và cô đơn trên lối mòn đầy gai giữa màn mưa xuân dịu ấm, ông Diểu sững sờ bắt gặp bạt ngàn hoa tử huyền trắng muốt ba mươi năm mới nở một lần. Thứ muối của rừng kết tinh từ đất trời ấy chính là phần thưởng thiêng liêng dành cho con người khi biết buông bỏ bạo lực để tìm lại bản tính thiện lương.',
-      startRatio: 0.83,
-    },
-  ],
-
-  compassStages: [
-    {
-      stage: 1,
-      location: 'Rừng dâu da • Khởi hành',
-      modeLabel: 'Đủ đầy vật chất',
-      lostTokens: [false, false, false, false],
-      humanityLevel: 1,
-      outerNote:
-        'Trang bị tối tân: khẩu súng hai nòng con trai gửi về, áo ấm, mũ lông, giày cao cổ và nắm xôi nếp.',
-      innerNote:
-        'Tâm thế kẻ bề trên ngạo mạn, xem khu rừng mùa xuân là chiến trường chinh phục; mắng khỉ cái là “đồ gian dối”.',
-      quote: '“Đồ gian dối, mày chứng minh tấm lòng cao thượng hệt như một bà trưởng giả!”',
-    },
-    {
-      stage: 2,
-      location: 'Mép vực Hõm Chết',
-      modeLabel: 'Bị tước vũ khí',
-      lostTokens: [true, false, false, false],
-      humanityLevel: 2,
-      outerNote:
-        'Khỉ con bất ngờ túm dây đeo súng kéo chạy rồi lao xuống khe vực Hõm Chết mù sương cùng khẩu súng hai nòng.',
-      innerNote:
-        'Uy quyền văn minh tan vỡ; ông Diểu kinh hoàng sợ hãi, bỏ chạy “như ma đuổi” trước sự giận dữ của đại ngàn.',
-      quote: '“Con khỉ con mang theo khẩu súng rơi tõm xuống vực sâu trong tiếng kêu thảm thiết.”',
-    },
-    {
-      stage: 3,
-      location: 'Chạc cây duối & Mỏm đá cao',
-      modeLabel: 'Tự cởi áo ngoài',
-      lostTokens: [true, true, false, false],
-      humanityLevel: 3,
-      outerNote:
-        'Nóng bức khi trèo vách đá, ông tự cởi giày cao cổ và quần áo ngoài vắt lên chạc cây duối, chỉ còn chiếc quần lót.',
-      innerNote:
-        'Chạm vào cơ thể nóng hầm hập và đôi mắt cầu khẩn của khỉ đực, lòng trắc ẩn đánh tan tham vọng săn bắt.',
-      quote: '“Ánh mắt run rẩy cầu xin của con vật khiến trái tim người thợ săn chấn động.”',
-    },
-    {
-      stage: 4,
-      location: 'Núi lở & Lùm cây mối đùn',
-      modeLabel: 'Bị thu hồi & Tự nguyện',
-      lostTokens: [true, true, true, true],
-      humanityLevel: 4,
-      outerNote:
-        'Núi lở cuốn cây duối mất áo giày; tổ mối đùn đất đỏ au lấp mũ xôi; ông TỰ NGUYỆN cởi chiếc quần lót cuối cùng băng vết thương cho khỉ.',
-      innerNote:
-        'Cảm phục tình nghĩa khỉ cái kiên trì theo chồng, ông ngộ ra trách nhiệm sinh tồn và quyết định phóng sinh.',
-      quote: '“Ở đời, trách nhiệm đè lên lưng mỗi sinh vật quả thật nặng nề!”',
-    },
-    {
-      stage: 5,
-      location: 'Lối mòn mưa xuân',
-      modeLabel: 'Thanh lọc nguyên sơ',
-      lostTokens: [true, true, true, true],
-      humanityLevel: 5,
-      outerNote:
-        'Hoàn toàn trần truồng, không súng ống, không trang phục; chủ động rẽ vào lối bụi gai vì lòng khiêm cung biết hổ thẹn.',
-      innerNote:
-        'Tâm hồn gột rửa sạch mọi tham sân si, giao hòa cùng thiên nhiên để chứng kiến hoa tử huyền nở trắng.',
-      quote: '“Mưa xuân dịu dàng nhưng rất mau hạt. Ông Diểu cứ trần truồng như thế, cô đơn như thế mà đi.”',
+        'Chặng năm, kết tinh: Trần truồng và cô đơn rẽ lối bụi gai giữa mưa xuân, ông Diểu bất ngờ bắt gặp bạt ngàn hoa tử huyền trắng muốt ba mươi năm mới nở một lần — muối của rừng ban tặng cho lòng thiện lương.',
     },
   ],
 };
