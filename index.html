@@ -5,14 +5,14 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Muối Của Rừng — Sách Điện Tử Văn Học | Nhóm 3</title>
-  <meta name="description" content="Sách điện tử lật trang tác phẩm Muối của rừng (Nguyễn Huy Thiệp, 1986) — Ấn bản 22 trang kèm sơ đồ tóm tắt, phân tích quá trình đi săn của ông Diểu và giọng đọc từng chương. Thực hiện: Nhóm 3." />
+  <meta name="description" content="Sách điện tử lật trang tác phẩm Muối của rừng (Nguyễn Huy Thiệp, 1986) — Ấn bản 22 trang đặt trong không gian phòng đọc 3D, sơ đồ hành trình 5 chương, chi tiết đáng chú ý và giọng đọc từng chương. Thực hiện: Nhóm 3." />
 
   <!-- Open Graph & Social Share (Zalo / Messenger / Facebook) -->
   <meta property="og:locale" content="vi_VN" />
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="Sách Điện Tử Ngữ Văn 12 — Nhóm 3" />
   <meta property="og:title" content="Muối Của Rừng — Sách Điện Tử Văn Học | Nhóm 3" />
-  <meta property="og:description" content="Ấn bản sách lật trang 22 trang về truyện ngắn Muối của rừng (Nguyễn Huy Thiệp): Sơ đồ mạch truyện, quá trình đi săn của ông Diểu và giọng đọc từng chương." />
+  <meta property="og:description" content="Ấn bản sách lật trang 22 trang về truyện ngắn Muối của rừng (Nguyễn Huy Thiệp): Không gian 3D bàn gỗ cạnh cửa sổ, sơ đồ 5 chương tương tác và giọng đọc từng chương." />
   <meta property="og:image" content="./assets/images/og-cover.jpg" />
   <meta property="og:image:type" content="image/jpeg" />
   <meta property="og:image:width" content="1200" />
@@ -34,95 +34,44 @@
 </head>
 
 <body data-scene="desk">
+  <!-- Real WebGL 3D Reading Room (Wooden Table, Sunlit Window Beside Desk, 3D Book) -->
+  <canvas id="scene-3d-canvas" aria-label="Phòng đọc sách 3D với bàn gỗ và cửa sổ nắng chiếu vào quyển sách Muối Của Rừng"></canvas>
+  <div class="scene-3d-reading-veil" aria-hidden="true"></div>
   <canvas id="rain-canvas" aria-hidden="true"></canvas>
 
-  <!-- Warm Sunlit Wooden Desk Backdrop -->
-  <div class="desk-backdrop" aria-hidden="true">
-    <div class="desk-wood-surface"></div>
-    <div class="desk-sunlight-rays"></div>
-    <div class="desk-dappled-leaves"></div>
-    <div class="desk-reading-dim"></div>
+  <!-- Floating bottom prompt when book rests on the 3D wooden desk -->
+  <div class="desk-intro-stage" id="desk-intro-stage">
+    <button type="button" class="desk-floating-prompt" id="desk-book-trigger"
+      aria-label="Nhấn vào cuốn sách trên bàn để nâng lên và mở đọc">
+      <span class="desk-prompt-dot" aria-hidden="true"></span>
+      <span>Nhấn vào cuốn sách trên bàn để nâng lên và mở đọc</span>
+    </button>
   </div>
 
-  <!-- 3D Hardcover Book Resting on Sunlit Desk -->
-  <section class="desk-intro-stage" id="desk-intro-stage" aria-label="Bìa sách 3D đặt trên mặt bàn gỗ">
-    <div class="book-3d-trigger" id="desk-book-trigger" role="button" tabindex="0"
-      aria-label="Nhấn vào cuốn sách Muối Của Rừng để nâng lên và lật đọc">
-      <div class="book-3d-shadow" aria-hidden="true"></div>
-      <div class="book-3d-object" id="book-3d-object">
-        <div class="book-3d-face book-3d-back"></div>
-        <div class="book-3d-face book-3d-spine">
-          <span class="spine-label">MUỐI CỦA RỪNG &nbsp;•&nbsp; NGUYỄN HUY THIỆP</span>
-          <span class="spine-group">NHÓM 3</span>
-        </div>
-        <div class="book-3d-face book-3d-pages-right"></div>
-        <div class="book-3d-face book-3d-pages-bottom"></div>
-        <div class="book-3d-face book-3d-pages-top"></div>
-        <div class="book-3d-face book-3d-front">
-          <img class="page-bg-img" src="./assets/images/cover-titlebook.jpg"
-            alt="Bìa cứng 3D sách Muối của rừng — Nguyễn Huy Thiệp" />
-          <div class="book-3d-front-editorial">
-            <div class="cover-top-sky">
-              <p class="cover-series">NGỮ VĂN 12 &nbsp;•&nbsp; ẤN BẢN SÁCH ĐIỆN TỬ</p>
-              <div class="cover-title" aria-hidden="true">
-                <span class="cover-title-line1">MUỐI</span>
-                <span class="cover-title-line2">CỦA RỪNG</span>
-              </div>
-              <div class="cover-fleuron" aria-hidden="true">
-                <span class="fleuron-line"></span>
-                <svg class="fleuron-flower" viewBox="0 0 24 24">
-                  <circle cx="12" cy="12" r="1.7" fill="currentColor" />
-                  <path d="M12 3.2C13.6 6 13.6 8.6 12 10.4C10.4 8.6 10.4 6 12 3.2Z" />
-                  <path d="M20.4 9.3C18.2 11.7 15.7 12.5 13.5 11.5C14.7 9.4 17.2 8.6 20.4 9.3Z" />
-                  <path d="M17.2 19.2C14.3 17.8 12.8 15.7 13 13.3C15.3 13.8 16.9 15.9 17.2 19.2Z" />
-                  <path d="M6.8 19.2C7.1 15.9 8.7 13.8 11 13.3C11.2 15.7 9.7 17.8 6.8 19.2Z" />
-                  <path d="M3.6 9.3C6.8 8.6 9.3 9.4 10.5 11.5C8.3 12.5 5.8 11.7 3.6 9.3Z" />
-                </svg>
-                <span class="fleuron-line"></span>
-              </div>
-              <p class="cover-author">Nguyễn Huy Thiệp</p>
-            </div>
-            <div class="cover-obi-band cover-obi-band--3d">
-              <div class="obi-left">
-                <span class="obi-kicker">THỰC HIỆN</span>
-                <strong class="obi-group">NHÓM 3</strong>
-              </div>
-              <span class="obi-pill-hint">Nhấn để mở →</span>
-            </div>
-          </div>
-          <div class="book-3d-sun-sheen" aria-hidden="true"></div>
-        </div>
-      </div>
-      <p class="desk-prompt">
-        <span class="desk-prompt-dot" aria-hidden="true"></span>
-        <span>Nhấn vào cuốn sách để nâng lên và mở đọc</span>
-      </p>
-    </div>
-  </section>
+  <!-- Top-Left Standalone Return-to-Desk Button (Far away from spine/titles) -->
+  <button type="button" class="hz-tool-btn hz-corner-left" id="btn-desk" title="Đặt sách trở lại bàn gỗ cạnh cửa sổ">
+    <svg class="ui-ico" viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M15 18l-6-6 6-6" />
+    </svg>
+    <span class="hz-tool-label">Đặt lên bàn</span>
+  </button>
 
   <!-- Discreet Top-Right Reader Toolbar (Outside book pages) -->
   <header class="hz-toolbar" role="toolbar" aria-label="Công cụ trình đọc sách">
-    <button type="button" class="hz-tool-btn" id="btn-desk" title="Đặt sách trở lại mặt bàn nắng">
-      <svg class="ui-ico" viewBox="0 0 24 24" aria-hidden="true">
-        <path d="M4 17.5A2.5 2.5 0 0 1 6.5 15H20" />
-        <path d="M6.5 3H20v16H6.5A2.5 2.5 0 0 1 4 16.5v-11A2.5 2.5 0 0 1 6.5 3Z" />
-      </svg>
-      <span class="hz-tool-label">Đặt lên bàn</span>
-    </button>
     <button type="button" class="hz-tool-btn" id="btn-toc" title="Mục lục 22 trang">
       <svg class="ui-ico" viewBox="0 0 24 24" aria-hidden="true">
         <path d="M4 6h16M4 12h16M4 18h10" />
       </svg>
       <span class="hz-tool-label">Mục lục</span>
     </button>
-    <button type="button" class="hz-tool-btn" id="btn-script" title="Quản lý giọng đọc & gắn file thu âm">
+    <button type="button" class="hz-tool-btn" id="btn-script" title="Quản lý giọng đọc &amp; gắn file thu âm">
       <svg class="ui-ico" viewBox="0 0 24 24" aria-hidden="true">
         <path d="M12 3a3 3 0 0 1 3 3v5a3 3 0 0 1-6 0V6a3 3 0 0 1 3-3Z" />
         <path d="M19 11a7 7 0 0 1-14 0M12 18v3M8 21h8" />
       </svg>
       <span class="hz-tool-label">Giọng đọc</span>
     </button>
-    <button type="button" class="hz-tool-btn" id="btn-diagram" title="Xem toàn cảnh sơ đồ mạch truyện">
+    <button type="button" class="hz-tool-btn" id="btn-diagram" title="Xem toàn cảnh sơ đồ 5 chương">
       <svg class="ui-ico" viewBox="0 0 24 24" aria-hidden="true">
         <circle cx="11" cy="11" r="7" />
         <path d="m20 20-3.5-3.5M11 8v6M8 11h6" />
@@ -221,16 +170,25 @@
               </div>
 
               <p class="story-para story-para--dropcap" data-track-seg="loi-mo-dau" data-seg-page="1">
-                Văn học chân chính luôn là cuộc đối thoại thầm kín nhưng mãnh liệt giữa con người với thiên nhiên và với chính phần sâu thẳm nhất trong bản ngã mình. Khi ra đời vào năm 1986, truyện ngắn <strong>“Muối của rừng”</strong> của Nguyễn Huy Thiệp đã lập tức tạo nên dấu ấn riêng biệt trong văn học Việt Nam thời kỳ Đổi mới nhờ giọng điệu tỉnh táo, sắc lạnh mà ẩn chứa lòng trắc ẩn sâu xa đối với muôn loài.
+                Văn học chân chính luôn là cuộc đối thoại thầm kín nhưng mãnh liệt giữa con người với thiên nhiên và với chính phần sâu thẳm nhất trong bản ngã mình. Ra đời năm 1986, truyện ngắn <strong>“Muối của rừng”</strong> của Nguyễn Huy Thiệp đã mở ra một lối viết tỉnh táo, sắc lạnh mà giàu lòng trắc ẩn với muôn loài.
               </p>
 
               <p class="story-para" data-track-seg="loi-mo-dau" data-seg-page="1">
-                Câu chuyện theo chân ông Diểu — một người đàn ông sáu mươi tuổi mang khẩu súng hai nòng tối tân bước vào vương quốc đá vôi Nam Xung vào tiết mưa bụi mùa xuân. Chuyến đi săn tưởng chừng chỉ để tìm thú vui tuổi già bỗng biến thành một cuộc thử thách lương tri khốc liệt: từng lớp trang bị văn minh bị đại ngàn tước bỏ, để rồi từ tay trắng trần trụi, con người mới nhận ra vẻ đẹp thiêng liêng của sự sống.
+                Theo chân ông Diểu — người đàn ông sáu mươi tuổi mang khẩu súng hai nòng tối tân bước vào vương quốc đá vôi Nam Xung giữa tiết mưa xuân — chuyến đi săn bỗng trở thành cuộc thử thách lương tri khốc liệt: từng lớp trang bị văn minh bị đại ngàn thu hồi để con người nhận ra vẻ đẹp thiêng liêng của sự sống.
               </p>
 
               <p class="story-para" data-track-seg="loi-mo-dau" data-seg-page="1">
-                Cuốn sách điện tử do <strong>Nhóm 3</strong> biên soạn được trình bày như một ấn bản đọc trọn vẹn gồm sơ đồ mạch truyện, các chương phân tích hành trình đi săn của ông Diểu cùng giọng đọc đồng hành theo từng trang. Mời thầy cô và các bạn lật nhẹ góc trang để bước vào không gian mưa xuân năm ấy.
+                Ấn bản điện tử do <strong>Nhóm 3</strong> biên soạn gồm sơ đồ 5 chương tương tác, lời bình chi tiết quá trình đi săn của ông Diểu và giọng đọc theo từng chương. Mời thầy cô và các bạn lật nhẹ trang sách để bước vào khu rừng mưa xuân năm ấy.
               </p>
+
+              <div class="ink-motif" aria-hidden="true">
+                <svg viewBox="0 0 220 46" class="motif-svg">
+                  <path d="M20,38 Q85,12 195,24" fill="none" stroke="currentColor" stroke-width="1.3" />
+                  <path d="M46,27 Q54,13 67,16 Q57,24 46,27 Z M74,22 Q86,8 100,14 Q86,21 74,22 Z M108,19 Q124,6 136,15 Q122,21 108,19 Z M144,21 Q158,10 172,18 Q156,24 144,21 Z" fill="currentColor" opacity="0.22"/>
+                  <path d="M62,25 Q70,38 84,35 Q73,27 62,25 Z M96,21 Q106,36 120,32 Q108,24 96,21 Z M130,20 Q141,34 156,30 Q143,23 130,20 Z" fill="currentColor" opacity="0.16"/>
+                </svg>
+                <span>Ấn bản minh họa văn học &bull; Nhóm 3</span>
+              </div>
             </div>
 
             <footer class="folio-foot folio-foot--left">— 02 —</footer>
@@ -247,87 +205,92 @@
             </header>
 
             <div class="page-body">
-              <blockquote class="epigraph-open">
-                <p>“Sau Tết Nguyên đán một tháng là thời gian thích nhất ở rừng. Cây cối đều nhú lộc non. Rừng xanh ngắt
-                  và ẩm ướt. Thiên nhiên vừa trang trọng vừa tình cảm. Điều ấy một phần là do mưa xuân.”</p>
-                <cite>— Nguyễn Huy Thiệp, 1986</cite>
+              <blockquote class="literary-quote-box">
+                <p>“Sau Tết Nguyên đán một tháng là thời gian thích nhất ở rừng. Cây cối đều nhú lộc non. Rừng xanh ngắt và ẩm ướt. Thiên nhiên vừa trang trọng vừa tình cảm. Điều ấy một phần là do mưa xuân.”</p>
+                <cite>— Nguyễn Huy Thiệp, Muối của rừng (1986)</cite>
               </blockquote>
 
-              <div class="section-break" aria-hidden="true"><span>✦</span></div>
-
               <p class="story-para">
-                <strong>Nguyễn Huy Thiệp (1950 – 2021)</strong> sinh tại Hà Nội, quê gốc ở huyện Thanh Trì. Trước khi trở thành hiện tượng văn học từ cuối thập niên 1980, ông từng có nhiều năm dạy học ở vùng núi Tây Bắc. Chính quãng đời gắn bó với thiên nhiên rừng núi phía Bắc đã mang lại cho trang viết của ông cái nhìn vừa chân thực, trần trụi về tập tính loài vật và đời sống sơn cước, vừa giàu chất thơ triết lý về mối quan hệ giữa con người và tự nhiên.
+                <strong>Nguyễn Huy Thiệp (1950 – 2021)</strong> quê gốc ở Thanh Trì (Hà Nội), từng có nhiều năm dạy học ở vùng núi Tây Bắc. Quãng đời gắn bó sâu sắc với núi rừng phía Bắc đã mang lại cho văn phong của ông cái nhìn chân thực về tập tính loài vật và chiều sâu triết lý về mối quan hệ giữa con người với tự nhiên.
               </p>
 
               <p class="story-para">
-                Sáng tác năm <strong>1986</strong>, <em>“Muối của rừng”</em> chọn ngôi kể thứ ba hạn tri với điểm nhìn đặt xuyên suốt qua nhận thức và tâm trạng của nhân vật ông Diểu. Cách chọn điểm nhìn ấy cho phép người đọc chứng kiến từng bước chuyển biến vi tế: từ cái nhìn trịch thượng, đa nghi của kẻ cầm súng đến khoảnh khắc sững sờ, xót thương và khiêm nhường cúi đầu trước thiên nhiên rộng lớn.
+                Chọn ngôi kể thứ ba hạn tri đặt qua điểm nhìn xuyên suốt của ông Diểu, tác phẩm cho phép người đọc chứng kiến từng bước chuyển biến vi tế: từ ánh mắt trịch thượng của kẻ cầm súng đến khoảnh khắc sững sờ, xót thương và cúi đầu trước thiên nhiên rộng lớn.
               </p>
+
+              <aside class="detail-callout">
+                <span class="callout-label">CHI TIẾT ĐÁNG CHÚ Ý</span>
+                <p>Khẩu hiệu nghệ thuật của thiên nhiên mở đầu tác phẩm — <strong>“vừa trang trọng vừa tình cảm”</strong> — đóng vai trò đối cực với tâm thế kiêu ngạo của người đi săn, báo trước cuộc thanh lọc tất yếu nơi cửa rừng.</p>
+              </aside>
             </div>
 
             <footer class="folio-foot folio-foot--right">— 03 —</footer>
           </div>
         </section>
 
-        <!-- ==================== PAGE 4: SƠ ĐỒ MẠCH TRUYỆN (CHẶNG I-III) ==================== -->
+        <!-- ==================== PAGE 4: SƠ ĐỒ HÀNH TRÌNH (CHƯƠNG I-III) ==================== -->
         <section class="page paper-vellum page-even">
           <div class="page-grid">
             <header class="running-head">
               <span>TÓM TẮT TRUYỆN</span>
               <span class="head-rule"></span>
-              <span>SƠ ĐỒ MẠCH TRUYỆN</span>
+              <span>SƠ ĐỒ HÀNH TRÌNH</span>
             </header>
 
             <div class="page-body">
               <div class="chapter-head chapter-head--tight">
-                <span class="chapter-kicker">BẢN ĐỒ CỐT TRUYỆN</span>
-                <h2 class="chapter-title">Sơ Đồ Hành Trình</h2>
+                <span class="chapter-kicker">BẢN ĐỒ CỐT TRUYỆN &bull; BẤM VÀO MỖI CHƯƠNG ĐỂ ĐỌC</span>
+                <h2 class="chapter-title">Sơ Đồ Hành Trình 5 Chương</h2>
                 <button type="button" class="chapter-listen-btn" data-play-track="tom-tat" data-no-flip>
                   <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5.5v13l11-6.5-11-6.5Z" fill="currentColor" stroke="none"/></svg>
                   <span>Nghe tóm tắt sơ đồ</span>
                 </button>
               </div>
 
-              <div class="ink-trail-flow">
-                <svg class="trail-curve-bg" viewBox="0 0 360 360" preserveAspectRatio="none" aria-hidden="true">
-                  <path d="M46,38 C46,95 295,112 295,175 C295,235 46,252 46,322" fill="none" stroke="rgba(158,83,62,0.34)" stroke-width="1.5" stroke-dasharray="4 4"/>
+              <div class="ink-trail-flow ink-trail-flow--p4">
+                <svg class="trail-curve-bg" viewBox="0 0 360 400" preserveAspectRatio="none" aria-hidden="true">
+                  <path d="M56,48 C56,120 304,132 304,200 C304,268 56,280 56,356" fill="none" stroke="rgba(132, 55, 35, 0.36)" stroke-width="2" stroke-dasharray="5 5"/>
                 </svg>
 
-                <div class="map-station" data-track-seg="tom-tat" data-seg-page="3">
-                  <div class="station-medallion">
-                    <img src="./assets/images/plate-01-khoi-hanh.jpg" alt="Khởi đầu đi săn" loading="lazy" decoding="async" />
-                  </div>
-                  <div class="station-text">
-                    <span class="station-roman">CHẶNG I • KHỞI ĐẦU</span>
-                    <h4>Vào rừng dâu da mùa xuân</h4>
-                    <p>Ông Diểu tuổi sáu mươi mang súng hai nòng, áo ấm, mũ lông, nắm xôi tiến vào rừng săn khỉ với tâm thế tự tin kiêu hãnh.</p>
-                  </div>
-                </div>
+                <button type="button" class="map-station" data-track-seg="tom-tat" data-seg-page="3" data-goto-page="5" data-no-flip>
+                  <span class="station-medallion">
+                    <img src="./assets/images/plate-01-khoi-hanh.jpg" alt="Chương I: Vào rừng dâu da mùa xuân" loading="lazy" decoding="async" />
+                  </span>
+                  <span class="station-text">
+                    <span class="station-roman">CHƯƠNG I &bull; KHỞI ĐẦU</span>
+                    <strong class="station-heading">Vào Rừng Dâu Da Mùa Xuân</strong>
+                    <span class="station-desc">Ông Diểu tuổi 60 mang súng hai nòng, áo ấm, mũ lông, nắm xôi tiến vào rừng săn khỉ với tâm thế kiêu hãnh.</span>
+                    <span class="station-jump-hint">Mở Chương I &rarr;</span>
+                  </span>
+                </button>
 
-                <p class="causal-bridge" aria-hidden="true">↘ nổ súng sát sinh</p>
+                <div class="causal-bridge-row"><span class="causal-bridge" aria-hidden="true">&searr; nổ súng sát sinh</span></div>
 
-                <div class="map-station map-station--flip" data-track-seg="tom-tat" data-seg-page="3">
-                  <div class="station-medallion">
-                    <img src="./assets/images/thumb-02-monkeys.jpg" alt="Vực Hõm Chết" loading="lazy" decoding="async" />
-                  </div>
-                  <div class="station-text">
-                    <span class="station-roman">CHẶNG II • BIẾN CỐ</span>
-                    <h4>Phát súng &amp; Vực Hõm Chết</h4>
-                    <p>Bắn hạ khỉ đực; khỉ cái quay lại cứu chồng bị ông mắng là giả dối; khỉ con túm dây đeo súng kéo chạy rồi rơi xuống vực Hõm Chết.</p>
-                  </div>
-                </div>
+                <button type="button" class="map-station map-station--flip" data-track-seg="tom-tat" data-seg-page="3" data-goto-page="8" data-no-flip>
+                  <span class="station-medallion">
+                    <img src="./assets/images/thumb-02-monkeys.jpg" alt="Chương II: Bờ vực Hõm Chết" loading="lazy" decoding="async" />
+                  </span>
+                  <span class="station-text">
+                    <span class="station-roman">CHƯƠNG II &bull; BIẾN CỐ</span>
+                    <strong class="station-heading">Bờ Vực Hõm Chết</strong>
+                    <span class="station-desc">Bắn ngã khỉ đực; mắng khỉ cái là giả dối; khỉ con túm dây đeo súng kéo chạy rồi rơi thẳng xuống vực Hõm Chết.</span>
+                    <span class="station-jump-hint">Mở Chương II &rarr;</span>
+                  </span>
+                </button>
 
-                <p class="causal-bridge" aria-hidden="true">↙ chạm nỗi đau sinh linh</p>
+                <div class="causal-bridge-row"><span class="causal-bridge" aria-hidden="true">&swarr; chạm nỗi đau sinh linh</span></div>
 
-                <div class="map-station" data-track-seg="tom-tat" data-seg-page="3">
-                  <div class="station-medallion">
-                    <img src="./assets/images/thumb-03-eyes.jpg" alt="Ánh mắt cầu xin" loading="lazy" decoding="async" />
-                  </div>
-                  <div class="station-text">
-                    <span class="station-roman">CHẶNG III • BƯỚC NGOẶT</span>
-                    <h4>Ánh mắt cầu xin trên mỏm đá</h4>
-                    <p>Cởi giày và áo ngoài vắt lên chạc cây duối để trèo vách đá; đôi mắt run rẩy cầu khẩn của khỉ đực đánh thức lòng trắc ẩn trong ông.</p>
-                  </div>
-                </div>
+                <button type="button" class="map-station" data-track-seg="tom-tat" data-seg-page="3" data-goto-page="11" data-no-flip>
+                  <span class="station-medallion">
+                    <img src="./assets/images/thumb-03-eyes.jpg" alt="Chương III: Khoảnh khắc thức tỉnh" loading="lazy" decoding="async" />
+                  </span>
+                  <span class="station-text">
+                    <span class="station-roman">CHƯƠNG III &bull; BƯỚC NGOẶT</span>
+                    <strong class="station-heading">Khoảnh Khắc Thức Tỉnh</strong>
+                    <span class="station-desc">Cởi giày, áo vắt lên cây duối trèo vách đá; đôi mắt run rẩy cầu xin của khỉ đực đánh thức lòng trắc ẩn trong ông.</span>
+                    <span class="station-jump-hint">Mở Chương III &rarr;</span>
+                  </span>
+                </button>
               </div>
             </div>
 
@@ -335,7 +298,7 @@
           </div>
         </section>
 
-        <!-- ==================== PAGE 5: SƠ ĐỒ MẠCH TRUYỆN (CHẶNG IV-V) ==================== -->
+        <!-- ==================== PAGE 5: SƠ ĐỒ HÀNH TRÌNH (CHƯƠNG IV-V) ==================== -->
         <section class="page paper-vellum page-odd">
           <div class="page-grid">
             <header class="running-head">
@@ -345,40 +308,44 @@
             </header>
 
             <div class="page-body">
-              <div class="ink-trail-flow">
-                <p class="causal-bridge causal-bridge--top" aria-hidden="true">↷ tiếp nối mạch truyện từ trang trước</p>
+              <div class="ink-trail-flow ink-trail-flow--p5">
+                <svg class="trail-curve-bg" viewBox="0 0 360 280" preserveAspectRatio="none" aria-hidden="true">
+                  <path d="M180,14 C252,30 296,62 296,104 C296,162 66,174 66,232" fill="none" stroke="rgba(132, 55, 35, 0.36)" stroke-width="2" stroke-dasharray="5 5"/>
+                </svg>
 
-                <div class="map-station map-station--flip" data-track-seg="tom-tat" data-seg-page="4">
-                  <div class="station-medallion">
-                    <img src="./assets/images/thumb-04-care.jpg" alt="Cứu chữa và phóng sinh" loading="lazy"
-                      decoding="async" />
-                  </div>
-                  <div class="station-text">
-                    <span class="station-roman">CHẶNG IV • CHUYỂN HÓA</span>
-                    <h4>Nắm cỏ Lào, Núi lở &amp; Phóng sinh</h4>
-                    <p>Nhai nắm cỏ Lào đắp cầm máu, tự nguyện cởi chiếc quần lót băng cho khỉ; núi lở cuốn cây duối, đống mối đùn lấp mũ xôi; cảm động thả khỉ về rừng.</p>
-                  </div>
-                </div>
+                <div class="causal-bridge-row"><span class="causal-bridge" aria-hidden="true">&curarr; tiếp nối từ bờ vực Hõm Chết</span></div>
 
-                <p class="causal-bridge" aria-hidden="true">↓ đất trời kết muối</p>
+                <button type="button" class="map-station map-station--flip" data-track-seg="tom-tat" data-seg-page="4" data-goto-page="15" data-no-flip>
+                  <span class="station-medallion">
+                    <img src="./assets/images/thumb-04-care.jpg" alt="Chương IV: Mưa xuân và hoa tử huyền" loading="lazy" decoding="async" />
+                  </span>
+                  <span class="station-text">
+                    <span class="station-roman">CHƯƠNG IV &bull; KẾT TINH</span>
+                    <strong class="station-heading">Mưa Xuân &amp; Hoa Tử Huyền</strong>
+                    <span class="station-desc">Nhai cỏ Lào cầm máu, cởi quần lót băng bó rồi thả khỉ; trần truồng rẽ lối gai tránh người, gặp bạt ngàn hoa tử huyền.</span>
+                    <span class="station-jump-hint">Mở Chương IV &rarr;</span>
+                  </span>
+                </button>
 
-                <div class="map-station" data-track-seg="tom-tat" data-seg-page="4">
-                  <div class="station-medallion">
-                    <img src="./assets/images/detail-hoa-tu-huyen.jpg" alt="Hoa tử huyền" loading="lazy" decoding="async" />
-                  </div>
-                  <div class="station-text">
-                    <span class="station-roman">CHẶNG V • KẾT TINH</span>
-                    <h4>Hoa tử huyền — “Muối của rừng”</h4>
-                    <p>Trần truồng rẽ lối gai tránh người giữa mưa xuân dịu hạt, ông gặp bạt ngàn hoa tử huyền trắng muốt ba mươi năm mới nở một lần.</p>
-                  </div>
-                </div>
+                <div class="causal-bridge-row"><span class="causal-bridge" aria-hidden="true">&darr; đất trời kết muối &amp; tái sinh nhân tính</span></div>
+
+                <button type="button" class="map-station" data-track-seg="tom-tat" data-seg-page="4" data-goto-page="17" data-no-flip>
+                  <span class="station-medallion">
+                    <img src="./assets/images/detail-hoa-tu-huyen.jpg" alt="Chương V: Tước bỏ để tái sinh" loading="lazy" decoding="async" />
+                  </span>
+                  <span class="station-text">
+                    <span class="station-roman">CHƯƠNG V &bull; TỔNG LUẬN</span>
+                    <strong class="station-heading">Tước Bỏ Để Tái Sinh</strong>
+                    <span class="station-desc">Khép lại vòng tuần hoàn đạo lý: từ bỏ tham vọng chế ngự tự nhiên để phần người tinh sạch tự khắc hồi sinh.</span>
+                    <span class="station-jump-hint">Mở Chương V &rarr;</span>
+                  </span>
+                </button>
               </div>
 
-              <div class="section-break" aria-hidden="true"><span>* * *</span></div>
-
-              <p class="story-para story-para--summary">
-                Năm chặng cốt truyện nối nhau như một vòng tuần hoàn đạo lý: khởi đầu bằng phát súng chia lìa sự sống, khép lại bằng bàn tay buông tha và loài hoa kết tinh từ bình yên đất trời. Mối quan hệ nhân quả xuyên suốt tác phẩm khẳng định rằng khi con người từ bỏ tham vọng chế ngự tự nhiên, phần nhân tính tinh sạch nhất sẽ tự khắc hồi sinh.
-              </p>
+              <aside class="detail-callout">
+                <span class="callout-label">TRỤC ĐỐI XỨNG TOÀN TRUYỆN</span>
+                <p>Năm chương ghép thành trục nhân quả chặt chẽ: lúc <strong>bước vào rừng</strong> mang đủ vũ khí văn minh mà tâm hồn chai sạn; lúc <strong>bước ra</strong> tay trắng trần trụi nhưng được đất trời trao tặng loài hoa 30 năm mới kết muối một lần.</p>
+              </aside>
             </div>
 
             <footer class="folio-foot folio-foot--right">— 05 —</footer>
@@ -391,8 +358,8 @@
             alt="Ông Diểu mang súng hai nòng bước vào rừng mùa xuân" loading="lazy" decoding="async" />
           <div class="plate-editorial plate-editorial--sky" aria-hidden="true">
             <div class="plate-top-title plate-top-title--pine">
-              <span class="plate-kicker">CHƯƠNG I &nbsp;•&nbsp; KHỞI HÀNH</span>
-              <h3 class="plate-heading">Rừng Dâu Da<br />Mùa Xuân</h3>
+              <span class="plate-kicker">CHƯƠNG I &nbsp;&bull;&nbsp; KHỞI ĐẦU</span>
+              <h3 class="plate-heading">Vào Rừng Dâu Da<br />Mùa Xuân</h3>
               <div class="plate-rule"><span>✦</span></div>
             </div>
             <p class="plate-bottom-quote">
@@ -413,8 +380,8 @@
 
             <div class="page-body">
               <div class="chapter-head">
-                <span class="chapter-kicker">CHƯƠNG I • RỪNG DÂU DA MÙA XUÂN</span>
-                <h2 class="chapter-title">Tâm Thế Kẻ Chinh Phục</h2>
+                <span class="chapter-kicker">CHƯƠNG I &bull; KHỞI ĐẦU</span>
+                <h2 class="chapter-title">Vào Rừng Dâu Da Mùa Xuân</h2>
                 <button type="button" class="chapter-listen-btn" data-play-track="chuong-1" data-no-flip>
                   <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5.5v13l11-6.5-11-6.5Z" fill="currentColor" stroke="none"/></svg>
                   <span>Nghe đọc Chương I</span>
@@ -422,16 +389,17 @@
               </div>
 
               <p class="story-para story-para--dropcap" data-track-seg="chuong-1" data-seg-page="6">
-                Chuyến đi săn của ông Diểu bắt đầu trong một khung cảnh thiên nhiên đẹp đến nao lòng. Sau Tết Nguyên đán một tháng, hơi ấm mùa xuân lan tỏa khắp núi rừng Nam Xung, cây cối nhú lộc non mơn mởn dưới màn mưa bụi dịu nhẹ. Nhà văn Nguyễn Huy Thiệp đã dùng một nhận xét tinh tế để đặt nền cho toàn bộ truyện: thiên nhiên lúc ấy <em>“vừa trang trọng vừa tình cảm”</em>.
+                Chuyến đi săn của ông Diểu bắt đầu trong khung cảnh mùa xuân tràn đầy sức sống. Sau Tết Nguyên đán một tháng, mưa bụi lan tỏa khắp núi rừng Nam Xung khiến cây cối đâm chồi nảy lộc. Nhà văn Nguyễn Huy Thiệp nhận xét thiên nhiên lúc ấy thật <em>“vừa trang trọng vừa tình cảm”</em>.
               </p>
 
               <p class="story-para" data-track-seg="chuong-1" data-seg-page="6">
-                Đối lập với vẻ thuần hậu, bao dung của đất trời là dáng vẻ trang bị tận răng của người đi săn. Ở tuổi sáu mươi, ông Diểu bước vào khu rừng dâu da rậm rạp với quần áo ấm, chiếc mũ lông che tai, đôi giày cao cổ vững chãi cùng nắm xôi nếp mang theo bên mình. Nổi bật hơn cả là khẩu súng săn hai nòng tuyệt đẹp do người con trai đang học ở nước ngoài gửi về biếu.
+                Đối lập với vẻ thuần hậu của đất trời là dáng vẻ trang bị tận răng của người đi săn tuổi sáu mươi: quần áo ấm dày dặn, mũ lông che tai, đôi giày cao cổ, nắm xôi nếp và đặc biệt là <strong>khẩu súng săn hai nòng</strong> tuyệt đẹp do người con trai đang học ở nước ngoài gửi biếu.
               </p>
 
-              <p class="story-para" data-track-seg="chuong-1" data-seg-page="6">
-                Với ông Diểu, khẩu súng hiện đại ấy không chỉ là công cụ sát sinh mà còn là niềm kiêu hãnh về sức mạnh văn minh, khiến ông tự tin nhìn muôn loài trong rừng bằng con mắt của kẻ bề trên đi chinh phục và hưởng thụ chiến lợi phẩm.
-              </p>
+              <aside class="detail-callout">
+                <span class="callout-label">CHI TIẾT ĐÁNG CHÚ Ý &bull; TÂM THẾ BAN ĐẦU</span>
+                <p>Khẩu súng hai nòng tối tân không chỉ để sát sinh mà là <strong>vật chứng kiêu hãnh về sức mạnh văn minh</strong>, khiến ông Diểu nhìn muôn loài bằng con mắt kẻ chinh phục đầy bề trên.</p>
+              </aside>
             </div>
 
             <footer class="folio-foot folio-foot--right">— 07 —</footer>
@@ -448,17 +416,33 @@
             </header>
 
             <div class="page-body">
+              <div class="subchapter-head">
+                <span class="subchapter-kicker">CHƯƠNG I &bull; TIẾP THEO</span>
+                <h3 class="subchapter-title">Phát Súng Định Mệnh</h3>
+              </div>
+
               <p class="story-para" data-track-seg="chuong-1" data-seg-page="7">
-                Đến gần khu rừng dâu da sum suê quả chín, ông Diểu bắt gặp một gia đình khỉ gồm ba con đang quấn quýt bên nhau trên mỏm đá cao: con khỉ đực to lớn đầu đàn, con khỉ cái nhanh nhẹn và một chú khỉ con nhỏ bé. Giữa buổi sáng yên bình ấy, bản năng thợ săn khiến ông nín thở giương nòng súng hướng thẳng về phía sinh linh đang tự do giữa đại ngàn.
+                Tới gần rặng dâu da sum suê quả chín, ông Diểu bắt gặp gia đình ba con khỉ đang quấn quýt trên mỏm đá cao: con khỉ đực to lớn đầu đàn, con khỉ cái nhanh nhẹn và chú khỉ con nhỏ bé. Bản năng săn đuổi khiến ông nín thở giương súng hướng thẳng vào chúng.
               </p>
 
               <p class="story-para" data-track-seg="chuong-1" data-seg-page="7">
-                Tiếng súng vang rền xé toạc sự tĩnh lặng trang trọng của khu rừng xuân. Con khỉ đực trúng đạn ngã gục xuống vách đá. Ngay khoảnh khắc hiểm nguy ấy, con khỉ cái không hề bỏ chạy thoát thân mà liều mình lao trở lại bên cạnh đỡ chồng, phát ra những tiếng kêu thảng thốt đầy thương xót. Cảnh tượng tình nghĩa thiêng liêng của loài vật đáng lẽ phải làm lay động lòng người, nhưng ông Diểu lúc này vẫn bị che mờ bởi thành kiến ích kỷ.
+                Tiếng súng vang rền xé toạc sự tĩnh lặng của rừng xuân. Con khỉ đực trúng đạn ngã gục. Ngay lập tức, khỉ cái liều mình lao trở lại bên cạnh nâng chồng trong những tiếng kêu thảng thốt. Thế nhưng lòng đa nghi ích kỷ khiến ông Diểu buông lời mắng nhiếc cay nghiệt: <em>“Đồ gian dối, mày chứng minh tấm lòng cao thượng hệt như một bà trưởng giả!”</em>
               </p>
 
-              <p class="story-para" data-track-seg="chuong-1" data-seg-page="7">
-                Ông xua đuổi khỉ cái và buông lời mắng nhiếc cay nghiệt: <em>“Đồ gian dối, mày chứng minh tấm lòng cao thượng hệt như một bà trưởng giả!”</em> Câu mắng lạnh lùng ấy đánh dấu đỉnh cao của sự ngạo mạn: con người tự cho mình quyền phán xét cả tình yêu thương thuần khiết của tự nhiên.
-              </p>
+              <div class="ink-motif" aria-hidden="true">
+                <svg viewBox="0 0 220 50" class="motif-svg">
+                  <path d="M18,42 L74,40 L102,22 L152,22 L202,42" fill="none" stroke="currentColor" stroke-width="1.2" opacity="0.55"/>
+                  <circle cx="116" cy="14" r="4" fill="currentColor" opacity="0.32"/>
+                  <path d="M111,22 Q115,15 121,21 Q124,14 130,22" fill="currentColor" opacity="0.32"/>
+                  <path d="M134,20 Q138,14 143,21" fill="none" stroke="currentColor" stroke-width="1.4" opacity="0.38"/>
+                </svg>
+                <span>Gia đình ba con khỉ trên mỏm đá rừng dâu da</span>
+              </div>
+
+              <aside class="detail-callout">
+                <span class="callout-label">CHI TIẾT ĐÁNG CHÚ Ý &bull; ĐỈNH ĐIỂM NGẠO MẠN</span>
+                <p>Lời mắng khỉ cái là giả dối phơi bày sự mù lòa của lý trí con người khi lấy toan tính vụ lợi đời thường để phán xét tình mẫu tử, nghĩa vợ chồng thuần khiết của tự nhiên.</p>
+              </aside>
             </div>
 
             <footer class="folio-foot folio-foot--left">— 08 —</footer>
@@ -470,7 +454,7 @@
           <img class="page-bg-img" src="./assets/images/plate-02-hom-chet.jpg" alt="Ông Diểu giương súng nhắm gia đình ba con khỉ bên bờ vực Hõm Chết" loading="lazy" decoding="async" />
           <div class="plate-editorial plate-editorial--canyon" aria-hidden="true">
             <div class="plate-top-title plate-top-title--canyon">
-              <span class="plate-kicker">CHƯƠNG II &nbsp;•&nbsp; BIẾN CỐ</span>
+              <span class="plate-kicker">CHƯƠNG II &nbsp;&bull;&nbsp; BIẾN CỐ</span>
               <h3 class="plate-heading">Bờ Vực<br />Hõm Chết</h3>
               <div class="plate-rule"><span>✦</span></div>
             </div>
@@ -492,8 +476,8 @@
 
             <div class="page-body">
               <div class="chapter-head">
-                <span class="chapter-kicker">CHƯƠNG II • BỜ VỰC HÕM CHẾT</span>
-                <h2 class="chapter-title">Tiếng Hú Nơi Bờ Vực Sâu</h2>
+                <span class="chapter-kicker">CHƯƠNG II &bull; BIẾN CỐ</span>
+                <h2 class="chapter-title">Bờ Vực Hõm Chết</h2>
                 <button type="button" class="chapter-listen-btn" data-play-track="chuong-2" data-no-flip>
                   <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5.5v13l11-6.5-11-6.5Z" fill="currentColor" stroke="none"/></svg>
                   <span>Nghe đọc Chương II</span>
@@ -501,16 +485,26 @@
               </div>
 
               <p class="story-para story-para--dropcap" data-track-seg="chuong-2" data-seg-page="9">
-                Đúng lúc ông Diểu đang mải quát tháo và ném đá xua đuổi con khỉ cái bướng bỉnh, một biến cố hoàn toàn nằm ngoài tính toán đã xảy ra. Trong phút ông sơ hở đặt súng xuống bên tảng đá, con khỉ con đã bất ngờ lao ra, dũng cảm nhảy xuống <strong>túm chặt lấy dây đeo khẩu súng hai nòng rồi kéo lê bỏ chạy</strong> về phía triền núi hiểm trở.
+                Đúng lúc ông Diểu mải quát tháo xua đuổi khỉ cái, một biến cố nằm ngoài tính toán bỗng xảy ra. Nhân phút sơ hở ông đặt súng bên tảng đá, con khỉ con lao ra <strong>túm chặt lấy dây đeo khẩu súng hai nòng kéo lê bỏ chạy</strong> về phía triền đá hiểm trở.
               </p>
 
               <p class="story-para" data-track-seg="chuong-2" data-seg-page="9">
-                Quá sửng sốt trước hành động táo bạo của sinh linh bé nhỏ, ông Diểu hốt hoảng gào thét và đuổi gấp theo sau. Cuộc rượt đuổi nghẹt thở đẩy chú khỉ con chạy dồn tới sát mép <strong>Hõm Chết</strong> — một cái khe núi sâu hun hút, quanh năm sương mù đặc quánh đến rợn người, nơi người dân miền sơn cước vẫn truyền tai nhau rằng năm nào cũng có người bị sương mù giăng bẫy mà bỏ mạng.
+                Cuộc rượt đuổi nghẹt thở đẩy sinh linh bé nhỏ dồn tới mép <strong>Hõm Chết</strong> — khe núi sâu thẳm quanh năm đặc quánh sương mù tử khí. Không còn đường lui, chú khỉ con cùng khẩu súng hai nòng trượt chân lăn thẳng xuống vực mịt mù, vọng lên tiếng hú thê thảm.
               </p>
 
-              <p class="story-para" data-track-seg="chuong-2" data-seg-page="9">
-                Trong cơn hoảng loạn tột cùng khi không còn đường lui, con khỉ con cùng khẩu súng hai nòng đã trượt chân lăn thẳng xuống đáy vực mịt mù sương trắng, để lại một tiếng kêu thê thảm vang vọng mãi vào vách đá.
-              </p>
+              <div class="ink-motif" aria-hidden="true">
+                <svg viewBox="0 0 240 52" class="motif-svg">
+                  <path d="M12,18 L66,22 L92,46 M146,46 L176,16 L228,22" fill="none" stroke="currentColor" stroke-width="1.35" opacity="0.5"/>
+                  <path d="M78,30 Q120,25 162,33 M88,39 Q122,35 154,42" fill="none" stroke="currentColor" stroke-width="1" stroke-dasharray="3 3" opacity="0.45"/>
+                  <path d="M68,18 Q74,10 80,17 L89,23" fill="none" stroke="currentColor" stroke-width="1.5" opacity="0.55"/>
+                </svg>
+                <span>Khỉ con kéo dây súng bên bờ vực Hõm Chết</span>
+              </div>
+
+              <aside class="detail-callout">
+                <span class="callout-label">CHI TIẾT ĐÁNG CHÚ Ý &bull; KHÔNG GIAN HÕM CHẾT</span>
+                <p>Hõm Chết là khe núi mờ sương nơi người đi rừng vẫn truyền tai có người bỏ mạng. Nơi đây xóa ranh giới giữa săn và bị săn, đẩy ông Diểu lần đầu đối mặt với nỗi khiếp sợ.</p>
+              </aside>
             </div>
 
             <footer class="folio-foot folio-foot--left">— 10 —</footer>
@@ -527,17 +521,31 @@
             </header>
 
             <div class="page-body">
+              <div class="subchapter-head">
+                <span class="subchapter-kicker">CHƯƠNG II &bull; TIẾP THEO</span>
+                <h3 class="subchapter-title">Sụp Đổ Quyền Uy</h3>
+              </div>
+
               <p class="story-para" data-track-seg="chuong-2" data-seg-page="10">
-                Âm thanh rùng rợn dội lên từ lòng vực Hõm Chết như tiếng oán trách trực tiếp của đại ngàn khiến người thợ săn lão luyện bỗng bủn rủn chân tay. Nỗi sợ hãi nguyên sơ ập đến xóa sạch vẻ uy nghi của kẻ cầm súng ban sáng; ông Diểu kinh hoàng quay đầu chạy thục mạng <em>“như ma đuổi”</em> khỏi miệng vực đầy tử khí.
+                Tiếng rú thảm thiết vọng từ lòng vực Hõm Chết khiến người thợ săn lão luyện bỗng bủn rủn chân tay. Toàn bộ vẻ uy nghi ban sáng sụp đổ trong tích tắc; ông Diểu kinh hoàng quay đầu chạy thục mạng <em>“như ma đuổi”</em> khỏi miệng vực lạnh lẽo.
               </p>
 
               <p class="story-para" data-track-seg="chuong-2" data-seg-page="10">
-                Về mặt cốt truyện, sự biến mất của khẩu súng hai nòng dưới đáy vực là bước ngoặt mang tính bản lề trong quá trình đi săn. Món quà đắt giá từ phương Tây — biểu tượng cho sức mạnh văn minh, cho bạo lực áp đặt và tâm thế thống trị tự nhiên — đã bị chính thiên nhiên tước đoạt và chôn vùi vĩnh viễn.
+                Sự biến mất của khẩu súng hai nòng là bước ngoặt bản lề: thứ vũ khí đại diện cho bạo lực và tâm thế thống trị tự nhiên đã bị đại ngàn thu hồi vĩnh viễn. Tuy vậy, sau cơn hoảng loạn lắng xuống, lòng tự ái vẫn thúc giục ông quay lại vách đá một lần nữa.
               </p>
 
-              <p class="story-para" data-track-seg="chuong-2" data-seg-page="10">
-                Từ khoảnh khắc mất súng bên bờ Hõm Chết, ông Diểu không còn bất kỳ thứ vũ khí nào để đứng ở vị thế kẻ bề trên nữa. Nhưng sự thay đổi bên trong con người không diễn ra ngay tức khắc: sau cơn hoảng loạn lắng xuống, lòng tự ái và nỗi cay cú không chịu về tay trắng vẫn còn thôi thúc ông lần ngược trở lại vách đá một lần nữa.
-              </p>
+              <aside class="detail-callout">
+                <span class="callout-label">CHI TIẾT ĐÁNG CHÚ Ý &bull; BƯỚC NGOẶT TÂM LÝ</span>
+                <p>Từ khoảnh khắc mất súng, ông Diểu không còn bất kỳ công cụ áp đặt nào trước thiên nhiên. Trận chạy <strong>“như ma đuổi”</strong> đánh dấu sự thất bại đầu tiên của cái tôi kiêu ngạo.</p>
+              </aside>
+
+              <div class="ink-motif" aria-hidden="true">
+                <svg viewBox="0 0 220 42" class="motif-svg">
+                  <path d="M26,34 Q90,10 194,26" fill="none" stroke="currentColor" stroke-width="1.2" opacity="0.48"/>
+                  <path d="M56,23 Q65,11 76,17 Q65,24 56,23 Z M92,18 Q103,7 116,14 Q103,20 92,18 Z M132,19 Q144,10 156,17 Q144,23 132,19 Z" fill="currentColor" opacity="0.22"/>
+                </svg>
+                <span>Nhành dương xỉ bên sườn đá sau cơn kinh hoàng</span>
+              </div>
             </div>
 
             <footer class="folio-foot folio-foot--right">— 11 —</footer>
@@ -549,7 +557,7 @@
           <img class="page-bg-img" src="./assets/images/plate-03-thuc-tinh.jpg" alt="Ông Diểu cởi bỏ trang phục, xót thương chăm sóc con khỉ đực bị thương" loading="lazy" decoding="async" />
           <div class="plate-editorial plate-editorial--mist" aria-hidden="true">
             <div class="plate-top-title plate-top-title--mist">
-              <span class="plate-kicker">CHƯƠNG III &nbsp;•&nbsp; BƯỚC NGOẶT</span>
+              <span class="plate-kicker">CHƯƠNG III &nbsp;&bull;&nbsp; BƯỚC NGOẶT</span>
               <h3 class="plate-heading">Khoảnh Khắc<br />Thức Tỉnh</h3>
               <div class="plate-rule"><span>✦</span></div>
             </div>
@@ -571,8 +579,8 @@
 
             <div class="page-body">
               <div class="chapter-head">
-                <span class="chapter-kicker">CHƯƠNG III • MỎM ĐÁ CHEO LEO</span>
-                <h2 class="chapter-title">Ánh Mắt Đánh Thức Lương Tri</h2>
+                <span class="chapter-kicker">CHƯƠNG III &bull; BƯỚC NGOẶT</span>
+                <h2 class="chapter-title">Khoảnh Khắc Thức Tỉnh</h2>
                 <button type="button" class="chapter-listen-btn" data-play-track="chuong-3" data-no-flip>
                   <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5.5v13l11-6.5-11-6.5Z" fill="currentColor" stroke="none"/></svg>
                   <span>Nghe đọc Chương III</span>
@@ -580,16 +588,17 @@
               </div>
 
               <p class="story-para story-para--dropcap" data-track-seg="chuong-3" data-seg-page="12">
-                Không đành lòng bỏ phí con mồi đã bắn trúng, ông Diểu quyết định leo lên mỏm đá cao nơi con khỉ đực bị thương đang mắc kẹt để bắt sống nó mang về. Leo được chừng chục mét, mồ hôi túa ra nóng hầm hập khiến bộ quần áo dày trở thành gánh nặng cản trở. Ông dừng lại bên một cây duối mọc chênh vênh trên triền đá, <strong>cởi bỏ đôi giày cao cổ cùng toàn bộ quần áo ngoài vắt lên chạc cây duối</strong>, trên thân mình chỉ giữ lại độc chiếc quần lót rồi tiếp tục trèo tay không lên đỉnh đá.
+                Tiếc con mồi đã bắn trúng, ông Diểu leo lên mỏm đá cao để bắt sống khỉ đực. Leo được chục mét, mồ hôi túa ra nóng bức khiến bộ đồ dày thành gánh nặng; ông bèn dừng lại bên cây duối, <strong>cởi bỏ đôi giày cao cổ và quần áo ngoài vắt lên chạc cây</strong>, chỉ mặc độc chiếc quần lót rồi trèo tay không lên đỉnh đá.
               </p>
 
               <p class="story-para" data-track-seg="chuong-3" data-seg-page="12">
-                Càng tiến gần tới gờ đá, không khí chiến thắng trong tâm tưởng ông Diểu càng nhường chỗ cho cảm giác rờn rợn trước vết máu loang lổ trên phiến đá lạnh. Khi ông vừa trườn tới nơi định tóm lấy con vật, cảnh tượng trước mắt đã khiến ông sững người lại.
+                Nhưng khi vừa chạm vào thân thể <strong>nóng hầm hập</strong> cùng hàm răng lập cập của con khỉ đực đang thoi thóp, đôi mắt run rẩy đầy van lơn của sinh linh ấy đã khiến ông sững người. Khoảng cách giữa thợ săn và con mồi lập tức bị xóa nhòa.
               </p>
 
-              <p class="story-para" data-track-seg="chuong-3" data-seg-page="12">
-                Không còn đối thủ hung dữ nào nữa, trước mặt ông chỉ là một sinh linh đang kiệt sức nằm thoi thóp giữa bờ đá hoang lạnh. Khoảng cách giữa người đi săn và con mồi bị xóa nhòa hoàn toàn ngay trên đỉnh núi đá vôi ấy.
-              </p>
+              <aside class="detail-callout">
+                <span class="callout-label">CHI TIẾT ĐÁNG CHÚ Ý &bull; CỞI ÁO BÊN CÂY DUỐI</span>
+                <p>Hành động cởi bỏ giày và quần áo ấm vắt lên cây duối là bước <strong>“trút bỏ vỏ bọc” thứ hai</strong>, đưa ông Diểu trở về trạng thái trần trụi mong manh ngang hàng với muôn thú trước núi đá lạnh.</p>
+              </aside>
             </div>
 
             <footer class="folio-foot folio-foot--right">— 13 —</footer>
@@ -606,17 +615,32 @@
             </header>
 
             <div class="page-body">
+              <div class="subchapter-head">
+                <span class="subchapter-kicker">CHƯƠNG III &bull; TIẾP THEO</span>
+                <h3 class="subchapter-title">Nắm Cỏ Lào &amp; Mảnh Vải Cuối Cùng</h3>
+              </div>
+
               <p class="story-para" data-track-seg="chuong-3" data-seg-page="13">
-                Khi bàn tay ông chạm vào thân thể con khỉ đực, cảm giác <strong>nóng hầm hập</strong> truyền sang da thịt cùng tiếng rên khe khẽ và hàm răng lập cập của con vật đã đánh mạnh vào lương tri ông Diểu. Con khỉ ngước đôi mắt đờ dại, run rẩy nhìn thẳng vào mắt ông với vẻ van lơn cầu khẩn như một con người đang đứng trước ngưỡng cửa sinh tử.
+                Giây phút nhìn thẳng vào đôi mắt cầu khẩn như mắt người ấy, mọi háo thắng săn bắt tan biến sạch không còn dấu vết. Lòng trắc ẩn và bản năng thiện lương trong ông Diểu bỗng trỗi dậy mãnh liệt.
               </p>
 
               <p class="story-para" data-track-seg="chuong-3" data-seg-page="13">
-                Ngay giây phút ấy, mọi tham vọng săn bắt, cay cú hay tự tôn tan biến không còn dấu vết. Lòng trắc ẩn và bản năng thiện lương trong ông bỗng trỗi dậy mãnh liệt. Ông Diểu cuống quýt nhìn quanh vách núi, vơ lấy một <strong>nắm cỏ Lào</strong> vò nát rồi cho vào miệng nhai kỹ để đắp lên vết thương đang rỉ máu cho con vật.
+                Ông cuống quýt vơ một <strong>nắm cỏ Lào</strong> vò nát, cho vào miệng nhai kỹ để đắp cầm máu cho con khỉ. Không có mảnh vải giữ lá thuốc, ông không chút đắn đo <strong>tự nguyện cởi nốt chiếc quần lót duy nhất</strong> trên người để băng bó cho kẻ mình vừa định đoạt mạng.
               </p>
 
-              <p class="story-para" data-track-seg="chuong-3" data-seg-page="13">
-                Không có mảnh vải nào để giữ lớp lá thuốc khỏi rơi, ông Diểu không chút do dự <strong>tự nguyện cởi nốt chiếc quần lót duy nhất</strong> trên người để băng bó vết thương cho khỉ đực. Nếu khẩu súng bị mất bởi khỉ con là sự cưỡng chế từ tự nhiên, thì hành động tự nguyện trút bỏ mảnh vải che thân cuối cùng để cứu sống con mồi chính là bước nhảy vọt rực rỡ nhất của nhân tính.
-              </p>
+              <div class="ink-motif" aria-hidden="true">
+                <svg viewBox="0 0 220 44" class="motif-svg">
+                  <path d="M24,32 Q95,12 196,24" fill="none" stroke="currentColor" stroke-width="1.2" opacity="0.5"/>
+                  <path d="M72,22 Q80,9 94,14 Q86,24 72,22 Z M106,18 Q116,6 130,13 Q119,21 106,18 Z M138,19 Q148,10 162,16 Q150,23 138,19 Z" fill="currentColor" opacity="0.22"/>
+                  <circle cx="96" cy="28" r="2.2" fill="currentColor" opacity="0.32"/><circle cx="122" cy="27" r="2.2" fill="currentColor" opacity="0.32"/>
+                </svg>
+                <span>Nhành cỏ Lào cầm máu trên đỉnh đá lạnh</span>
+              </div>
+
+              <aside class="detail-callout">
+                <span class="callout-label">CHI TIẾT ĐÁNG CHÚ Ý &bull; HÀNH ĐỘNG TỰ NGUYỆN</span>
+                <p>Nếu mất súng là bị thiên nhiên <em>cưỡng chế tước đoạt</em>, thì việc tự cởi chiếc quần lót cuối cùng bằng lòng thương xót chính là bước nhảy vọt rực rỡ nhất của <strong>nhân tính tự giác</strong>.</p>
+              </aside>
             </div>
 
             <footer class="folio-foot folio-foot--left">— 14 —</footer>
@@ -633,17 +657,32 @@
             </header>
 
             <div class="page-body">
+              <div class="subchapter-head">
+                <span class="subchapter-kicker">CHƯƠNG III &bull; KHÉP LẠI</span>
+                <h3 class="subchapter-title">Núi Lở &amp; Cái Vẫy Tay Phóng Sinh</h3>
+              </div>
+
               <p class="story-para" data-track-seg="chuong-3" data-seg-page="14">
-                Ôm con khỉ bị thương trong tay lần xuống núi, ông Diểu lại trải qua thêm hai cuộc thu hồi khắc nghiệt nữa của đất trời. Một trận <strong>núi lở</strong> bất ngờ đổ ập xuống sạt phẳng lối mòn cũ, cuốn mất tăm cả cây duối lẫn bộ quần áo ấm và đôi giày cao cổ ông treo ban nãy. Lần mò tới lùm cây nơi giấu chiếc mũ lông và nắm xôi nếp từ sớm, ông bàng hoàng thấy tất cả đã bị một <strong>đống mối đùn đất mới đỏ au</strong> to gần bằng cây rạ phủ kín và làm nát thành cám.
+                Bế con khỉ lần xuống núi, ông Diểu chứng kiến hai cuộc thu hồi khắc nghiệt của đất trời: trận <strong>núi lở</strong> bất ngờ sạt phẳng lối cũ, cuốn mất cây duối cùng quần áo và giày cao cổ; còn tại lùm cây đầu rừng, chiếc mũ lông và nắm xôi đã bị <strong>đống mối đùn đất mới đỏ au</strong> phủ kín thành cám.
               </p>
 
               <p class="story-para" data-track-seg="chuong-3" data-seg-page="14">
-                Trắng tay hoàn toàn, trên người không còn lấy một mảnh vải, ông Diểu vẫn bế con khỉ đực đi về hướng cửa rừng. Bất chợt ngoái lại, ông nhận ra con khỉ cái vẫn lặng lẽ, kiên trì lẽo đẽo bám theo sau không rời chồng nửa bước. Chứng kiến sự thủy chung bền bỉ ấy, một câu triết lý thấm thía chợt bừng sáng trong tâm trí ông: <em>“Ở đời, trách nhiệm đè lên lưng mỗi sinh vật quả thật nặng nề!”</em>
+                Ngoái lại thấy con khỉ cái vẫn lặng lẽ bám theo sau không rời chồng nửa bước, ông chợt thấu hiểu và dịu dàng đặt con khỉ đực xuống đất, vẫy tay phóng sinh cho nó trở về với đại ngàn.
               </p>
 
-              <p class="story-para" data-track-seg="chuong-3" data-seg-page="14">
-                Ông Diểu dừng bước, dịu dàng đặt con khỉ đực xuống nền đất ẩm và vẫy tay phóng sinh cho nó trở về đoàn tụ cùng vợ con giữa đại ngàn.
-              </p>
+              <div class="ink-motif" aria-hidden="true">
+                <svg viewBox="0 0 220 46" class="motif-svg">
+                  <path d="M22,38 Q110,28 198,38" fill="none" stroke="currentColor" stroke-width="1.2" opacity="0.45"/>
+                  <path d="M84,32 C84,18 96,16 98,28 M124,33 C124,22 134,20 136,30" fill="none" stroke="currentColor" stroke-width="1.4" opacity="0.45"/>
+                  <circle cx="91" cy="18" r="3.4" fill="currentColor" opacity="0.28"/><circle cx="130" cy="21" r="2.8" fill="currentColor" opacity="0.24"/>
+                </svg>
+                <span>Khỉ cái lặng lẽ theo chồng giữa lối núi sạt</span>
+              </div>
+
+              <blockquote class="literary-quote-box">
+                <p>“Ở đời, trách nhiệm đè lên lưng mỗi sinh vật quả thật nặng nề!”</p>
+                <cite>— Lời độc thoại thức tỉnh của ông Diểu</cite>
+              </blockquote>
             </div>
 
             <footer class="folio-foot folio-foot--right">— 15 —</footer>
@@ -661,8 +700,8 @@
 
             <div class="page-body">
               <div class="chapter-head">
-                <span class="chapter-kicker">CHƯƠNG IV • LỐI MÒN MƯA XUÂN</span>
-                <h2 class="chapter-title">Sắc Trắng Hoa Tử Huyền</h2>
+                <span class="chapter-kicker">CHƯƠNG IV &bull; KẾT TINH</span>
+                <h2 class="chapter-title">Mưa Xuân &amp; Hoa Tử Huyền</h2>
                 <button type="button" class="chapter-listen-btn" data-play-track="chuong-4" data-no-flip>
                   <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5.5v13l11-6.5-11-6.5Z" fill="currentColor" stroke="none"/></svg>
                   <span>Nghe đọc Chương IV</span>
@@ -670,16 +709,17 @@
               </div>
 
               <p class="story-para story-para--dropcap" data-track-seg="chuong-4" data-seg-page="15">
-                Buông tha cho con khỉ đực xong, ông Diểu lặng lẽ bước ra khỏi rừng trong tình trạng hoàn toàn trần truồng. Vì còn giữ lòng tự trọng và nỗi hổ thẹn trước con người, ông không đi theo con đường cái quen thuộc mà chủ động rẽ sang một <strong>lối mòn đầy bụi gai</strong> vắng vẻ để tránh gặp người qua lại. Cái lối rẽ khiêm cung của kẻ biết hối lỗi ấy đã dẫn ông chạm tới một phép màu kỳ lạ.
+                Phóng sinh cho con khỉ xong, ông Diểu lặng lẽ rời rừng trong tình trạng hoàn toàn trần truồng. Giữ lòng tự trọng trước đồng loại, ông không đi đường cái quen thuộc mà chủ động rẽ sang một <strong>lối mòn đầy bụi gai</strong> vắng vẻ để tránh gặp người.
               </p>
 
               <p class="story-para" data-track-seg="chuong-4" data-seg-page="15">
-                Dọc hai bên triền cỏ ẩm ướt dưới làn mưa xuân mịn màng, ông Diểu ngỡ ngàng bắt gặp cả một vạt <strong>hoa tử huyền</strong> đang nở rộ trắng xóa. Theo lời người đi rừng, loài hoa màu trắng, vị mặn, bé bằng đầu tăm ấy <strong>cứ ba chục năm mới nở một lần</strong> và được gọi là <strong>“muối của rừng”</strong>.
+                Ngay trên lối rẽ khiêm cung giữa màn mưa xuân mịn hạt ấy, ông bàng hoàng bắt gặp bạt ngàn <strong>hoa tử huyền</strong> đang nở trắng xóa — loài hoa nhỏ bé bằng đầu tăm, vị mặn, cứ <strong>ba chục năm mới nở một lần</strong> và được gọi là <strong>“muối của rừng”</strong>.
               </p>
 
-              <p class="story-para" data-track-seg="chuong-4" data-seg-page="15">
-                Sự xuất hiện của hoa tử huyền vào khoảnh khắc ông Diểu tay trắng trở về như một lời ân xá và phần thưởng thiêng liêng của đất trời: khi rừng kết muối, ấy là điềm lành báo hiệu đất nước thanh bình, mùa màng phong túc.
-              </p>
+              <aside class="detail-callout">
+                <span class="callout-label">CHI TIẾT ĐÁNG CHÚ Ý &bull; LỐI MÒN ĐẦY BỤI GAI</span>
+                <p>Phép màu hoa tử huyền không nở trên đường lớn kiêu hãnh, mà chỉ hiện ra trên <strong>lối mòn bụi gai</strong> của con người biết hối lỗi và sống thuận theo hòa bình đất trời.</p>
+              </aside>
             </div>
 
             <footer class="folio-foot folio-foot--left">— 16 —</footer>
@@ -693,7 +733,7 @@
             decoding="async" />
           <div class="plate-editorial plate-editorial--rain" aria-hidden="true">
             <div class="plate-top-title plate-top-title--rain">
-              <span class="plate-kicker">CHƯƠNG IV &nbsp;•&nbsp; KẾT TINH</span>
+              <span class="plate-kicker">CHƯƠNG IV &nbsp;&bull;&nbsp; KẾT TINH</span>
               <h3 class="plate-heading">Mưa Xuân &amp;<br />Hoa Tử Huyền</h3>
               <div class="plate-rule"><span>✦</span></div>
             </div>
@@ -715,7 +755,7 @@
 
             <div class="page-body">
               <div class="chapter-head">
-                <span class="chapter-kicker">CHƯƠNG V • HÀNH TRÌNH TÂM THỨC</span>
+                <span class="chapter-kicker">CHƯƠNG V &bull; TỔNG LUẬN</span>
                 <h2 class="chapter-title">Tước Bỏ Để Tái Sinh</h2>
                 <button type="button" class="chapter-listen-btn" data-play-track="chuong-5" data-no-flip>
                   <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5.5v13l11-6.5-11-6.5Z" fill="currentColor" stroke="none"/></svg>
@@ -724,22 +764,22 @@
               </div>
 
               <p class="story-para story-para--dropcap" data-track-seg="chuong-5" data-seg-page="17">
-                Nhìn lại toàn bộ quá trình đi săn của ông Diểu, người đọc nhận ra một cấu trúc đối nghịch đầy nghệ thuật: cứ mỗi bước ông tiến sâu vào rừng và lùi dần về mặt vật chất, thì nhân tính và phần người thiện lương bên trong lại tiến thêm một bước dài tới sự giác ngộ.
+                Nhìn lại hành trình đi săn của ông Diểu, cấu trúc nghệ thuật hiện lên rõ nét: mỗi bước ông mất dần trang bị vật chất cũng là một bước phần Người thiện lương hồi sinh mạnh mẽ:
               </p>
 
               <div class="prose-stanza" data-track-seg="chuong-5" data-seg-page="17">
                 <span class="stanza-num">I.</span>
-                <p><strong>Tại bìa rừng dâu da:</strong> Đủ đầy súng hai nòng, áo ấm, mũ lông, giày cao cổ và nắm xôi; tâm thế tự mãn, nhìn sự sống loài vật bằng thái độ đa nghi bề trên.</p>
+                <p><strong>Khởi đầu tại bìa rừng dâu da:</strong> Đủ đầy súng hai nòng, áo ấm, mũ lông, giày cao cổ và nắm xôi; tâm thế tự mãn, đa nghi bề trên.</p>
               </div>
 
               <div class="prose-stanza" data-track-seg="chuong-5" data-seg-page="17">
                 <span class="stanza-num">II.</span>
-                <p><strong>Bên bờ vực Hõm Chết:</strong> Khỉ con kéo súng lao xuống vực sâu; vũ khí bạo lực bị tước đoạt, lòng kiêu hãnh rạn vỡ trước nỗi kinh hoàng của thiên nhiên.</p>
+                <p><strong>Biến cố bờ vực Hõm Chết:</strong> Khỉ con kéo khẩu súng lao xuống vực sâu; vũ khí bạo lực bị tước bỏ, lòng kiêu hãnh rạn vỡ trước thiên nhiên.</p>
               </div>
 
               <div class="prose-stanza" data-track-seg="chuong-5" data-seg-page="17">
                 <span class="stanza-num">III.</span>
-                <p><strong>Trên chạc cây duối &amp; mỏm đá:</strong> Tự cởi giày và áo ngoài để leo núi, rồi chấn động lương tri khi chạm vào hơi ấm và ánh mắt cầu khẩn của sinh linh bị thương.</p>
+                <p><strong>Bước ngoặt trên mỏm đá:</strong> Tự cởi giày và áo ngoài vắt lên cây duối, chấn động lương tri trước ánh mắt cầu khẩn của khỉ đực bị thương.</p>
               </div>
             </div>
 
@@ -757,21 +797,24 @@
             </header>
 
             <div class="page-body">
+              <div class="subchapter-head">
+                <span class="subchapter-kicker">CHƯƠNG V &bull; TIẾP THEO</span>
+                <h3 class="subchapter-title">Từ Bị Tước Bỏ Đến Tự Nguyện Trút Bỏ</h3>
+              </div>
+
               <div class="prose-stanza" data-track-seg="chuong-5" data-seg-page="18">
                 <span class="stanza-num">IV.</span>
-                <p><strong>Giữa núi lở &amp; đống mối đùn:</strong> Núi lở cuốn mất quần áo giày dép, mối đùn vùi nát mũ và nắm xôi; đồng thời ông tự nguyện cởi nốt chiếc quần lót cuối cùng để băng vết thương rồi phóng sinh khỉ đực trước sự thủy chung của khỉ cái.</p>
+                <p><strong>Kết tinh trong mưa xuân:</strong> Núi lở cuốn đồ ấm, mối đùn vùi nắm xôi; đồng thời ông tự nguyện cởi mảnh vải cuối cùng băng cho khỉ rồi phóng sinh để gặp hoa tử huyền.</p>
               </div>
-
-              <div class="prose-stanza" data-track-seg="chuong-5" data-seg-page="18">
-                <span class="stanza-num">V.</span>
-                <p><strong>Trên lối mòn hoa tử huyền:</strong> Trần truồng như thuở nguyên sơ, rũ bỏ mọi lớp vỏ văn minh giả tạo, để rồi tâm hồn thanh sạch được đất trời trao tặng điềm lành muối của rừng.</p>
-              </div>
-
-              <div class="section-break" aria-hidden="true"><span>* * *</span></div>
 
               <p class="story-para" data-track-seg="chuong-5" data-seg-page="18">
-                Điểm đặc sắc nhất của tiến trình này nằm ở bước chuyển từ <em>bị tước bỏ</em> sang <em>tự nguyện trút bỏ</em>. Nếu thiên nhiên dùng vực sâu, núi lở và tổ mối để thu hồi vật dụng bên ngoài, thì chính ông Diểu đã tự tay gỡ bỏ mảnh vải cuối cùng bằng lòng thương xót — khẳng định rằng sự cứu rỗi đích thực bao giờ cũng bắt nguồn từ lựa chọn tự giác của trái tim con người.
+                Giá trị cốt lõi của tiến trình nằm ở sự chuyển hóa từ <em>bị tước bỏ</em> sang <em>tự nguyện trút bỏ</em>: sự cứu rỗi đích thực bao giờ cũng khởi phát từ lựa chọn tự giác của trái tim nhân hậu.
               </p>
+
+              <aside class="detail-callout">
+                <span class="callout-label">QUY LUẬT NGHỊCH LÝ ĐẠO LÝ</span>
+                <p><strong>Vật chất giảm dần về số 0</strong> (súng &rarr; áo giày &rarr; mũ xôi &rarr; quần lót) tỉ lệ nghịch hoàn toàn với <strong>lòng nhân ái tăng dần tới trọn vẹn</strong> (sát sinh &rarr; kinh sợ &rarr; xót thương &rarr; phóng sinh).</p>
+              </aside>
             </div>
 
             <footer class="folio-foot folio-foot--right">— 19 —</footer>
@@ -789,7 +832,7 @@
 
             <div class="page-body">
               <div class="chapter-head">
-                <span class="chapter-kicker">PHẦN KẾT • CHIỀU SÂU TRIẾT LÝ</span>
+                <span class="chapter-kicker">PHẦN KẾT &bull; CHIỀU SÂU TRIẾT LÝ</span>
                 <h2 class="chapter-title">Hệ Thống Biểu Tượng</h2>
                 <button type="button" class="chapter-listen-btn" data-play-track="ket-luan" data-no-flip>
                   <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5.5v13l11-6.5-11-6.5Z" fill="currentColor" stroke="none"/></svg>
@@ -798,16 +841,17 @@
               </div>
 
               <p class="story-para" data-track-seg="ket-luan" data-seg-page="19">
-                <strong>Khẩu súng hai nòng</strong> — món quà từ thế giới văn minh công nghiệp — là biểu tượng của tham vọng chinh phục và sức mạnh bạo lực. Việc khẩu súng rơi xuống đáy vực cùng tiếng kêu thảm thiết báo hiệu sự bất lực của kỹ thuật khi tự đặt mình đối lập với quy luật sinh tồn của tự nhiên.
+                <strong>Khẩu súng hai nòng</strong> biểu trưng cho tham vọng chinh phục và sức mạnh kỹ thuật bạo lực — thứ nhanh chóng rơi xuống đáy <strong>vực Hõm Chết</strong> ranh giới sinh tử. Còn <strong>núi lở và đống mối đùn đất đỏ au</strong> gợi nhắc quy luật thanh lọc âm thầm mà triệt để của tự nhiên trước mọi dấu vết phù phiếm.
               </p>
 
               <p class="story-para" data-track-seg="ket-luan" data-seg-page="19">
-                <strong>Vực Hõm Chết</strong> mang sắc thái không gian ranh giới giữa sống và chết, đẩy kẻ đi săn vào tận cùng nỗi sợ để đối diện với lỗi lầm của chính mình; còn <strong>trận núi lở và đống mối đùn đất đỏ au</strong> tượng trưng cho quy luật thanh lọc âm thầm mà triệt để của tự nhiên trước mọi dấu vết phù phiếm.
+                Đẹp đẽ và hàm súc nhất là biểu tượng <strong>hoa tử huyền — “muối của rừng”</strong>: nếu biển kết tinh vị mặn của muối, thì đại ngàn sau ba mươi năm mới kết tụ loài hoa trắng bé xíu vị mặn ấy để tôn vinh lòng thiện lương và khát vọng thái hòa.
               </p>
 
-              <p class="story-para" data-track-seg="ket-luan" data-seg-page="19">
-                Đẹp đẽ và hàm súc nhất là biểu tượng <strong>hoa tử huyền — “muối của rừng”</strong>. Nếu biển cả kết tinh vị mặn của muối, thì rừng già sau ba mươi năm mới kết tụ một lần loài hoa trắng nhỏ xíu vị mặn ấy để tôn vinh lòng thiện lương, khát vọng hòa bình và sự giao cảm giữa con người với thiên nhiên.
-              </p>
+              <aside class="detail-callout">
+                <span class="callout-label">CHI TIẾT ĐÁNG CHÚ Ý &bull; Ý NGHĨA NHAN ĐỀ</span>
+                <p><strong>“Muối của rừng”</strong> vừa là sản vật huyền nhiệm của thiên nhiên, vừa là biểu tượng cho thứ “muối mặn” cốt tủy làm nên phẩm giá người: biết yêu thương và tôn trọng sự sống.</p>
+              </aside>
             </div>
 
             <footer class="folio-foot folio-foot--left">— 20 —</footer>
@@ -824,8 +868,13 @@
             </header>
 
             <div class="page-body">
+              <div class="subchapter-head">
+                <span class="subchapter-kicker">PHẦN KẾT &bull; GIÁ TRỊ NGHỆ THUẬT</span>
+                <h3 class="subchapter-title">Dư Âm Thi Pháp &amp; Lời Kết</h3>
+              </div>
+
               <p class="story-para" data-track-seg="ket-luan" data-seg-page="20">
-                Thành công nghệ thuật của <em>“Muối của rừng”</em> được tạo nên từ tình huống nghịch lý giàu kịch tính: kẻ đi săn ra đi với đầy đủ vũ khí để chiếm đoạt tự nhiên, nhưng lại trở về tay trắng và nhận được phần thưởng tinh thần quý giá nhất. Ngôn ngữ kể chuyện cô đọng, khách quan kết hợp tài tình giữa bút pháp hiện thực sắc lạnh với chất thơ huyền nhiệm của truyền thuyết dân gian.
+                Thành công nghệ thuật của truyện ngắn đến từ tình huống nghịch lý giàu kịch tính và ngôn ngữ cô đọng, kết hợp bút pháp hiện thực sắc lạnh với chất thơ huyền nhiệm của truyền thuyết dân gian.
               </p>
 
               <figure class="arch-vignette">
@@ -834,7 +883,7 @@
               </figure>
 
               <p class="story-para closing-echo" data-track-seg="ket-luan" data-seg-page="20">
-                Khép lại trang truyện, hình ảnh ông lão tóc bạc đi dưới màn mưa không hề mang vẻ hân hoan ồn ào mà lắng đọng thành dư âm suy tư sâu thẳm: <em>“Mưa xuân dịu dàng nhưng rất mau hạt. Ông Diểu cứ trần truồng như thế, cô đơn như thế mà đi.”</em> Sự cô đơn thanh thản ấy nhắc nhở mỗi chúng ta học cách cúi mình tôn trọng sự sống để tìm thấy “muối của rừng” ngay trong tâm hồn mình.
+                Hình ảnh ông lão tóc bạc đi dưới làn mưa dịu hạt không ồn ào hân hoan mà lắng đọng suy tư sâu thẳm: <em>“Mưa xuân dịu dàng nhưng rất mau hạt. Ông Diểu cứ trần truồng như thế, cô đơn như thế mà đi.”</em> — lời nhắc nhở ta cúi mình gìn giữ “muối của rừng” trong tâm hồn.
               </p>
             </div>
 
@@ -859,7 +908,7 @@
                 <strong>Biên soạn &amp; Thiết kế: NHÓM 3</strong>
               </div>
               <button type="button" class="back-restart-link" id="btn-restart" data-no-flip>
-                ← Lật trở lại bìa đầu
+                &larr; Lật trở lại bìa đầu
               </button>
             </div>
           </div>
@@ -875,19 +924,18 @@
     </button>
   </main>
 
-  <!-- Collector's Footer Bar + External Mini-Audio Pill -->
+  <!-- Collector's Footer Bar + Corner-Anchored External Mini-Audio Pill -->
   <footer class="viewer-footer">
-    <div class="footer-credit">NHÓM 3 &nbsp;•&nbsp; Muối Của Rừng</div>
+    <div class="footer-credit">NHÓM 3 &nbsp;&bull;&nbsp; Muối Của Rừng</div>
 
     <div class="hz-scrub-wrap">
-      <button type="button" class="mobile-nav-btn" id="btn-prev-mobile" aria-label="Trang trước">‹</button>
+      <button type="button" class="mobile-nav-btn" id="btn-prev-mobile" aria-label="Trang trước">&lsaquo;</button>
       <input type="range" id="page-scrub" class="hz-scrub-slider" min="0" max="21" value="0" aria-label="Thanh chuyển nhanh số trang" />
       <span class="page-readout" id="page-readout">Bìa 1 / 22</span>
-      <button type="button" class="mobile-nav-btn" id="btn-next-mobile" aria-label="Trang sau">›</button>
+      <button type="button" class="mobile-nav-btn" id="btn-next-mobile" aria-label="Trang sau">&rsaquo;</button>
     </div>
 
     <div class="footer-right-slot">
-      <!-- Discreet External Mini Audio Player (only shown while reading aloud) -->
       <div class="footer-audio-pill" id="footer-audio-pill" hidden>
         <button type="button" class="pill-play-btn" id="pill-play-btn" aria-label="Phát hoặc tạm dừng giọng đọc">⏸</button>
         <span class="pill-track-name" id="pill-track-name">Đang đọc: Chương I</span>
@@ -908,12 +956,12 @@
       <div class="toc-list" id="toc-list">
         <button type="button" class="toc-jump" data-page="0"><span>Trang 1</span><strong>Bìa trước — Muối Của Rừng</strong></button>
         <button type="button" class="toc-jump" data-page="1"><span>Trang 2 – 3</span><strong>Lời mở đầu &amp; Hồ sơ tác phẩm</strong></button>
-        <button type="button" class="toc-jump" data-page="3"><span>Trang 4 – 5</span><strong>Sơ đồ mạch truyện (5 chặng)</strong></button>
-        <button type="button" class="toc-jump" data-page="5"><span>Trang 6 – 8</span><strong>Chương I: Tâm thế kẻ chinh phục</strong></button>
-        <button type="button" class="toc-jump" data-page="8"><span>Trang 9 – 11</span><strong>Chương II: Tiếng hú nơi bờ vực Hõm Chết</strong></button>
-        <button type="button" class="toc-jump" data-page="11"><span>Trang 12 – 15</span><strong>Chương III: Ánh mắt cầu khẩn, Cỏ Lào &amp; Phóng sinh</strong></button>
-        <button type="button" class="toc-jump" data-page="15"><span>Trang 16 – 17</span><strong>Chương IV: Mưa xuân &amp; Sắc trắng hoa tử huyền</strong></button>
-        <button type="button" class="toc-jump" data-page="17"><span>Trang 18 – 19</span><strong>Chương V: Tước bỏ để tái sinh</strong></button>
+        <button type="button" class="toc-jump" data-page="3"><span>Trang 4 – 5</span><strong>Sơ đồ hành trình 5 chương</strong></button>
+        <button type="button" class="toc-jump" data-page="5"><span>Trang 6 – 8</span><strong>Chương I (Khởi đầu): Vào Rừng Dâu Da Mùa Xuân</strong></button>
+        <button type="button" class="toc-jump" data-page="8"><span>Trang 9 – 11</span><strong>Chương II (Biến cố): Bờ Vực Hõm Chết</strong></button>
+        <button type="button" class="toc-jump" data-page="11"><span>Trang 12 – 15</span><strong>Chương III (Bước ngoặt): Khoảnh Khắc Thức Tỉnh</strong></button>
+        <button type="button" class="toc-jump" data-page="15"><span>Trang 16 – 17</span><strong>Chương IV (Kết tinh): Mưa Xuân &amp; Hoa Tử Huyền</strong></button>
+        <button type="button" class="toc-jump" data-page="17"><span>Trang 18 – 19</span><strong>Chương V (Tổng luận): Tước Bỏ Để Tái Sinh</strong></button>
         <button type="button" class="toc-jump" data-page="19"><span>Trang 20 – 21</span><strong>Hệ thống biểu tượng &amp; Dư âm thi pháp</strong></button>
         <button type="button" class="toc-jump" data-page="21"><span>Trang 22</span><strong>Bìa sau</strong></button>
       </div>
@@ -924,19 +972,19 @@
   <div class="modal-backdrop" id="modal-diagram" hidden role="dialog" aria-modal="true" aria-labelledby="diagram-title">
     <div class="modal-panel modal-panel--wide">
       <div class="modal-head">
-        <h3 id="diagram-title">Toàn cảnh Sơ đồ Cốt truyện — “Muối Của Rừng”</h3>
+        <h3 id="diagram-title">Toàn cảnh Sơ đồ 5 Chương — “Muối Của Rừng”</h3>
         <button type="button" class="modal-close" data-close="modal-diagram" aria-label="Đóng bản đồ">✕</button>
       </div>
       <div class="modal-body">
         <div class="panorama-console">
-          <button type="button" class="jacket-btn jacket-btn--primary" id="modal-play-btn">▶ Nghe tóm tắt 5 chặng</button>
-          <span class="panorama-status" id="modal-audio-status">Bấm vào từng chặng để nghe giọng đọc hoặc lật tới chương tương ứng</span>
+          <button type="button" class="jacket-btn jacket-btn--primary" id="modal-play-btn">▶ Nghe tóm tắt 5 chương</button>
+          <span class="panorama-status" id="modal-audio-status">Bấm vào từng chương để nghe giọng đọc hoặc lật tới trang tương ứng</span>
         </div>
         <div class="panorama-grid" id="modal-diagram-grid"></div>
         <div class="panorama-axis-bar">
-          <span><strong>Khởi đầu:</strong> Súng hai nòng, áo ấm, tâm thế bề trên</span>
-          <span aria-hidden="true">⟶</span>
-          <span><strong>Kết tinh:</strong> Trần truồng thanh sạch, gặp hoa tử huyền (30 năm nở một lần)</span>
+          <span><strong>Chương I:</strong> Súng hai nòng, áo ấm, tâm thế bề trên</span>
+          <span aria-hidden="true">&longrightarrow;</span>
+          <span><strong>Chương IV–V:</strong> Trần truồng thanh sạch, gặp hoa tử huyền (30 năm nở một lần)</span>
         </div>
       </div>
     </div>
@@ -956,7 +1004,7 @@
             <li>Khi chưa gắn file MP3, bấm nút <strong>Nghe đọc</strong> ở đầu mỗi chương sẽ tự động đọc trọn vẹn các trang của chương đó bằng giọng đọc tổng hợp và tự lật trang theo tiến độ.</li>
             <li>Để gắn bản tự đọc của nhóm cho bất kỳ chương nào: chọn file thu âm <code>.mp3</code> / <code>.m4a</code> ngay tại dòng chương đó để nghe thử, hoặc đặt file vào thư mục <code>audio/</code> (ví dụ <code>audio/chuong-1.mp3</code>, <code>audio/tom-tat.mp3</code>) trước khi đăng GitHub Pages.</li>
           </ul>
-          <button type="button" class="jacket-btn" id="btn-copy-script">Sao chép kịch bản tóm tắt 5 chặng</button>
+          <button type="button" class="jacket-btn" id="btn-copy-script">Sao chép kịch bản tóm tắt 5 chương</button>
         </div>
         <div class="track-manager-list" id="track-manager-list"></div>
       </div>
@@ -980,8 +1028,7 @@
             link <code>https://...</code> để gửi cho cô và các bạn trong lớp nhé.
           </p>
           <div class="jacket-actions">
-            <button type="button" class="jacket-btn jacket-btn--primary" id="btn-copy-share-msg">Sao chép lời nhắn &amp;
-              link</button>
+            <button type="button" class="jacket-btn jacket-btn--primary" id="btn-copy-share-msg">Sao chép lời nhắn &amp; link</button>
             <button type="button" class="jacket-btn" id="btn-native-share" hidden>Mở menu chia sẻ điện thoại</button>
           </div>
         </div>
@@ -991,7 +1038,10 @@
 
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
+  <script defer src="./scripts/vendor/three.min.js"></script>
+  <script defer src="./scripts/cover-texture-data.js"></script>
   <script defer src="./scripts/vendor/page-flip.browser.js"></script>
+  <script defer src="./scripts/scene-3d.js"></script>
   <script defer src="./scripts/book-data.js"></script>
   <script defer src="./scripts/audio-player.js"></script>
   <script defer src="./scripts/app.js"></script>

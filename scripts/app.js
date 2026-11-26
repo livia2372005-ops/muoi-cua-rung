@@ -1,9 +1,11 @@
 (function () {
   var data = window.MuoiCuaRung.DATA;
   var ChapterAudioController = window.MuoiCuaRung.ChapterAudioController;
+  var ReadingRoom3D = window.MuoiCuaRung.ReadingRoom3D;
 
   var pageFlip = null;
   var chapterAudio = null;
+  var room3D = null;
   var soundEnabled = true;
   var rainSoundEnabled = false;
   var audioCtx = null;
@@ -150,18 +152,9 @@
   }
 
   function isolateNoFlipControls() {
+    // Only stop pointer/mouse start events so dragging a page across revealed buttons still moves and completes cleanly on window mouseup/touchend
     var els = document.querySelectorAll('[data-no-flip]');
-    var evts = [
-      'mousedown',
-      'touchstart',
-      'pointerdown',
-      'mousemove',
-      'touchmove',
-      'pointermove',
-      'mouseup',
-      'touchend',
-      'click',
-    ];
+    var evts = ['mousedown', 'touchstart', 'pointerdown'];
     els.forEach(function (el) {
       evts.forEach(function (name) {
         el.addEventListener(name, function (e) {
@@ -178,7 +171,6 @@
     var orientation = pageFlip.getOrientation();
 
     if (orientation === 'landscape') {
-      // Check if targetPageIdx is already shown on current open spread
       if (cur === 0 && targetPageIdx === 0) return;
       if (cur >= total - 1 && targetPageIdx >= total - 1) return;
       if (cur > 0 && cur < total - 1) {
@@ -192,6 +184,16 @@
       if (Math.abs(targetPageIdx - cur) <= 1) pageFlip.flip(targetPageIdx, 'top');
       else pageFlip.turnToPage(targetPageIdx);
     }
+  }
+
+  function setupDiagramJumpLinks() {
+    document.querySelectorAll('[data-goto-page]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var targetPage = Number(btn.dataset.gotoPage);
+        if (!pageFlip || !Number.isFinite(targetPage)) return;
+        pageFlip.turnToPage(targetPage);
+      });
+    });
   }
 
   function populateModals() {
@@ -208,7 +210,7 @@
             '" alt="' +
             node.title +
             '" loading="lazy" decoding="async" />' +
-            '<span class="station-roman">CHẶNG ' +
+            '<span class="station-roman">CHƯƠNG ' +
             node.step +
             ' • ' +
             node.phase.toUpperCase() +
@@ -219,11 +221,16 @@
             '<p>' +
             node.detailText +
             '</p>' +
+            '<div class="modal-card-actions">' +
             '<button type="button" class="jacket-btn modal-play-node" data-node="' +
             idx +
-            '">Nghe chặng ' +
+            '">Nghe chương ' +
             node.step +
             '</button>' +
+            '<button type="button" class="jacket-btn jacket-btn--primary modal-open-node" data-target-page="' +
+            node.targetPage +
+            '">Mở trang →</button>' +
+            '</div>' +
             '</article>'
           );
         })
@@ -233,6 +240,17 @@
         btn.addEventListener('click', function () {
           var idx = Number(btn.dataset.node);
           if (chapterAudio) chapterAudio.playTrack('tom-tat', idx);
+        });
+      });
+
+      diagramGrid.querySelectorAll('.modal-open-node').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          var targetPage = Number(btn.dataset.targetPage);
+          var modal = document.getElementById('modal-diagram');
+          if (modal) modal.hidden = true;
+          if (pageFlip && Number.isFinite(targetPage)) {
+            pageFlip.turnToPage(targetPage);
+          }
         });
       });
     }
@@ -418,16 +436,16 @@
       width: 440,
       height: 704,
       size: 'stretch',
-      minWidth: 270,
-      maxWidth: 470,
-      minHeight: 432,
-      maxHeight: 752,
-      maxShadowOpacity: 0.44,
+      minWidth: 240,
+      maxWidth: 460,
+      minHeight: 384,
+      maxHeight: 736,
+      maxShadowOpacity: 0.42,
       showCover: true,
-      showPageCorners: true,
+      showPageCorners: false,
       usePortrait: true,
       mobileScrollSupport: true,
-      flippingTime: 760,
+      flippingTime: 740,
     });
 
     pageFlip.loadFromHTML(pages);
@@ -563,7 +581,7 @@
         .join('\n\n');
       if (navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard.writeText(text).then(function () {
-          showToast('Đã sao chép kịch bản tóm tắt 5 chặng!');
+          showToast('Đã sao chép kịch bản tóm tắt 5 chương!');
         });
       }
     });
@@ -596,23 +614,7 @@
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       var scene = document.body.dataset.scene || 'reading';
 
-      if (scene === 'desk' || scene === 'lifting') {
-        for (var j = 0; j < drops.length; j++) {
-          var s = drops[j];
-          s.x += s.speed * 0.16;
-          s.y += s.speed * 0.12;
-          if (s.x > canvas.width + 16) s.x = -12;
-          if (s.y > canvas.height + 16) {
-            s.y = -12;
-            s.x = Math.random() * canvas.width * 0.85;
-          }
-          var warmAlpha = Math.min(0.42, s.alpha * 2.1);
-          ctx.fillStyle = 'rgba(255, 232, 182, ' + warmAlpha + ')';
-          ctx.beginPath();
-          ctx.arc(s.x, s.y, 1.3 + (j % 3) * 0.5, 0, Math.PI * 2);
-          ctx.fill();
-        }
-      } else {
+      if (scene === 'reading') {
         var showAtmosphere =
           rainSoundEnabled || currentPageIndex === 0 || currentPageIndex >= 15;
 
@@ -640,85 +642,72 @@
   }
 
   function setupDeskIntroScene() {
-    var trigger = document.getElementById('desk-book-trigger');
-    var bookObj = document.getElementById('book-3d-object');
+    var canvas3d = document.getElementById('scene-3d-canvas');
+    var promptBtn = document.getElementById('desk-book-trigger');
     var returnBtn = document.getElementById('btn-desk');
-    var liftTimer = null;
+    var openImmediate = window.location.search.indexOf('open=1') !== -1;
 
-    if (window.location.search.indexOf('open=1') !== -1) {
+    function finishLiftToReading() {
       document.body.dataset.scene = 'reading';
-      setTimeout(function () {
-        if (pageFlip) pageFlip.update();
-      }, 60);
-    }
-
-    function computeLiftTarget() {
-      if (!bookObj || !trigger) return;
-      var coverEl = document.querySelector('.page-cover');
-      if (!coverEl) return;
-      var coverRect = coverEl.getBoundingClientRect();
-      if (!coverRect || coverRect.width < 40) return;
-
-      var triggerRect = trigger.getBoundingClientRect();
-      var baseW = bookObj.offsetWidth || 300;
-      var baseH = bookObj.offsetHeight || baseW * 1.6;
-      var originCenterX = triggerRect.left + triggerRect.width / 2;
-      var originCenterY = triggerRect.top + baseH / 2;
-
-      var targetCenterX = coverRect.left + coverRect.width / 2;
-      var targetCenterY = coverRect.top + coverRect.height / 2;
-
-      var dx = targetCenterX - originCenterX;
-      var dy = targetCenterY - originCenterY;
-      var scale = coverRect.width / baseW;
-
-      bookObj.style.setProperty('--lift-x', Math.round(dx) + 'px');
-      bookObj.style.setProperty('--lift-y', Math.round(dy) + 'px');
-      bookObj.style.setProperty('--lift-scale', scale.toFixed(3));
+      if (pageFlip) {
+        pageFlip.update();
+        updatePagerUI(pageFlip.getCurrentPageIndex(), pageFlip.getPageCount());
+      }
     }
 
     function liftBookFromDesk() {
       var scene = document.body.dataset.scene;
-      if (scene === 'lifting' || scene === 'reading') return;
+      if (scene === 'lifting' || scene === 'reading' || scene === 'returning') return;
       playBookLiftSound();
 
-      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-        document.body.dataset.scene = 'reading';
-        if (pageFlip) pageFlip.update();
+      if (pageFlip && pageFlip.getCurrentPageIndex() !== 0) {
+        pageFlip.turnToPage(0);
+      }
+
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches || !room3D || !room3D.supported) {
+        if (room3D) room3D.setImmediateReading();
+        finishLiftToReading();
         return;
       }
 
-      if (pageFlip) pageFlip.turnToPage(0);
-      computeLiftTarget();
       document.body.dataset.scene = 'lifting';
-
-      if (liftTimer) clearTimeout(liftTimer);
-      liftTimer = setTimeout(function () {
-        document.body.dataset.scene = 'reading';
-        if (pageFlip) {
-          pageFlip.update();
-          updatePagerUI(pageFlip.getCurrentPageIndex(), pageFlip.getPageCount());
-        }
-      }, 880);
+      room3D.triggerLift(finishLiftToReading);
     }
 
     function returnBookToDesk() {
       if (chapterAudio && chapterAudio.activeTrackId) {
         chapterAudio.stop();
       }
-      if (liftTimer) {
-        clearTimeout(liftTimer);
-        liftTimer = null;
-      }
       if (pageFlip && pageFlip.getCurrentPageIndex() !== 0) {
         pageFlip.turnToPage(0);
       }
-      document.body.dataset.scene = 'desk';
+
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches || !room3D || !room3D.supported) {
+        document.body.dataset.scene = 'desk';
+        return;
+      }
+
+      document.body.dataset.scene = 'returning';
+      room3D.triggerReturn(function () {
+        document.body.dataset.scene = 'desk';
+      });
     }
 
-    if (trigger) {
-      trigger.addEventListener('click', liftBookFromDesk);
-      trigger.addEventListener('keydown', function (e) {
+    if (typeof ReadingRoom3D === 'function' && canvas3d) {
+      room3D = new ReadingRoom3D({
+        canvas: canvas3d,
+        onRequestOpenBook: liftBookFromDesk,
+      });
+    }
+
+    if (openImmediate || (room3D && !room3D.supported)) {
+      if (room3D && room3D.supported) room3D.setImmediateReading();
+      finishLiftToReading();
+    }
+
+    if (promptBtn) {
+      promptBtn.addEventListener('click', liftBookFromDesk);
+      promptBtn.addEventListener('keydown', function (e) {
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault();
           liftBookFromDesk();
@@ -735,6 +724,7 @@
     isolateNoFlipControls();
     initBook();
     setupDeskIntroScene();
+    setupDiagramJumpLinks();
     initSpringRainCanvas();
 
     chapterAudio = new ChapterAudioController({
