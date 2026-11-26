@@ -193,10 +193,15 @@ body:not([data-scene='desk']) .desk-intro-stage {
   background: rgba(255, 255, 255, 0.08);
 }
 
-.hz-tool-btn[aria-pressed='true']#btn-rain {
+.hz-tool-btn[aria-pressed='true']#btn-rain,
+.hz-tool-btn[aria-pressed='true']#btn-lofi {
   background: rgba(184, 139, 74, 0.22);
   border-color: rgba(184, 139, 74, 0.55);
   color: #f6e7c6;
+}
+
+.hz-tool-btn[aria-pressed='true']#btn-lofi .ui-ico {
+  color: #eac27a;
 }
 
 .hz-tool-btn--brass {

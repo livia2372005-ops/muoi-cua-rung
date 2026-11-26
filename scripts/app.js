@@ -3,6 +3,8 @@
   var ChapterAudioController = window.MuoiCuaRung.ChapterAudioController;
   var ReadingRoom3D = window.MuoiCuaRung.ReadingRoom3D;
   var BookParallaxController = window.MuoiCuaRung.BookParallaxController;
+  var LofiPlayer = window.MuoiCuaRung.LofiPlayer;
+  var lofi = null;
 
   var pageFlip = null;
   var chapterAudio = null;
@@ -562,6 +564,16 @@
 
     document.getElementById('btn-rain')?.addEventListener('click', toggleSpringRainAudio);
 
+    document.getElementById('btn-lofi')?.addEventListener('click', function () {
+      if (!LofiPlayer) return;
+      if (!lofi) lofi = new LofiPlayer();
+      var on = lofi.toggle();
+      lofi.setDucked(Boolean(chapterAudio && chapterAudio.isPlaying));
+      this.setAttribute('aria-pressed', String(on));
+      this.classList.toggle('is-on', on);
+      showToast(on ? 'Đã bật nhạc nền lofi' : 'Đã tắt nhạc nền lofi');
+    });
+
     document.getElementById('btn-copy-share-msg')?.addEventListener('click', function () {
       var msg =
         'Mời thầy cô và các bạn xem Sách Điện Tử "Muối Của Rừng" (Nhóm 3): ' +
@@ -772,6 +784,7 @@
         }
       },
       onPlayStateChange: function (playing) {
+        if (lofi) lofi.setDucked(playing);
         if (rainGainNode && audioCtx) {
           rainGainNode.gain.setTargetAtTime(playing ? 0.05 : 0.14, audioCtx.currentTime, 0.25);
         }
