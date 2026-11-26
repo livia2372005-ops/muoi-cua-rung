@@ -65,6 +65,36 @@
     } catch (e) {}
   }
 
+  function playBookLiftSound() {
+    if (!soundEnabled) return;
+    try {
+      var ctx = ensureAudioCtx();
+      if (!ctx) return;
+      var duration = 0.24;
+      var len = Math.floor(ctx.sampleRate * duration);
+      var buffer = ctx.createBuffer(1, len, ctx.sampleRate);
+      var channel = buffer.getChannelData(0);
+      for (var i = 0; i < len; i++) {
+        var env = Math.sin((i / len) * Math.PI);
+        channel[i] = (Math.random() * 2 - 1) * env * 0.06;
+      }
+      var src = ctx.createBufferSource();
+      src.buffer = buffer;
+
+      var filter = ctx.createBiquadFilter();
+      filter.type = 'lowpass';
+      filter.frequency.value = 740;
+
+      var gain = ctx.createGain();
+      gain.gain.value = 0.25;
+
+      src.connect(filter);
+      filter.connect(gain);
+      gain.connect(ctx.destination);
+      src.start();
+    } catch (e) {}
+  }
+
   function toggleSpringRainAudio() {
     var btn = document.getElementById('btn-rain');
     rainSoundEnabled = !rainSoundEnabled;
@@ -411,6 +441,33 @@
       updatePagerUI(e.data, pageFlip.getPageCount());
     });
 
+    pageFlip.on('changeState', function (e) {
+      var wrapper = document.getElementById('book-wrapper');
+      if (!wrapper || !pageFlip) return;
+
+      if (e.data === 'flipping') {
+        var orientation = pageFlip.getOrientation();
+        wrapper.classList.toggle('is-landscape', orientation === 'landscape');
+        if (orientation === 'landscape') {
+          var total = pageFlip.getPageCount();
+          var cur = pageFlip.getCurrentPageIndex();
+          var render = pageFlip.getRender();
+          var dir = render && typeof render.getDirection === 'function' ? render.getDirection() : null;
+          if (cur === 0 && dir === 0) {
+            wrapper.dataset.bookPos = 'open';
+          } else if (cur > 0 && cur <= 2 && dir === 1) {
+            wrapper.dataset.bookPos = 'cover';
+          } else if (cur >= total - 3 && cur < total - 1 && dir === 0) {
+            wrapper.dataset.bookPos = 'back';
+          } else if (cur >= total - 1 && dir === 1) {
+            wrapper.dataset.bookPos = 'open';
+          }
+        }
+      } else if (e.data === 'read') {
+        updatePagerUI(pageFlip.getCurrentPageIndex(), pageFlip.getPageCount());
+      }
+    });
+
     pageFlip.on('changeOrientation', function () {
       updatePagerUI(pageFlip.getCurrentPageIndex(), pageFlip.getPageCount());
     });
@@ -447,6 +504,7 @@
     }
 
     document.addEventListener('keydown', function (e) {
+      if (document.body.dataset.scene !== 'reading') return;
       if (e.target instanceof HTMLInputElement) return;
       if (document.querySelector('.modal-backdrop:not([hidden])')) return;
       if (e.key === 'ArrowRight') goNext();
@@ -536,24 +594,44 @@
 
     function frame() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      var showAtmosphere =
-        rainSoundEnabled || currentPageIndex === 0 || currentPageIndex >= 15;
+      var scene = document.body.dataset.scene || 'reading';
 
-      if (showAtmosphere) {
-        ctx.lineWidth = 1;
-        for (var i = 0; i < drops.length; i++) {
-          var d = drops[i];
-          d.x -= d.speed * 0.25;
-          d.y += d.speed;
-          if (d.y > canvas.height + 20) {
-            d.y = -20;
-            d.x = Math.random() * canvas.width;
+      if (scene === 'desk' || scene === 'lifting') {
+        for (var j = 0; j < drops.length; j++) {
+          var s = drops[j];
+          s.x += s.speed * 0.16;
+          s.y += s.speed * 0.12;
+          if (s.x > canvas.width + 16) s.x = -12;
+          if (s.y > canvas.height + 16) {
+            s.y = -12;
+            s.x = Math.random() * canvas.width * 0.85;
           }
-          ctx.strokeStyle = 'rgba(246, 248, 244, ' + d.alpha + ')';
+          var warmAlpha = Math.min(0.42, s.alpha * 2.1);
+          ctx.fillStyle = 'rgba(255, 232, 182, ' + warmAlpha + ')';
           ctx.beginPath();
-          ctx.moveTo(d.x, d.y);
-          ctx.lineTo(d.x - 3, d.y + d.len);
-          ctx.stroke();
+          ctx.arc(s.x, s.y, 1.3 + (j % 3) * 0.5, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      } else {
+        var showAtmosphere =
+          rainSoundEnabled || currentPageIndex === 0 || currentPageIndex >= 15;
+
+        if (showAtmosphere) {
+          ctx.lineWidth = 1;
+          for (var i = 0; i < drops.length; i++) {
+            var d = drops[i];
+            d.x -= d.speed * 0.25;
+            d.y += d.speed;
+            if (d.y > canvas.height + 20) {
+              d.y = -20;
+              d.x = Math.random() * canvas.width;
+            }
+            ctx.strokeStyle = 'rgba(246, 248, 244, ' + d.alpha + ')';
+            ctx.beginPath();
+            ctx.moveTo(d.x, d.y);
+            ctx.lineTo(d.x - 3, d.y + d.len);
+            ctx.stroke();
+          }
         }
       }
       requestAnimationFrame(frame);
@@ -561,9 +639,102 @@
     requestAnimationFrame(frame);
   }
 
+  function setupDeskIntroScene() {
+    var trigger = document.getElementById('desk-book-trigger');
+    var bookObj = document.getElementById('book-3d-object');
+    var returnBtn = document.getElementById('btn-desk');
+    var liftTimer = null;
+
+    if (window.location.search.indexOf('open=1') !== -1) {
+      document.body.dataset.scene = 'reading';
+      setTimeout(function () {
+        if (pageFlip) pageFlip.update();
+      }, 60);
+    }
+
+    function computeLiftTarget() {
+      if (!bookObj || !trigger) return;
+      var coverEl = document.querySelector('.page-cover');
+      if (!coverEl) return;
+      var coverRect = coverEl.getBoundingClientRect();
+      if (!coverRect || coverRect.width < 40) return;
+
+      var triggerRect = trigger.getBoundingClientRect();
+      var baseW = bookObj.offsetWidth || 300;
+      var baseH = bookObj.offsetHeight || baseW * 1.6;
+      var originCenterX = triggerRect.left + triggerRect.width / 2;
+      var originCenterY = triggerRect.top + baseH / 2;
+
+      var targetCenterX = coverRect.left + coverRect.width / 2;
+      var targetCenterY = coverRect.top + coverRect.height / 2;
+
+      var dx = targetCenterX - originCenterX;
+      var dy = targetCenterY - originCenterY;
+      var scale = coverRect.width / baseW;
+
+      bookObj.style.setProperty('--lift-x', Math.round(dx) + 'px');
+      bookObj.style.setProperty('--lift-y', Math.round(dy) + 'px');
+      bookObj.style.setProperty('--lift-scale', scale.toFixed(3));
+    }
+
+    function liftBookFromDesk() {
+      var scene = document.body.dataset.scene;
+      if (scene === 'lifting' || scene === 'reading') return;
+      playBookLiftSound();
+
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        document.body.dataset.scene = 'reading';
+        if (pageFlip) pageFlip.update();
+        return;
+      }
+
+      if (pageFlip) pageFlip.turnToPage(0);
+      computeLiftTarget();
+      document.body.dataset.scene = 'lifting';
+
+      if (liftTimer) clearTimeout(liftTimer);
+      liftTimer = setTimeout(function () {
+        document.body.dataset.scene = 'reading';
+        if (pageFlip) {
+          pageFlip.update();
+          updatePagerUI(pageFlip.getCurrentPageIndex(), pageFlip.getPageCount());
+        }
+      }, 880);
+    }
+
+    function returnBookToDesk() {
+      if (chapterAudio && chapterAudio.activeTrackId) {
+        chapterAudio.stop();
+      }
+      if (liftTimer) {
+        clearTimeout(liftTimer);
+        liftTimer = null;
+      }
+      if (pageFlip && pageFlip.getCurrentPageIndex() !== 0) {
+        pageFlip.turnToPage(0);
+      }
+      document.body.dataset.scene = 'desk';
+    }
+
+    if (trigger) {
+      trigger.addEventListener('click', liftBookFromDesk);
+      trigger.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          liftBookFromDesk();
+        }
+      });
+    }
+
+    if (returnBtn) {
+      returnBtn.addEventListener('click', returnBookToDesk);
+    }
+  }
+
   document.addEventListener('DOMContentLoaded', function () {
     isolateNoFlipControls();
     initBook();
+    setupDeskIntroScene();
     initSpringRainCanvas();
 
     chapterAudio = new ChapterAudioController({

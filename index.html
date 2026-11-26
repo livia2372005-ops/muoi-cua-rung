@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -25,36 +26,127 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@500;600;700&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600&display=swap" rel="stylesheet" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@500;600;700&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600&display=swap"
+    rel="stylesheet" />
 
   <link rel="stylesheet" href="./styles/book.css" />
 </head>
-<body>
+
+<body data-scene="desk">
   <canvas id="rain-canvas" aria-hidden="true"></canvas>
+
+  <!-- Warm Sunlit Wooden Desk Backdrop -->
+  <div class="desk-backdrop" aria-hidden="true">
+    <div class="desk-wood-surface"></div>
+    <div class="desk-sunlight-rays"></div>
+    <div class="desk-dappled-leaves"></div>
+    <div class="desk-reading-dim"></div>
+  </div>
+
+  <!-- 3D Hardcover Book Resting on Sunlit Desk -->
+  <section class="desk-intro-stage" id="desk-intro-stage" aria-label="Bìa sách 3D đặt trên mặt bàn gỗ">
+    <div class="book-3d-trigger" id="desk-book-trigger" role="button" tabindex="0"
+      aria-label="Nhấn vào cuốn sách Muối Của Rừng để nâng lên và lật đọc">
+      <div class="book-3d-shadow" aria-hidden="true"></div>
+      <div class="book-3d-object" id="book-3d-object">
+        <div class="book-3d-face book-3d-back"></div>
+        <div class="book-3d-face book-3d-spine">
+          <span class="spine-label">MUỐI CỦA RỪNG &nbsp;•&nbsp; NGUYỄN HUY THIỆP</span>
+          <span class="spine-group">NHÓM 3</span>
+        </div>
+        <div class="book-3d-face book-3d-pages-right"></div>
+        <div class="book-3d-face book-3d-pages-bottom"></div>
+        <div class="book-3d-face book-3d-pages-top"></div>
+        <div class="book-3d-face book-3d-front">
+          <img class="page-bg-img" src="./assets/images/cover-titlebook.jpg"
+            alt="Bìa cứng 3D sách Muối của rừng — Nguyễn Huy Thiệp" />
+          <div class="book-3d-front-editorial">
+            <div class="cover-top-sky">
+              <p class="cover-series">NGỮ VĂN 12 &nbsp;•&nbsp; ẤN BẢN SÁCH ĐIỆN TỬ</p>
+              <div class="cover-title" aria-hidden="true">
+                <span class="cover-title-line1">MUỐI</span>
+                <span class="cover-title-line2">CỦA RỪNG</span>
+              </div>
+              <div class="cover-fleuron" aria-hidden="true">
+                <span class="fleuron-line"></span>
+                <svg class="fleuron-flower" viewBox="0 0 24 24">
+                  <circle cx="12" cy="12" r="1.7" fill="currentColor" />
+                  <path d="M12 3.2C13.6 6 13.6 8.6 12 10.4C10.4 8.6 10.4 6 12 3.2Z" />
+                  <path d="M20.4 9.3C18.2 11.7 15.7 12.5 13.5 11.5C14.7 9.4 17.2 8.6 20.4 9.3Z" />
+                  <path d="M17.2 19.2C14.3 17.8 12.8 15.7 13 13.3C15.3 13.8 16.9 15.9 17.2 19.2Z" />
+                  <path d="M6.8 19.2C7.1 15.9 8.7 13.8 11 13.3C11.2 15.7 9.7 17.8 6.8 19.2Z" />
+                  <path d="M3.6 9.3C6.8 8.6 9.3 9.4 10.5 11.5C8.3 12.5 5.8 11.7 3.6 9.3Z" />
+                </svg>
+                <span class="fleuron-line"></span>
+              </div>
+              <p class="cover-author">Nguyễn Huy Thiệp</p>
+            </div>
+            <div class="cover-obi-band cover-obi-band--3d">
+              <div class="obi-left">
+                <span class="obi-kicker">THỰC HIỆN</span>
+                <strong class="obi-group">NHÓM 3</strong>
+              </div>
+              <span class="obi-pill-hint">Nhấn để mở →</span>
+            </div>
+          </div>
+          <div class="book-3d-sun-sheen" aria-hidden="true"></div>
+        </div>
+      </div>
+      <p class="desk-prompt">
+        <span class="desk-prompt-dot" aria-hidden="true"></span>
+        <span>Nhấn vào cuốn sách để nâng lên và mở đọc</span>
+      </p>
+    </div>
+  </section>
 
   <!-- Discreet Top-Right Reader Toolbar (Outside book pages) -->
   <header class="hz-toolbar" role="toolbar" aria-label="Công cụ trình đọc sách">
+    <button type="button" class="hz-tool-btn" id="btn-desk" title="Đặt sách trở lại mặt bàn nắng">
+      <svg class="ui-ico" viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M4 17.5A2.5 2.5 0 0 1 6.5 15H20" />
+        <path d="M6.5 3H20v16H6.5A2.5 2.5 0 0 1 4 16.5v-11A2.5 2.5 0 0 1 6.5 3Z" />
+      </svg>
+      <span class="hz-tool-label">Đặt lên bàn</span>
+    </button>
     <button type="button" class="hz-tool-btn" id="btn-toc" title="Mục lục 22 trang">
-      <svg class="ui-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h10"/></svg>
+      <svg class="ui-ico" viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M4 6h16M4 12h16M4 18h10" />
+      </svg>
       <span class="hz-tool-label">Mục lục</span>
     </button>
     <button type="button" class="hz-tool-btn" id="btn-script" title="Quản lý giọng đọc & gắn file thu âm">
-      <svg class="ui-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a3 3 0 0 1 3 3v5a3 3 0 0 1-6 0V6a3 3 0 0 1 3-3Z"/><path d="M19 11a7 7 0 0 1-14 0M12 18v3M8 21h8"/></svg>
+      <svg class="ui-ico" viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M12 3a3 3 0 0 1 3 3v5a3 3 0 0 1-6 0V6a3 3 0 0 1 3-3Z" />
+        <path d="M19 11a7 7 0 0 1-14 0M12 18v3M8 21h8" />
+      </svg>
       <span class="hz-tool-label">Giọng đọc</span>
     </button>
     <button type="button" class="hz-tool-btn" id="btn-diagram" title="Xem toàn cảnh sơ đồ mạch truyện">
-      <svg class="ui-ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5M11 8v6M8 11h6"/></svg>
+      <svg class="ui-ico" viewBox="0 0 24 24" aria-hidden="true">
+        <circle cx="11" cy="11" r="7" />
+        <path d="m20 20-3.5-3.5M11 8v6M8 11h6" />
+      </svg>
       <span class="hz-tool-label">Sơ đồ</span>
     </button>
     <button type="button" class="hz-tool-btn" id="btn-rain" title="Bật/tắt tiếng mưa xuân dịu nhẹ" aria-pressed="false">
-      <svg class="ui-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 15a4 4 0 0 1-.8-7.9A5.5 5.5 0 0 1 17 8a3.8 3.8 0 0 1 1 7.4"/><path d="m9 18-1 3M13 18l-1 3M17 18l-1 3"/></svg>
+      <svg class="ui-ico" viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M7 15a4 4 0 0 1-.8-7.9A5.5 5.5 0 0 1 17 8a3.8 3.8 0 0 1 1 7.4" />
+        <path d="m9 18-1 3M13 18l-1 3M17 18l-1 3" />
+      </svg>
       <span class="hz-tool-label">Mưa xuân</span>
     </button>
     <button type="button" class="hz-tool-btn" id="btn-sound" title="Bật/tắt tiếng lật giấy" aria-pressed="true">
-      <svg class="ui-ico" id="sound-icon-svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4V5Z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12"/></svg>
+      <svg class="ui-ico" id="sound-icon-svg" viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M11 5 6 9H3v6h3l5 4V5Z" />
+        <path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" />
+      </svg>
     </button>
     <button type="button" class="hz-tool-btn hz-tool-btn--brass" id="btn-share" title="Chia sẻ link lên nhóm lớp">
-      <svg class="ui-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.1.1l2.8-2.8a5 5 0 0 0-7.1-7.1L11.2 4.8"/><path d="M14 11a5 5 0 0 0-7.1-.1l-2.8 2.8a5 5 0 0 0 7.1 7.1l1.6-1.6"/></svg>
+      <svg class="ui-ico" viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M10 13a5 5 0 0 0 7.1.1l2.8-2.8a5 5 0 0 0-7.1-7.1L11.2 4.8" />
+        <path d="M14 11a5 5 0 0 0-7.1-.1l-2.8 2.8a5 5 0 0 0 7.1 7.1l1.6-1.6" />
+      </svg>
       <span class="hz-tool-label">Chia sẻ</span>
     </button>
   </header>
@@ -62,15 +154,19 @@
   <!-- Main Book Viewport -->
   <main class="viewer-stage">
     <button type="button" class="side-nav-btn side-nav-prev" id="btn-prev" aria-label="Trang trước" title="Trang trước">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="m15 18-6-6 6-6" />
+      </svg>
     </button>
 
     <div class="book-wrapper" id="book-wrapper" data-book-pos="cover">
+      <div class="book-ambient-shadow" aria-hidden="true"></div>
       <div id="flipbook-container" class="flipbook">
 
         <!-- ==================== PAGE 1: FRONT COVER ==================== -->
         <section class="page page-cover" data-density="hard">
-          <img class="page-bg-img" src="./assets/images/cover-titlebook.jpg" alt="Bìa sách Muối của rừng — Núi đá vôi Nam Xung" />
+          <img class="page-bg-img" src="./assets/images/cover-titlebook.jpg"
+            alt="Bìa sách Muối của rừng — Núi đá vôi Nam Xung" />
           <div class="cover-editorial">
             <div class="cover-top-sky">
               <p class="cover-series">NGỮ VĂN 12 &nbsp;•&nbsp; ẤN BẢN SÁCH ĐIỆN TỬ</p>
@@ -80,7 +176,14 @@
               </h1>
               <div class="cover-fleuron" aria-hidden="true">
                 <span class="fleuron-line"></span>
-                <svg class="fleuron-flower" viewBox="0 0 24 24"><circle cx="12" cy="12" r="1.7" fill="currentColor"/><path d="M12 3.2C13.6 6 13.6 8.6 12 10.4C10.4 8.6 10.4 6 12 3.2Z"/><path d="M20.4 9.3C18.2 11.7 15.7 12.5 13.5 11.5C14.7 9.4 17.2 8.6 20.4 9.3Z"/><path d="M17.2 19.2C14.3 17.8 12.8 15.7 13 13.3C15.3 13.8 16.9 15.9 17.2 19.2Z"/><path d="M6.8 19.2C7.1 15.9 8.7 13.8 11 13.3C11.2 15.7 9.7 17.8 6.8 19.2Z"/><path d="M3.6 9.3C6.8 8.6 9.3 9.4 10.5 11.5C8.3 12.5 5.8 11.7 3.6 9.3Z"/></svg>
+                <svg class="fleuron-flower" viewBox="0 0 24 24">
+                  <circle cx="12" cy="12" r="1.7" fill="currentColor" />
+                  <path d="M12 3.2C13.6 6 13.6 8.6 12 10.4C10.4 8.6 10.4 6 12 3.2Z" />
+                  <path d="M20.4 9.3C18.2 11.7 15.7 12.5 13.5 11.5C14.7 9.4 17.2 8.6 20.4 9.3Z" />
+                  <path d="M17.2 19.2C14.3 17.8 12.8 15.7 13 13.3C15.3 13.8 16.9 15.9 17.2 19.2Z" />
+                  <path d="M6.8 19.2C7.1 15.9 8.7 13.8 11 13.3C11.2 15.7 9.7 17.8 6.8 19.2Z" />
+                  <path d="M3.6 9.3C6.8 8.6 9.3 9.4 10.5 11.5C8.3 12.5 5.8 11.7 3.6 9.3Z" />
+                </svg>
                 <span class="fleuron-line"></span>
               </div>
               <p class="cover-author">Nguyễn Huy Thiệp</p>
@@ -145,7 +248,8 @@
 
             <div class="page-body">
               <blockquote class="epigraph-open">
-                <p>“Sau Tết Nguyên đán một tháng là thời gian thích nhất ở rừng. Cây cối đều nhú lộc non. Rừng xanh ngắt và ẩm ướt. Thiên nhiên vừa trang trọng vừa tình cảm. Điều ấy một phần là do mưa xuân.”</p>
+                <p>“Sau Tết Nguyên đán một tháng là thời gian thích nhất ở rừng. Cây cối đều nhú lộc non. Rừng xanh ngắt
+                  và ẩm ướt. Thiên nhiên vừa trang trọng vừa tình cảm. Điều ấy một phần là do mưa xuân.”</p>
                 <cite>— Nguyễn Huy Thiệp, 1986</cite>
               </blockquote>
 
@@ -246,7 +350,8 @@
 
                 <div class="map-station map-station--flip" data-track-seg="tom-tat" data-seg-page="4">
                   <div class="station-medallion">
-                    <img src="./assets/images/thumb-04-care.jpg" alt="Cứu chữa và phóng sinh" loading="lazy" decoding="async" />
+                    <img src="./assets/images/thumb-04-care.jpg" alt="Cứu chữa và phóng sinh" loading="lazy"
+                      decoding="async" />
                   </div>
                   <div class="station-text">
                     <span class="station-roman">CHẶNG IV • CHUYỂN HÓA</span>
@@ -282,7 +387,18 @@
 
         <!-- ==================== PAGE 6: CHƯƠNG I ART PLATE ==================== -->
         <section class="page page-art-plate page-even">
-          <img class="page-bg-img" src="./assets/images/plate-01-khoi-hanh.jpg" alt="Ông Diểu mang súng hai nòng bước vào rừng mùa xuân" loading="lazy" decoding="async" />
+          <img class="page-bg-img" src="./assets/images/plate-01-khoi-hanh.jpg"
+            alt="Ông Diểu mang súng hai nòng bước vào rừng mùa xuân" loading="lazy" decoding="async" />
+          <div class="plate-editorial plate-editorial--sky" aria-hidden="true">
+            <div class="plate-top-title plate-top-title--pine">
+              <span class="plate-kicker">CHƯƠNG I &nbsp;•&nbsp; KHỞI HÀNH</span>
+              <h3 class="plate-heading">Rừng Dâu Da<br />Mùa Xuân</h3>
+              <div class="plate-rule"><span>✦</span></div>
+            </div>
+            <p class="plate-bottom-quote">
+              “Thiên nhiên vừa trang trọng vừa tình cảm. Điều ấy một phần là do mưa xuân.”
+            </p>
+          </div>
           <footer class="folio-foot folio-foot--left folio-foot--overlay">— 06 —</footer>
         </section>
 
@@ -352,6 +468,16 @@
         <!-- ==================== PAGE 9: CHƯƠNG II ART PLATE ==================== -->
         <section class="page page-art-plate page-odd">
           <img class="page-bg-img" src="./assets/images/plate-02-hom-chet.jpg" alt="Ông Diểu giương súng nhắm gia đình ba con khỉ bên bờ vực Hõm Chết" loading="lazy" decoding="async" />
+          <div class="plate-editorial plate-editorial--canyon" aria-hidden="true">
+            <div class="plate-top-title plate-top-title--canyon">
+              <span class="plate-kicker">CHƯƠNG II &nbsp;•&nbsp; BIẾN CỐ</span>
+              <h3 class="plate-heading">Bờ Vực<br />Hõm Chết</h3>
+              <div class="plate-rule"><span>✦</span></div>
+            </div>
+            <p class="plate-bottom-quote">
+              “Tiếng súng xé toạc rừng xuân — khẩu súng hai nòng vĩnh viễn chôn vùi nơi đáy vực sương mù.”
+            </p>
+          </div>
           <footer class="folio-foot folio-foot--right folio-foot--overlay">— 09 —</footer>
         </section>
 
@@ -421,6 +547,16 @@
         <!-- ==================== PAGE 12: CHƯƠNG III ART PLATE ==================== -->
         <section class="page page-art-plate page-even">
           <img class="page-bg-img" src="./assets/images/plate-03-thuc-tinh.jpg" alt="Ông Diểu cởi bỏ trang phục, xót thương chăm sóc con khỉ đực bị thương" loading="lazy" decoding="async" />
+          <div class="plate-editorial plate-editorial--mist" aria-hidden="true">
+            <div class="plate-top-title plate-top-title--mist">
+              <span class="plate-kicker">CHƯƠNG III &nbsp;•&nbsp; BƯỚC NGOẶT</span>
+              <h3 class="plate-heading">Khoảnh Khắc<br />Thức Tỉnh</h3>
+              <div class="plate-rule"><span>✦</span></div>
+            </div>
+            <p class="plate-bottom-quote">
+              “Đôi mắt run rẩy cầu khẩn xóa nhòa khoảng cách giữa kẻ đi săn và con mồi.”
+            </p>
+          </div>
           <footer class="folio-foot folio-foot--left folio-foot--overlay">— 12 —</footer>
         </section>
 
@@ -552,7 +688,19 @@
 
         <!-- ==================== PAGE 17: CHƯƠNG IV ART PLATE ==================== -->
         <section class="page page-art-plate page-odd">
-          <img class="page-bg-img" src="./assets/images/plate-04-hoa-tu-huyen.jpg" alt="Ông Diểu trần truồng bước về trong mưa xuân trên lối mòn hoa tử huyền" loading="lazy" decoding="async" />
+          <img class="page-bg-img" src="./assets/images/plate-04-hoa-tu-huyen.jpg"
+            alt="Ông Diểu trần truồng bước về trong mưa xuân trên lối mòn hoa tử huyền" loading="lazy"
+            decoding="async" />
+          <div class="plate-editorial plate-editorial--rain" aria-hidden="true">
+            <div class="plate-top-title plate-top-title--rain">
+              <span class="plate-kicker">CHƯƠNG IV &nbsp;•&nbsp; KẾT TINH</span>
+              <h3 class="plate-heading">Mưa Xuân &amp;<br />Hoa Tử Huyền</h3>
+              <div class="plate-rule"><span>✦</span></div>
+            </div>
+            <p class="plate-bottom-quote">
+              “Ba mươi năm rừng mới kết muối một lần — điềm lành của đất trời thanh bình.”
+            </p>
+          </div>
           <footer class="folio-foot folio-foot--right folio-foot--overlay">— 17 —</footer>
         </section>
 
@@ -696,7 +844,8 @@
 
         <!-- ==================== PAGE 22: BACK COVER ==================== -->
         <section class="page page-backcover" data-density="hard">
-          <img class="page-bg-img" src="./assets/images/detail-hoa-tu-huyen.jpg" alt="Hoa tử huyền trong mưa xuân" loading="lazy" decoding="async" />
+          <img class="page-bg-img" src="./assets/images/detail-hoa-tu-huyen.jpg" alt="Hoa tử huyền trong mưa xuân"
+            loading="lazy" decoding="async" />
           <div class="backcover-scrim"></div>
           <div class="backcover-inner">
             <div class="backcover-jacket">
@@ -720,7 +869,9 @@
     </div>
 
     <button type="button" class="side-nav-btn side-nav-next" id="btn-next" aria-label="Trang sau" title="Trang sau">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="m9 18 6-6-6-6" />
+      </svg>
     </button>
   </main>
 
@@ -825,10 +976,12 @@
           <h4>Muối Của Rừng — Nhóm 3</h4>
           <p id="share-url-hint" class="share-url-box"></p>
           <p id="share-file-warning" class="share-warning" hidden>
-            Bạn đang mở file trực tiếp trên máy tính (<code>file://</code>). Sau khi đăng lên GitHub Pages, hãy dùng link <code>https://...</code> để gửi cho cô và các bạn trong lớp nhé.
+            Bạn đang mở file trực tiếp trên máy tính (<code>file://</code>). Sau khi đăng lên GitHub Pages, hãy dùng
+            link <code>https://...</code> để gửi cho cô và các bạn trong lớp nhé.
           </p>
           <div class="jacket-actions">
-            <button type="button" class="jacket-btn jacket-btn--primary" id="btn-copy-share-msg">Sao chép lời nhắn &amp; link</button>
+            <button type="button" class="jacket-btn jacket-btn--primary" id="btn-copy-share-msg">Sao chép lời nhắn &amp;
+              link</button>
             <button type="button" class="jacket-btn" id="btn-native-share" hidden>Mở menu chia sẻ điện thoại</button>
           </div>
         </div>
@@ -843,4 +996,5 @@
   <script defer src="./scripts/audio-player.js"></script>
   <script defer src="./scripts/app.js"></script>
 </body>
+
 </html>
