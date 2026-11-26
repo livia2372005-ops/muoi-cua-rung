@@ -1,8 +1,12 @@
-# Keep high-res original artworks locally; deploy compressed assets/images/*.jpg on GitHub Pages
+# Keep high-res original artworks and raw PNG packs locally; deploy compressed assets/images/*.jpg and assets/images/parallax/*.webp on GitHub Pages
 /Titlebook_*.png
 /Khởi_hành_*.jpg
 /Dò_theo_*.png
 /Băng_bó_*.png
 /Cao_trào_*.png
+assets/images/Packtitle/
+assets/images/packkhoihanh/
+assets/images/packdotheoconkhi/
+assets/images/packbangbo&cuukhi/
 .DS_Store
 Thumbs.db

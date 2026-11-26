@@ -488,6 +488,77 @@ body[data-scene='reading'] .viewer-stage {
   pointer-events: none;
 }
 
+/* ==================== MULTI-LAYER 2.5D PARALLAX ==================== */
+.parallax-scene {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  isolation: isolate;
+  overflow: hidden;
+  pointer-events: none;
+  --parallax-scale: 1;
+}
+
+.parallax-layer {
+  position: absolute;
+  inset: -6.5%;
+  width: 113%;
+  height: 113%;
+  object-fit: cover;
+  object-position: 50% 50%;
+  transform: translate3d(
+    calc(var(--px, 0px) * var(--depth, 0) * var(--parallax-scale, 1)),
+    calc(var(--py, 0px) * var(--depth, 0) * var(--parallax-scale, 1)),
+    0
+  );
+  will-change: transform;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+.parallax-layer--z1 { z-index: 1; }
+.parallax-layer--z2 { z-index: 2; }
+.parallax-layer--z3 { z-index: 3; }
+.parallax-layer--z4 { z-index: 4; }
+
+.parallax-scene--mini {
+  --parallax-scale: 0.28;
+}
+
+.parallax-scene--mini .parallax-layer {
+  inset: -8%;
+  width: 116%;
+  height: 116%;
+  will-change: auto;
+}
+
+.parallax-scene--band {
+  --parallax-scale: 0.72;
+}
+
+.parallax-scene--band .parallax-layer {
+  inset: -9%;
+  width: 118%;
+  height: 118%;
+}
+
+/* Shared scene framing overrides so all layers stay aligned within cropped viewports */
+.parallax-scene--focus-ch1 .parallax-layer { object-position: 50% 52%; }
+.parallax-scene--focus-ch2 .parallax-layer { object-position: 50% 42%; }
+.parallax-scene--focus-ch3 .parallax-layer { object-position: 50% 48%; }
+.parallax-scene--focus-ch4 .parallax-layer { object-position: 50% 48%; }
+.parallax-scene--focus-ch5 .parallax-layer {
+  object-position: 50% 72%;
+  transform-origin: 66% 82%;
+  transform: translate3d(
+    calc(var(--px, 0px) * var(--depth, 0) * var(--parallax-scale, 1)),
+    calc(var(--py, 0px) * var(--depth, 0) * var(--parallax-scale, 1)),
+    0
+  ) scale(1.55);
+}
+.parallax-scene--focus-band .parallax-layer { object-position: 50% 76%; }
+
 .cover-editorial {
   position: relative;
   z-index: 2;
@@ -615,6 +686,7 @@ body[data-scene='reading'] .viewer-stage {
 .backcover-scrim {
   position: absolute;
   inset: 0;
+  z-index: 1;
   background: rgba(18, 28, 25, 0.68);
   pointer-events: none;
 }
@@ -954,6 +1026,8 @@ body[data-scene='reading'] .viewer-stage {
 }
 
 .station-medallion {
+  position: relative;
+  isolation: isolate;
   width: 78px;
   height: 96px;
   border-radius: 39px;
@@ -964,7 +1038,7 @@ body[data-scene='reading'] .viewer-stage {
   background: #1b2a24;
 }
 
-.station-medallion img {
+.station-medallion > img {
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -1130,6 +1204,8 @@ body[data-scene='reading'] .viewer-stage {
   letter-spacing: 0.03em;
   color: #16221f;
   text-shadow: 0 1px 0 rgba(255, 252, 245, 0.72);
+  transform: translate3d(calc(var(--px, 0px) * 0.12), calc(var(--py, 0px) * 0.12), 0);
+  will-change: transform;
 }
 
 .plate-rule {
@@ -1172,7 +1248,20 @@ body[data-scene='reading'] .viewer-stage {
   text-align: center;
 }
 
-.arch-vignette img {
+.arch-vignette-stage {
+  position: relative;
+  isolation: isolate;
+  transform: translateZ(0);
+  width: 100%;
+  height: 146px;
+  overflow: hidden;
+  border-radius: 6px;
+  border: 1px solid rgba(184, 139, 74, 0.55);
+  box-shadow: 0 6px 18px rgba(24, 36, 34, 0.14);
+  background: #1b2a24;
+}
+
+.arch-vignette > img {
   width: 100%;
   height: 146px;
   object-fit: cover;
@@ -1624,7 +1713,8 @@ body[data-scene='reading'] .viewer-stage {
     padding: 7px 10px;
   }
 
-  .arch-vignette img {
+  .arch-vignette-stage,
+  .arch-vignette > img {
     height: 120px;
   }
 }
@@ -1742,12 +1832,23 @@ body[data-scene='reading'] .viewer-stage {
   .plate-top-title--canyon { padding: 14px 10px 10px 38%; }
   .plate-heading { font-size: 1.24rem; }
   .plate-bottom-quote { padding: 28px 14px 30px; font-size: 0.65rem; }
-  .arch-vignette img { height: 102px; }
+  .arch-vignette-stage,
+  .arch-vignette > img { height: 102px; }
 
   .panorama-grid { grid-template-columns: 1fr; }
 }
 
 @media (prefers-reduced-motion: reduce) {
+  #flipbook-container {
+    --px: 0px !important;
+    --py: 0px !important;
+  }
+
+  .parallax-layer,
+  .plate-heading {
+    transform: none !important;
+  }
+
   *,
   *::before,
   *::after {

@@ -22,7 +22,8 @@
   <meta name="twitter:image" content="./assets/images/og-cover.jpg" />
 
   <link rel="icon" type="image/jpeg" href="./assets/images/detail-hoa-tu-huyen.jpg" />
-  <link rel="preload" as="image" href="./assets/images/cover-titlebook.jpg" fetchpriority="high" />
+  <link rel="preload" as="image" href="./assets/images/parallax/cover-bg.webp" fetchpriority="high" />
+  <link rel="preload" as="image" href="./assets/images/parallax/cover-char.webp" fetchpriority="high" />
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -114,8 +115,20 @@
 
         <!-- ==================== PAGE 1: FRONT COVER ==================== -->
         <section class="page page-cover" data-density="hard">
-          <img class="page-bg-img" src="./assets/images/cover-titlebook.jpg"
-            alt="Bìa sách Muối của rừng — Núi đá vôi Nam Xung" />
+          <div class="parallax-scene" aria-label="Bìa sách Muối của rừng — Núi đá vôi Nam Xung">
+            <img class="parallax-layer parallax-layer--z1" style="--depth: -0.42"
+              src="./assets/images/parallax/cover-bg.webp" alt="" aria-hidden="true"
+              loading="eager" decoding="async" draggable="false" />
+            <img class="parallax-layer parallax-layer--z2" style="--depth: 0.10"
+              src="./assets/images/parallax/cover-trail.webp" alt="" aria-hidden="true"
+              loading="eager" decoding="async" draggable="false" />
+            <img class="parallax-layer parallax-layer--z3" style="--depth: 0.52"
+              src="./assets/images/parallax/cover-char.webp" alt="Bìa sách Muối của rừng — Ông Diểu bước vào núi đá vôi Nam Xung"
+              loading="eager" decoding="async" draggable="false" />
+            <img class="parallax-layer parallax-layer--z4" style="--depth: 0.98"
+              src="./assets/images/parallax/cover-fg.webp" alt="" aria-hidden="true"
+              loading="eager" decoding="async" draggable="false" />
+          </div>
           <div class="cover-editorial">
             <div class="cover-top-sky">
               <p class="cover-series">NGỮ VĂN 12 &nbsp;•&nbsp; ẤN BẢN SÁCH ĐIỆN TỬ</p>
@@ -254,7 +267,17 @@
 
                 <button type="button" class="map-station" data-track-seg="tom-tat" data-seg-page="3" data-goto-page="5" data-no-flip>
                   <span class="station-medallion">
-                    <img src="./assets/images/plate-01-khoi-hanh.jpg" alt="Chương I: Vào rừng dâu da mùa xuân" loading="lazy" decoding="async" />
+                    <span class="parallax-scene parallax-scene--mini parallax-scene--focus-ch1">
+                      <img class="parallax-layer parallax-layer--z1" style="--depth: -0.42"
+                        src="./assets/images/parallax/ch1-bg.webp" alt="" aria-hidden="true"
+                        loading="eager" decoding="async" draggable="false" />
+                      <img class="parallax-layer parallax-layer--z2" style="--depth: 0.48"
+                        src="./assets/images/parallax/ch1-char.webp" alt="Chương I: Vào rừng dâu da mùa xuân"
+                        loading="eager" decoding="async" draggable="false" />
+                      <img class="parallax-layer parallax-layer--z4" style="--depth: 0.95"
+                        src="./assets/images/parallax/ch1-fg.webp" alt="" aria-hidden="true"
+                        loading="eager" decoding="async" draggable="false" />
+                    </span>
                   </span>
                   <span class="station-text">
                     <span class="station-roman">CHƯƠNG I &bull; KHỞI ĐẦU</span>
@@ -268,7 +291,17 @@
 
                 <button type="button" class="map-station map-station--flip" data-track-seg="tom-tat" data-seg-page="3" data-goto-page="8" data-no-flip>
                   <span class="station-medallion">
-                    <img src="./assets/images/thumb-02-monkeys.jpg" alt="Chương II: Bờ vực Hõm Chết" loading="lazy" decoding="async" />
+                    <span class="parallax-scene parallax-scene--mini parallax-scene--focus-ch2">
+                      <img class="parallax-layer parallax-layer--z1" style="--depth: -0.42"
+                        src="./assets/images/parallax/ch2-bg.webp" alt="" aria-hidden="true"
+                        loading="eager" decoding="async" draggable="false" />
+                      <img class="parallax-layer parallax-layer--z2" style="--depth: 0.22"
+                        src="./assets/images/parallax/ch2-cliff.webp" alt="" aria-hidden="true"
+                        loading="eager" decoding="async" draggable="false" />
+                      <img class="parallax-layer parallax-layer--z3" style="--depth: 0.88"
+                        src="./assets/images/parallax/ch2-char.webp" alt="Chương II: Bờ vực Hõm Chết"
+                        loading="eager" decoding="async" draggable="false" />
+                    </span>
                   </span>
                   <span class="station-text">
                     <span class="station-roman">CHƯƠNG II &bull; BIẾN CỐ</span>
@@ -282,7 +315,17 @@
 
                 <button type="button" class="map-station" data-track-seg="tom-tat" data-seg-page="3" data-goto-page="11" data-no-flip>
                   <span class="station-medallion">
-                    <img src="./assets/images/thumb-03-eyes.jpg" alt="Chương III: Khoảnh khắc thức tỉnh" loading="lazy" decoding="async" />
+                    <span class="parallax-scene parallax-scene--mini parallax-scene--focus-ch3">
+                      <img class="parallax-layer parallax-layer--z1" style="--depth: -0.42"
+                        src="./assets/images/parallax/ch3-bg.webp" alt="" aria-hidden="true"
+                        loading="eager" decoding="async" draggable="false" />
+                      <img class="parallax-layer parallax-layer--z2" style="--depth: 0.48"
+                        src="./assets/images/parallax/ch3-char.webp" alt="Chương III: Khoảnh khắc thức tỉnh"
+                        loading="eager" decoding="async" draggable="false" />
+                      <img class="parallax-layer parallax-layer--z4" style="--depth: 0.95"
+                        src="./assets/images/parallax/ch3-fg.webp" alt="" aria-hidden="true"
+                        loading="eager" decoding="async" draggable="false" />
+                    </span>
                   </span>
                   <span class="station-text">
                     <span class="station-roman">CHƯƠNG III &bull; BƯỚC NGOẶT</span>
@@ -317,7 +360,17 @@
 
                 <button type="button" class="map-station map-station--flip" data-track-seg="tom-tat" data-seg-page="4" data-goto-page="15" data-no-flip>
                   <span class="station-medallion">
-                    <img src="./assets/images/thumb-04-care.jpg" alt="Chương IV: Mưa xuân và hoa tử huyền" loading="lazy" decoding="async" />
+                    <span class="parallax-scene parallax-scene--mini parallax-scene--focus-ch4">
+                      <img class="parallax-layer parallax-layer--z1" style="--depth: -0.42"
+                        src="./assets/images/parallax/ch4-bg.webp" alt="" aria-hidden="true"
+                        loading="eager" decoding="async" draggable="false" />
+                      <img class="parallax-layer parallax-layer--z2" style="--depth: 0.35"
+                        src="./assets/images/parallax/ch4-mist.webp" alt="" aria-hidden="true"
+                        loading="eager" decoding="async" draggable="false" />
+                      <img class="parallax-layer parallax-layer--z4" style="--depth: 0.92"
+                        src="./assets/images/parallax/ch4-fg.webp" alt="Chương IV: Mưa xuân và hoa tử huyền"
+                        loading="eager" decoding="async" draggable="false" />
+                    </span>
                   </span>
                   <span class="station-text">
                     <span class="station-roman">CHƯƠNG IV &bull; KẾT TINH</span>
@@ -331,7 +384,17 @@
 
                 <button type="button" class="map-station" data-track-seg="tom-tat" data-seg-page="4" data-goto-page="17" data-no-flip>
                   <span class="station-medallion">
-                    <img src="./assets/images/detail-hoa-tu-huyen.jpg" alt="Chương V: Tước bỏ để tái sinh" loading="lazy" decoding="async" />
+                    <span class="parallax-scene parallax-scene--mini parallax-scene--focus-ch5">
+                      <img class="parallax-layer parallax-layer--z1" style="--depth: -0.42"
+                        src="./assets/images/parallax/ch4-bg.webp" alt="" aria-hidden="true"
+                        loading="eager" decoding="async" draggable="false" />
+                      <img class="parallax-layer parallax-layer--z2" style="--depth: 0.35"
+                        src="./assets/images/parallax/ch4-mist.webp" alt="" aria-hidden="true"
+                        loading="eager" decoding="async" draggable="false" />
+                      <img class="parallax-layer parallax-layer--z4" style="--depth: 0.95"
+                        src="./assets/images/parallax/ch4-fg.webp" alt="Chương V: Tước bỏ để tái sinh"
+                        loading="eager" decoding="async" draggable="false" />
+                    </span>
                   </span>
                   <span class="station-text">
                     <span class="station-roman">CHƯƠNG V &bull; TỔNG LUẬN</span>
@@ -354,8 +417,17 @@
 
         <!-- ==================== PAGE 6: CHƯƠNG I ART PLATE ==================== -->
         <section class="page page-art-plate page-even">
-          <img class="page-bg-img" src="./assets/images/plate-01-khoi-hanh.jpg"
-            alt="Ông Diểu mang súng hai nòng bước vào rừng mùa xuân" loading="lazy" decoding="async" />
+          <div class="parallax-scene">
+            <img class="parallax-layer parallax-layer--z1" style="--depth: -0.45"
+              src="./assets/images/parallax/ch1-bg.webp" alt="" aria-hidden="true"
+              loading="eager" decoding="async" draggable="false" />
+            <img class="parallax-layer parallax-layer--z2" style="--depth: 0.48"
+              src="./assets/images/parallax/ch1-char.webp" alt="Ông Diểu mang súng hai nòng bước vào rừng mùa xuân"
+              loading="eager" decoding="async" draggable="false" />
+            <img class="parallax-layer parallax-layer--z4" style="--depth: 1.00"
+              src="./assets/images/parallax/ch1-fg.webp" alt="" aria-hidden="true"
+              loading="eager" decoding="async" draggable="false" />
+          </div>
           <div class="plate-editorial plate-editorial--sky" aria-hidden="true">
             <div class="plate-top-title plate-top-title--pine">
               <span class="plate-kicker">CHƯƠNG I &nbsp;&bull;&nbsp; KHỞI ĐẦU</span>
@@ -451,7 +523,17 @@
 
         <!-- ==================== PAGE 9: CHƯƠNG II ART PLATE ==================== -->
         <section class="page page-art-plate page-odd">
-          <img class="page-bg-img" src="./assets/images/plate-02-hom-chet.jpg" alt="Ông Diểu giương súng nhắm gia đình ba con khỉ bên bờ vực Hõm Chết" loading="lazy" decoding="async" />
+          <div class="parallax-scene">
+            <img class="parallax-layer parallax-layer--z1" style="--depth: -0.45"
+              src="./assets/images/parallax/ch2-bg.webp" alt="" aria-hidden="true"
+              loading="eager" decoding="async" draggable="false" />
+            <img class="parallax-layer parallax-layer--z2" style="--depth: 0.18"
+              src="./assets/images/parallax/ch2-cliff.webp" alt="" aria-hidden="true"
+              loading="eager" decoding="async" draggable="false" />
+            <img class="parallax-layer parallax-layer--z3" style="--depth: 0.85"
+              src="./assets/images/parallax/ch2-char.webp" alt="Ông Diểu giương súng nhắm gia đình ba con khỉ bên bờ vực Hõm Chết"
+              loading="eager" decoding="async" draggable="false" />
+          </div>
           <div class="plate-editorial plate-editorial--canyon" aria-hidden="true">
             <div class="plate-top-title plate-top-title--canyon">
               <span class="plate-kicker">CHƯƠNG II &nbsp;&bull;&nbsp; BIẾN CỐ</span>
@@ -554,7 +636,17 @@
 
         <!-- ==================== PAGE 12: CHƯƠNG III ART PLATE ==================== -->
         <section class="page page-art-plate page-even">
-          <img class="page-bg-img" src="./assets/images/plate-03-thuc-tinh.jpg" alt="Ông Diểu cởi bỏ trang phục, xót thương chăm sóc con khỉ đực bị thương" loading="lazy" decoding="async" />
+          <div class="parallax-scene">
+            <img class="parallax-layer parallax-layer--z1" style="--depth: -0.45"
+              src="./assets/images/parallax/ch3-bg.webp" alt="" aria-hidden="true"
+              loading="eager" decoding="async" draggable="false" />
+            <img class="parallax-layer parallax-layer--z2" style="--depth: 0.48"
+              src="./assets/images/parallax/ch3-char.webp" alt="Ông Diểu cởi bỏ trang phục, xót thương chăm sóc con khỉ đực bị thương"
+              loading="eager" decoding="async" draggable="false" />
+            <img class="parallax-layer parallax-layer--z4" style="--depth: 1.00"
+              src="./assets/images/parallax/ch3-fg.webp" alt="" aria-hidden="true"
+              loading="eager" decoding="async" draggable="false" />
+          </div>
           <div class="plate-editorial plate-editorial--mist" aria-hidden="true">
             <div class="plate-top-title plate-top-title--mist">
               <span class="plate-kicker">CHƯƠNG III &nbsp;&bull;&nbsp; BƯỚC NGOẶT</span>
@@ -728,9 +820,17 @@
 
         <!-- ==================== PAGE 17: CHƯƠNG IV ART PLATE ==================== -->
         <section class="page page-art-plate page-odd">
-          <img class="page-bg-img" src="./assets/images/plate-04-hoa-tu-huyen.jpg"
-            alt="Ông Diểu trần truồng bước về trong mưa xuân trên lối mòn hoa tử huyền" loading="lazy"
-            decoding="async" />
+          <div class="parallax-scene">
+            <img class="parallax-layer parallax-layer--z1" style="--depth: -0.45"
+              src="./assets/images/parallax/ch4-bg.webp" alt="" aria-hidden="true"
+              loading="eager" decoding="async" draggable="false" />
+            <img class="parallax-layer parallax-layer--z2" style="--depth: 0.35"
+              src="./assets/images/parallax/ch4-mist.webp" alt="" aria-hidden="true"
+              loading="eager" decoding="async" draggable="false" />
+            <img class="parallax-layer parallax-layer--z4" style="--depth: 0.95"
+              src="./assets/images/parallax/ch4-fg.webp" alt="Ông Diểu trần truồng bước về trong mưa xuân trên lối mòn hoa tử huyền"
+              loading="eager" decoding="async" draggable="false" />
+          </div>
           <div class="plate-editorial plate-editorial--rain" aria-hidden="true">
             <div class="plate-top-title plate-top-title--rain">
               <span class="plate-kicker">CHƯƠNG IV &nbsp;&bull;&nbsp; KẾT TINH</span>
@@ -878,7 +978,19 @@
               </p>
 
               <figure class="arch-vignette">
-                <img src="./assets/images/detail-hoa-tu-huyen.jpg" alt="Hoa tử huyền trắng muốt nở trong mưa xuân" loading="lazy" decoding="async" />
+                <div class="arch-vignette-stage">
+                  <div class="parallax-scene parallax-scene--band parallax-scene--focus-band">
+                    <img class="parallax-layer parallax-layer--z1" style="--depth: -0.40"
+                      src="./assets/images/parallax/ch4-bg.webp" alt="" aria-hidden="true"
+                      loading="eager" decoding="async" draggable="false" />
+                    <img class="parallax-layer parallax-layer--z2" style="--depth: 0.32"
+                      src="./assets/images/parallax/ch4-mist.webp" alt="" aria-hidden="true"
+                      loading="eager" decoding="async" draggable="false" />
+                    <img class="parallax-layer parallax-layer--z4" style="--depth: 0.92"
+                      src="./assets/images/parallax/ch4-fg.webp" alt="Hoa tử huyền trắng muốt nở trong mưa xuân"
+                      loading="eager" decoding="async" draggable="false" />
+                  </div>
+                </div>
                 <figcaption>Hoa tử huyền — Điềm lành của đất trời thanh bình</figcaption>
               </figure>
 
@@ -893,8 +1005,17 @@
 
         <!-- ==================== PAGE 22: BACK COVER ==================== -->
         <section class="page page-backcover" data-density="hard">
-          <img class="page-bg-img" src="./assets/images/detail-hoa-tu-huyen.jpg" alt="Hoa tử huyền trong mưa xuân"
-            loading="lazy" decoding="async" />
+          <div class="parallax-scene">
+            <img class="parallax-layer parallax-layer--z1" style="--depth: -0.35"
+              src="./assets/images/parallax/ch4-bg.webp" alt="" aria-hidden="true"
+              loading="eager" decoding="async" draggable="false" />
+            <img class="parallax-layer parallax-layer--z2" style="--depth: 0.25"
+              src="./assets/images/parallax/ch4-mist.webp" alt="" aria-hidden="true"
+              loading="eager" decoding="async" draggable="false" />
+            <img class="parallax-layer parallax-layer--z4" style="--depth: 0.72"
+              src="./assets/images/parallax/ch4-fg.webp" alt="Hoa tử huyền trong mưa xuân"
+              loading="eager" decoding="async" draggable="false" />
+          </div>
           <div class="backcover-scrim"></div>
           <div class="backcover-inner">
             <div class="backcover-jacket">
@@ -1044,6 +1165,7 @@
   <script defer src="./scripts/scene-3d.js"></script>
   <script defer src="./scripts/book-data.js"></script>
   <script defer src="./scripts/audio-player.js"></script>
+  <script defer src="./scripts/parallax.js"></script>
   <script defer src="./scripts/app.js"></script>
 </body>
 

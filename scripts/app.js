@@ -2,6 +2,7 @@
   var data = window.MuoiCuaRung.DATA;
   var ChapterAudioController = window.MuoiCuaRung.ChapterAudioController;
   var ReadingRoom3D = window.MuoiCuaRung.ReadingRoom3D;
+  var BookParallaxController = window.MuoiCuaRung.BookParallaxController;
 
   var pageFlip = null;
   var chapterAudio = null;
@@ -726,6 +727,14 @@
     setupDeskIntroScene();
     setupDiagramJumpLinks();
     initSpringRainCanvas();
+    if (BookParallaxController) {
+      new BookParallaxController({
+        targetEl: document.getElementById('flipbook-container') || document.body,
+        getIsFlipping: function () {
+          return Boolean(pageFlip && pageFlip.getState && pageFlip.getState() !== 'read');
+        }
+      });
+    }
 
     chapterAudio = new ChapterAudioController({
       tracks: data.tracks,
