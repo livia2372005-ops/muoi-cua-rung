@@ -854,6 +854,12 @@ body[data-scene='reading'] .viewer-stage {
   color: #fbf7ec;
 }
 
+.chapter-listen-btn.is-completed {
+  border-color: rgba(48, 84, 62, 0.48);
+  color: #264935;
+  background: rgba(48, 84, 62, 0.08);
+}
+
 .story-para {
   margin: 0;
   padding: 1px 3px;
@@ -881,9 +887,34 @@ body[data-scene='reading'] .viewer-stage {
 }
 
 .story-para.is-reading,
-.prose-stanza.is-reading {
-  background: linear-gradient(90deg, rgba(158, 83, 62, 0.14) 0%, rgba(184, 139, 74, 0.06) 100%);
+.prose-stanza.is-reading,
+.literary-quote-box.is-reading {
+  background: linear-gradient(90deg, rgba(158, 83, 62, 0.1) 0%, rgba(184, 139, 74, 0.04) 100%);
   box-shadow: -3px 0 0 var(--terracotta);
+}
+
+.story-para.is-seg-done,
+.prose-stanza.is-seg-done,
+.literary-quote-box.is-seg-done {
+  box-shadow: -2px 0 0 rgba(184, 139, 74, 0.65);
+}
+
+.tts-word {
+  display: inline;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: background-color 0.14s ease, color 0.14s ease;
+}
+
+.tts-word.is-read {
+  background-color: rgba(184, 139, 74, 0.18);
+  color: #19211e;
+}
+
+.tts-word.is-current {
+  background-color: rgba(158, 83, 62, 0.3);
+  color: #5c1d0e;
+  box-shadow: 0 1.5px 0 var(--terracotta);
 }
 
 /* Quoted Box & Highlight Callout */
@@ -1347,15 +1378,17 @@ body[data-scene='reading'] .viewer-stage {
 }
 
 .footer-audio-pill {
+  position: relative;
   display: inline-flex;
   align-items: center;
   gap: 7px;
-  padding: 4px 10px;
-  border-radius: 999px;
-  background: rgba(24, 36, 34, 0.95);
+  padding: 4px 10px 7px;
+  border-radius: 12px;
+  background: rgba(24, 36, 34, 0.96);
   border: 1px solid rgba(184, 139, 74, 0.55);
   color: #f6efe0;
   font-size: 0.7rem;
+  overflow: hidden;
 }
 
 .footer-audio-pill[hidden] {
@@ -1363,6 +1396,7 @@ body[data-scene='reading'] .viewer-stage {
 }
 
 .pill-play-btn,
+.pill-auto-btn,
 .pill-speed-btn,
 .pill-stop-btn {
   appearance: none;
@@ -1371,7 +1405,7 @@ body[data-scene='reading'] .viewer-stage {
   color: #f6efe0;
   border-radius: 999px;
   padding: 2px 7px;
-  font-size: 0.68rem;
+  font-size: 0.66rem;
   font-weight: 700;
   cursor: pointer;
 }
@@ -1381,12 +1415,47 @@ body[data-scene='reading'] .viewer-stage {
   color: #16221d;
 }
 
+.pill-auto-btn.is-on {
+  background: rgba(184, 139, 74, 0.32);
+  color: #f3dba9;
+}
+
+.pill-meta {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.15;
+  min-width: 0;
+}
+
 .pill-track-name {
   font-weight: 600;
   max-width: 145px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.pill-time {
+  font-size: 0.58rem;
+  color: #cfc4ad;
+  font-variant-numeric: tabular-nums;
+}
+
+.pill-progress {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 3.5px;
+  background: rgba(255, 255, 255, 0.12);
+  cursor: pointer;
+}
+
+.pill-progress-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #c59b57, #d76a4a);
+  transition: width 0.08s linear;
 }
 
 /* ==================== MODALS & TOAST ==================== */
@@ -1486,6 +1555,12 @@ body[data-scene='reading'] .viewer-stage {
 .toc-jump strong {
   font-size: 0.8rem;
   color: var(--ink-woodblock);
+}
+
+.toc-jump.is-completed strong::after {
+  content: ' ✓';
+  color: #2c6642;
+  font-weight: 700;
 }
 
 .jacket-btn {
@@ -1595,6 +1670,23 @@ body[data-scene='reading'] .viewer-stage {
 
 .script-guide-box p { margin: 0 0 6px; }
 .script-guide-box ul { margin: 0 0 10px; padding-left: 18px; }
+
+.guide-actions-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.track-row.is-completed {
+  border-color: rgba(44, 102, 66, 0.45);
+  background: #f4faf5;
+}
+
+.track-row.is-completed .track-row-meta strong::after {
+  content: ' (Đã nghe ✓)';
+  font-size: 0.72rem;
+  color: #2c6642;
+}
 
 .track-manager-list { display: grid; gap: 8px; }
 

@@ -165,8 +165,16 @@
     });
   }
 
+  var pendingEnsurePage = null;
+
   function ensurePageVisible(targetPageIdx) {
     if (!pageFlip) return;
+    // Never queue a second flip while a page is mid-turn: remember the latest target and re-evaluate once the book settles.
+    if (pageFlip.getState && pageFlip.getState() !== 'read') {
+      pendingEnsurePage = targetPageIdx;
+      return;
+    }
+    pendingEnsurePage = null;
     var total = pageFlip.getPageCount();
     var cur = pageFlip.getCurrentPageIndex();
     var orientation = pageFlip.getOrientation();
@@ -294,6 +302,8 @@
         btn.addEventListener('click', function () {
           var trId = btn.dataset.track;
           var tr = data.tracks.find(function (t) { return t.id === trId; });
+          var modal = document.getElementById('modal-script');
+          if (modal) modal.hidden = true;
           if (tr) ensurePageVisible(tr.pageStart);
           if (chapterAudio) chapterAudio.toggleTrack(trId);
         });
@@ -484,6 +494,11 @@
         }
       } else if (e.data === 'read') {
         updatePagerUI(pageFlip.getCurrentPageIndex(), pageFlip.getPageCount());
+        if (pendingEnsurePage !== null) {
+          var queued = pendingEnsurePage;
+          pendingEnsurePage = null;
+          setTimeout(function () { ensurePageVisible(queued); }, 60);
+        }
       }
     });
 
@@ -572,6 +587,16 @@
           url: window.location.href,
         })
         .catch(function () {});
+    });
+
+    document.getElementById('btn-play-all-book')?.addEventListener('click', function () {
+      var modal = document.getElementById('modal-script');
+      if (modal) modal.hidden = true;
+      ensurePageVisible(1);
+      if (chapterAudio) {
+        chapterAudio.setAutoContinue(true);
+        chapterAudio.playTrack('loi-mo-dau', 0);
+      }
     });
 
     document.getElementById('btn-copy-script')?.addEventListener('click', function () {

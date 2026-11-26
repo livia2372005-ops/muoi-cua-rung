@@ -4,8 +4,8 @@ window.MuoiCuaRung.DATA = {
   tracks: [
     {
       id: 'loi-mo-dau',
-      shortTitle: 'Lời mở đầu',
-      pageLabel: 'Trang 2',
+      shortTitle: 'Lời mở đầu & Tác giả',
+      pageLabel: 'Trang 2–3',
       pageStart: 1,
       audioCandidates: ['./audio/loi-mo-dau.mp3', './audio/loi-mo-dau.m4a'],
     },

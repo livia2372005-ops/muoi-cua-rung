@@ -10,3 +10,7 @@ assets/images/packdotheoconkhi/
 assets/images/packbangbo&cuukhi/
 .DS_Store
 Thumbs.db
+
+# Keep API keys and tokens strictly local
+.env
+.env.*
