@@ -33,6 +33,7 @@
     rel="stylesheet" />
 
   <link rel="stylesheet" href="./styles/book.css" />
+  <link rel="stylesheet" href="./styles/easter-egg.css" />
 </head>
 
 <body data-scene="desk">
@@ -1042,6 +1043,11 @@
               </button>
             </div>
           </div>
+          <button type="button" class="backcover-glitch-tear" id="btn-easter-glitch" data-no-flip
+            title="Tín hiệu lạ nơi rừng sâu..." aria-label="Khám phá bí mật ẩn sau bìa sách">
+            <span class="glitch-bars" aria-hidden="true"></span>
+            <span>ERR::1986//HÕM_CHẾT</span>
+          </button>
         </section>
 
       </div>
@@ -1176,6 +1182,84 @@
     </div>
   </div>
 
+  <!-- Hidden Easter Egg Pixel Forest Mini-Game Overlay -->
+  <div class="easter-overlay" id="easter-game-overlay" hidden role="dialog" aria-modal="true" aria-label="Mini-game Muối Của Rừng Pixel">
+    <canvas class="pixel-game-canvas" id="pixel-game-canvas"></canvas>
+
+    <!-- Top-Left Dark Translucent HUD Card -->
+    <div class="pg-hud-card">
+      <div class="pg-score-big" id="pg-score">0</div>
+      <div class="pg-stats-row">
+        <span id="pg-dist">DIST 0m</span>
+        <span id="pg-coins">XU 0</span>
+        <span id="pg-monkeys">KHỈ 0</span>
+      </div>
+      <div class="pg-hp-label" id="pg-hp-text">HP 100/100</div>
+      <div class="pg-bar-track">
+        <div class="pg-bar-fill--hp" id="pg-hp-fill"></div>
+      </div>
+      <div class="pg-bar-track pg-bar-track--dash">
+        <div class="pg-bar-fill--dash" id="pg-dash-fill"></div>
+      </div>
+      <div class="pg-combo-row">
+        <span id="pg-combo">COMBO x0</span>
+        <span id="pg-mult">MULT 1.00</span>
+      </div>
+    </div>
+    <div class="pg-dash-status" id="pg-dash-status">DASH READY</div>
+    <div class="pg-controls-hint">A/D hoặc ←/→: Chạy &bull; W/Space: Nhảy đôi &bull; Shift: Lướt &bull; E: Trò chuyện NPC</div>
+
+    <!-- Top-Right Controls -->
+    <div class="pg-top-right">
+      <button type="button" class="pg-circle-btn" id="pg-btn-restart" title="Chơi lại từ đầu" aria-label="Chơi lại từ đầu">↻</button>
+      <button type="button" class="pg-exit-pill" id="pg-btn-exit" title="Thoát về Bìa sau">✕ Về sách</button>
+    </div>
+
+    <!-- AI NPC Chat Modal (Groq qwen/qwen3.8-27b) -->
+    <div class="pg-npc-modal" id="pg-npc-modal" hidden>
+      <div class="pg-npc-header">
+        <div class="pg-npc-who">
+          <canvas class="pg-npc-portrait" id="pg-npc-portrait" width="44" height="44"></canvas>
+          <div>
+            <strong class="pg-npc-name" id="pg-npc-name">Cụ Cây Duối Già</strong>
+            <span class="pg-npc-role" id="pg-npc-role">Cổ thụ giữ áo</span>
+          </div>
+        </div>
+        <button type="button" class="pg-npc-close" id="pg-npc-close">Đóng [Esc]</button>
+      </div>
+      <div class="pg-npc-speech" id="pg-npc-speech"></div>
+      <div class="pg-npc-chips" id="pg-npc-chips"></div>
+      <form class="pg-npc-form" id="pg-npc-form">
+        <input type="text" class="pg-npc-input" id="pg-npc-input" placeholder="Nhập lời trò chuyện với NPC..." maxlength="180" autocomplete="off" />
+        <button type="submit" class="pg-npc-send" id="pg-npc-send">Hỏi AI</button>
+      </form>
+    </div>
+
+    <!-- Victory / Game Over Modal -->
+    <div class="pg-banner-modal" id="pg-banner-modal" hidden>
+      <h3 id="pg-banner-title">Rừng Nở Trắng Hoa Tử Huyền!</h3>
+      <p id="pg-banner-desc"></p>
+      <div class="pg-banner-actions">
+        <button type="button" class="pg-npc-send" id="pg-btn-endless">Đi tiếp vô tận &rarr;</button>
+        <button type="button" class="pg-chip-btn" id="pg-btn-retry">Chơi lại</button>
+        <button type="button" class="pg-npc-close" id="pg-btn-backbook">Về trang sách</button>
+      </div>
+    </div>
+
+    <!-- Touch Gamepad for Mobile -->
+    <div class="pg-touch-pad">
+      <div class="pg-touch-group">
+        <button type="button" class="pg-touch-btn" id="pg-touch-left" aria-label="Sang trái">◀</button>
+        <button type="button" class="pg-touch-btn" id="pg-touch-right" aria-label="Sang phải">▶</button>
+      </div>
+      <div class="pg-touch-group">
+        <button type="button" class="pg-touch-btn" id="pg-touch-talk" aria-label="Nói chuyện NPC">💬</button>
+        <button type="button" class="pg-touch-btn" id="pg-touch-dash" aria-label="Lướt nhanh">⚡</button>
+        <button type="button" class="pg-touch-btn" id="pg-touch-jump" aria-label="Nhảy">▲</button>
+      </div>
+    </div>
+  </div>
+
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
   <script defer src="./scripts/vendor/three.min.js"></script>
@@ -1187,6 +1271,9 @@
   <script defer src="./scripts/audio-player.js"></script>
   <script defer src="./scripts/lofi.js"></script>
   <script defer src="./scripts/parallax.js"></script>
+  <script defer src="./scripts/easter-sprites.js"></script>
+  <script defer src="./scripts/easter-npc-ai.js"></script>
+  <script defer src="./scripts/easter-game.js"></script>
   <script defer src="./scripts/app.js"></script>
 </body>
 
