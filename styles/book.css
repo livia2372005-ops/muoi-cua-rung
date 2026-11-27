@@ -31,10 +31,18 @@ body {
   width: 100%;
   height: 100%;
   overflow: hidden;
+  overscroll-behavior: none;
+  -webkit-tap-highlight-color: transparent;
   background: #1a130e;
   color: var(--tu-huyen-white);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
+}
+
+button,
+input,
+label {
+  touch-action: manipulation;
 }
 
 button:focus-visible,
@@ -72,6 +80,11 @@ input:focus-visible,
 
 body[data-scene='reading'] .scene-3d-reading-veil {
   opacity: 1;
+}
+
+body.is-easter-open .scene-3d-reading-veil {
+  backdrop-filter: none;
+  display: none;
 }
 
 #rain-canvas {
@@ -310,10 +323,10 @@ body[data-scene='reading'] .viewer-stage {
 
 .book-wrapper {
   position: relative;
-  width: min(920px, calc(100vw - 136px), calc((100vh - 116px) * 1.25));
-  width: min(920px, calc(100vw - 136px), calc((100dvh - 116px) * 1.25));
-  height: min(736px, calc(100vh - 116px));
-  height: min(736px, calc(100dvh - 116px));
+  width: min(1080px, calc(100vw - 136px), calc((100vh - 116px) * 1.25));
+  width: min(1080px, calc(100vw - 136px), calc((100dvh - 116px) * 1.25));
+  height: min(864px, calc(100vh - 116px));
+  height: min(864px, calc(100dvh - 116px));
   display: flex;
   align-items: center;
   justify-content: center;
@@ -516,10 +529,13 @@ body[data-scene='reading'] .viewer-stage {
     calc(var(--py, 0px) * var(--depth, 0) * var(--parallax-scale, 1)),
     0
   );
-  will-change: transform;
   pointer-events: none;
   user-select: none;
   -webkit-user-drag: none;
+}
+
+body[data-scene='reading'] .stf__item .parallax-layer {
+  will-change: transform;
 }
 
 .parallax-layer--z1 { z-index: 1; }
@@ -1773,6 +1789,49 @@ body[data-scene='reading'] .viewer-stage {
   transform: translateX(-50%) translateY(0);
 }
 
+/* ==================== LARGE DESKTOP MONITORS (1080p / 2K+) ==================== */
+@media (min-width: 1360px) and (min-height: 920px) {
+  .page-grid {
+    padding: 24px 30px 18px;
+    gap: 10px;
+  }
+
+  .page-body {
+    gap: 13px;
+  }
+
+  .chapter-title {
+    font-size: 1.56rem;
+  }
+
+  .story-para {
+    font-size: 0.95rem;
+    line-height: 1.72;
+  }
+
+  .detail-callout p,
+  .literary-quote-box p,
+  .prose-stanza p {
+    font-size: 0.86rem;
+    line-height: 1.6;
+  }
+
+  .station-medallion {
+    width: 86px;
+    height: 106px;
+    border-radius: 43px;
+  }
+
+  .station-desc {
+    font-size: 0.76rem;
+  }
+
+  .arch-vignette-stage,
+  .arch-vignette > img {
+    height: 170px;
+  }
+}
+
 /* ==================== COMPACT LAPTOP (HEIGHT <= 800px) ==================== */
 @media (max-height: 800px) and (min-width: 821px) {
   .page-grid {
@@ -1834,7 +1893,8 @@ body[data-scene='reading'] .viewer-stage {
   .hz-tool-label,
   .side-nav-btn,
   .footer-credit,
-  .footer-hint {
+  .footer-hint,
+  #btn-fullscreen {
     display: none;
   }
 
@@ -1933,6 +1993,65 @@ body[data-scene='reading'] .viewer-stage {
   .arch-vignette > img { height: 102px; }
 
   .panorama-grid { grid-template-columns: 1fr; }
+}
+
+/* ==================== PHONE LANDSCAPE MODE (<= 520px HEIGHT) ==================== */
+@media (max-height: 520px) and (orientation: landscape) {
+  .hz-corner-left {
+    top: 6px;
+    left: max(8px, env(safe-area-inset-left));
+    padding: 5px 8px;
+  }
+
+  .hz-toolbar {
+    top: 6px;
+    right: max(8px, env(safe-area-inset-right));
+    padding: 3px 6px;
+  }
+
+  #btn-fullscreen,
+  .hz-tool-label,
+  .footer-credit,
+  .footer-hint {
+    display: none;
+  }
+
+  .viewer-stage {
+    height: calc(100dvh - 34px);
+    padding: 44px 56px 8px;
+  }
+
+  .book-wrapper {
+    height: calc(100dvh - 86px);
+    width: min(calc(100vw - 120px), calc((100dvh - 86px) * 1.28));
+  }
+
+  .viewer-footer {
+    height: 34px;
+    padding: 0 max(12px, env(safe-area-inset-right)) 0 max(12px, env(safe-area-inset-left));
+  }
+
+  .page-grid {
+    padding: 10px 12px 10px;
+    gap: 5px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .running-head { font-size: 0.48rem; padding-bottom: 3px; }
+  .chapter-kicker, .subchapter-kicker { font-size: 0.5rem; }
+  .chapter-title { font-size: 0.94rem; }
+  .subchapter-title { font-size: 0.82rem; }
+  .story-para { font-size: 0.65rem; line-height: 1.4; }
+  .detail-callout { padding: 6px 8px; }
+  .detail-callout p { font-size: 0.6rem; line-height: 1.35; }
+  .callout-label { font-size: 0.48rem; }
+  .folio-foot { font-size: 0.52rem; }
+  .plate-top-title { padding: 10px 10px 8px; }
+  .plate-heading { font-size: 0.98rem; }
+  .plate-kicker { font-size: 0.48rem; }
+  .plate-bottom-quote { padding: 14px 10px 18px; font-size: 0.54rem; line-height: 1.32; }
+  .plate-folio { bottom: 4px; font-size: 0.5rem; }
 }
 
 @media (prefers-reduced-motion: reduce) {

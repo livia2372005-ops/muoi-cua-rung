@@ -611,7 +611,9 @@
   color: #f8fafc;
   font-size: 0.76rem;
   font-weight: 800;
-  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: none;
 }
 
 .pg-touch-btn:active {
@@ -659,5 +661,76 @@
   }
   .pg-npc-modal {
     bottom: 74px;
+  }
+}
+
+/* ==================== PHONE LANDSCAPE GAMEPLAY (<= 520px HEIGHT) ==================== */
+@media (max-height: 520px) {
+  .pg-touch-pad {
+    display: flex;
+    left: max(12px, env(safe-area-inset-left));
+    right: max(12px, env(safe-area-inset-right));
+    bottom: max(8px, env(safe-area-inset-bottom));
+  }
+  .pg-touch-btn {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+  }
+  .pg-controls-hint {
+    display: none;
+  }
+  .pg-hud-card {
+    top: 8px;
+    left: max(10px, env(safe-area-inset-left));
+    width: 215px;
+    padding: 6px 10px;
+  }
+  .pg-score-big {
+    font-size: 1.12rem;
+  }
+  .pg-stats-row,
+  .pg-hp-label,
+  .pg-combo-row {
+    font-size: 0.6rem;
+    margin-top: 3px;
+  }
+  .pg-bar-track {
+    height: 7px;
+    margin-top: 3px;
+  }
+  .pg-bar-track--dash {
+    height: 4px;
+    margin-top: 4px;
+  }
+  .pg-dash-status {
+    top: 112px;
+    left: max(12px, env(safe-area-inset-left));
+    font-size: 0.58rem;
+  }
+  .pg-top-right {
+    top: 8px;
+    right: max(10px, env(safe-area-inset-right));
+  }
+  .pg-npc-modal {
+    bottom: 8px;
+    padding: 9px 12px;
+    max-height: calc(100dvh - 16px);
+    overflow-y: auto;
+  }
+  .pg-npc-speech {
+    min-height: 34px;
+    max-height: 68px;
+    padding: 6px 9px;
+    font-size: 0.78rem;
+  }
+  .pg-lb-modal,
+  .pg-banner-modal {
+    padding: 12px 14px;
+    max-height: calc(100dvh - 16px);
+    overflow-y: auto;
+  }
+  .pg-lb-list {
+    max-height: 165px;
   }
 }

@@ -347,10 +347,15 @@ window.MuoiCuaRung = window.MuoiCuaRung || {};
     var THREE = window.THREE;
     if (!THREE || !this.canvas) return;
 
+    var isMobile =
+      window.innerWidth <= 820 ||
+      (window.matchMedia && window.matchMedia('(pointer: coarse)').matches);
+    this.isMobile = isMobile;
+
     try {
       this.renderer = new THREE.WebGLRenderer({
         canvas: this.canvas,
-        antialias: true,
+        antialias: !isMobile,
         alpha: false,
         powerPreference: 'high-performance',
       });
@@ -359,7 +364,7 @@ window.MuoiCuaRung = window.MuoiCuaRung || {};
     }
 
     this.supported = true;
-    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, isMobile ? 1.5 : 2));
     this.renderer.setSize(window.innerWidth, window.innerHeight, false);
     this.renderer.shadowMap.enabled = true;
     this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
@@ -406,9 +411,10 @@ window.MuoiCuaRung = window.MuoiCuaRung || {};
     this.sunLight = new THREE.DirectionalLight(0xffe7bd, 2.35);
     this.sunLight.position.set(-5.8, 4.15, 1.35);
     this.sunLight.target.position.set(0.15, TABLE_Y, 0.2);
+    var shadowRes = this.isMobile ? 1024 : 2048;
     this.sunLight.castShadow = true;
-    this.sunLight.shadow.mapSize.width = 2048;
-    this.sunLight.shadow.mapSize.height = 2048;
+    this.sunLight.shadow.mapSize.width = shadowRes;
+    this.sunLight.shadow.mapSize.height = shadowRes;
     this.sunLight.shadow.camera.near = 0.5;
     this.sunLight.shadow.camera.far = 14;
     this.sunLight.shadow.camera.left = -2.6;
@@ -787,8 +793,14 @@ window.MuoiCuaRung = window.MuoiCuaRung || {};
     spineMesh.castShadow = true;
     spineMesh.receiveShadow = true;
 
-    this.bookHitMeshes = [frontBoard, backBoard, pageBlock, spineMesh];
-    this.bookGroup.add(frontBoard, backBoard, pageBlock, spineMesh);
+    // Invisible slightly padded touch hitbox so tapping the book on small mobile screens never misses
+    var touchHitPad = new THREE.Mesh(
+      new THREE.BoxGeometry(BOOK_W * 1.36, BOOK_H * 1.24, BOOK_THICK * 1.6),
+      new THREE.MeshBasicMaterial({ transparent: true, opacity: 0, depthWrite: false })
+    );
+
+    this.bookHitMeshes = [touchHitPad, frontBoard, backBoard, pageBlock, spineMesh];
+    this.bookGroup.add(touchHitPad, frontBoard, backBoard, pageBlock, spineMesh);
     this.scene.add(this.bookGroup);
   };
 
@@ -817,7 +829,7 @@ window.MuoiCuaRung = window.MuoiCuaRung || {};
     this.scene.add(this.sunbeams);
 
     // Floating 3D golden dust motes in the sunlight
-    var count = 56;
+    var count = this.isMobile ? 28 : 56;
     var positions = new Float32Array(count * 3);
     this.dustSeeds = [];
     for (var i = 0; i < count; i++) {
@@ -934,7 +946,10 @@ window.MuoiCuaRung = window.MuoiCuaRung || {};
 
     window.addEventListener('resize', function () {
       if (!self.supported) return;
-      self.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+      var mob =
+        window.innerWidth <= 820 ||
+        (window.matchMedia && window.matchMedia('(pointer: coarse)').matches);
+      self.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, mob ? 1.5 : 2));
       self.renderer.setSize(window.innerWidth, window.innerHeight, false);
       self.updateResponsiveCameraPreset();
       self.readingFrozen = false;
@@ -954,16 +969,32 @@ window.MuoiCuaRung = window.MuoiCuaRung || {};
       self.canvas.style.cursor = self.hovered ? 'pointer' : 'default';
     });
 
-    this.canvas.addEventListener('click', function (e) {
+    var downX = 0;
+    var downY = 0;
+    this.canvas.addEventListener('pointerdown', function (e) {
+      downX = e.clientX;
+      downY = e.clientY;
+    });
+
+    function tryOpenAt(clientX, clientY) {
       if (!self.supported || self.sceneState !== 'desk') return;
-      var nx = (e.clientX / Math.max(1, window.innerWidth)) * 2 - 1;
-      var ny = -(e.clientY / Math.max(1, window.innerHeight)) * 2 + 1;
+      var nx = (clientX / Math.max(1, window.innerWidth)) * 2 - 1;
+      var ny = -(clientY / Math.max(1, window.innerHeight)) * 2 + 1;
       self.pointerNdc.set(nx, ny);
       self.raycaster.setFromCamera(self.pointerNdc, self.camera);
       var hits = self.raycaster.intersectObjects(self.bookHitMeshes || [], false);
       if (hits.length > 0 && self.onRequestOpenBook) {
         self.onRequestOpenBook();
       }
+    }
+
+    this.canvas.addEventListener('pointerup', function (e) {
+      if (Math.hypot(e.clientX - downX, e.clientY - downY) > 14) return;
+      tryOpenAt(e.clientX, e.clientY);
+    });
+
+    this.canvas.addEventListener('click', function (e) {
+      tryOpenAt(e.clientX, e.clientY);
     });
   };
 
@@ -976,6 +1007,9 @@ window.MuoiCuaRung = window.MuoiCuaRung || {};
 
     function tick() {
       self.rafId = window.requestAnimationFrame(tick);
+      if (document.hidden || document.body.classList.contains('is-easter-open')) {
+        return;
+      }
       var dt = Math.min(0.05, self.clock.getDelta());
       var elapsed = self.clock.elapsedTime;
 

@@ -273,6 +273,7 @@ window.MuoiCuaRung = window.MuoiCuaRung || {};
 
   ForestEasterGame.prototype.open = function () {
     if (!this.overlay) return;
+    document.body.classList.add('is-easter-open');
     this.overlay.hidden = false;
     this.overlay.classList.add('is-entering');
     var self = this;
@@ -287,6 +288,11 @@ window.MuoiCuaRung = window.MuoiCuaRung || {};
     if (this.rafId) window.cancelAnimationFrame(this.rafId);
     function loop(ts) {
       if (!self.active) return;
+      if (document.hidden) {
+        self.lastTs = ts;
+        self.rafId = window.requestAnimationFrame(loop);
+        return;
+      }
       var dt = Math.min(0.05, Math.max(0.001, (ts - self.lastTs) / 1000));
       self.lastTs = ts;
       self.update(dt);
@@ -298,6 +304,7 @@ window.MuoiCuaRung = window.MuoiCuaRung || {};
 
   ForestEasterGame.prototype.close = function () {
     this.active = false;
+    document.body.classList.remove('is-easter-open');
     this.keys.left = false;
     this.keys.right = false;
     if (this.rafId) {
@@ -1236,13 +1243,27 @@ window.MuoiCuaRung = window.MuoiCuaRung || {};
     bindHold('pg-touch-left', 'left');
     bindHold('pg-touch-right', 'right');
 
-    document.getElementById('pg-touch-jump')?.addEventListener('click', function () {
-      self.triggerJump();
-    });
-    document.getElementById('pg-touch-dash')?.addEventListener('click', function () {
-      self.triggerDash();
-    });
-    document.getElementById('pg-touch-talk')?.addEventListener('click', function () {
+    // Instant multi-touch action triggers (0ms delay even while left thumb holds ▶!)
+    function bindTapAction(id, fn) {
+      var btn = document.getElementById(id);
+      if (!btn) return;
+      var touched = false;
+      btn.addEventListener('touchstart', function (ev) {
+        ev.preventDefault();
+        touched = true;
+        fn();
+      }, { passive: false });
+      btn.addEventListener('click', function () {
+        if (touched) {
+          touched = false;
+          return;
+        }
+        fn();
+      });
+    }
+    bindTapAction('pg-touch-jump', function () { self.triggerJump(); });
+    bindTapAction('pg-touch-dash', function () { self.triggerDash(); });
+    bindTapAction('pg-touch-talk', function () {
       if (self.nearbyNpc) self.openNpcChat(self.nearbyNpc);
     });
   };

@@ -439,6 +439,80 @@
     tocBtns.forEach(function (b, idx) {
       b.classList.toggle('is-current', idx === activeToc);
     });
+
+    preloadAdjacentPages(pageIdx);
+  }
+
+  function warmPageImages(pageEl) {
+    if (!pageEl) return;
+    var imgs = pageEl.querySelectorAll('img');
+    for (var j = 0; j < imgs.length; j++) {
+      var img = imgs[j];
+      if (img.dataset.prewarmed === '1') continue;
+      img.dataset.prewarmed = '1';
+      img.loading = 'eager';
+      img.removeAttribute('loading');
+      var src = img.currentSrc || img.getAttribute('src');
+      if (src) {
+        var pre = new Image();
+        pre.decoding = 'async';
+        pre.src = src;
+      }
+    }
+  }
+
+  function preloadAdjacentPages(centerIdx) {
+    var container = document.getElementById('flipbook-container');
+    if (!container) return;
+    var pages = container.querySelectorAll('.page');
+    var from = Math.max(0, centerIdx - 3);
+    var to = Math.min(pages.length - 1, centerIdx + 6);
+    for (var i = from; i <= to; i++) {
+      warmPageImages(pages[i]);
+    }
+  }
+
+  function scheduleIdleImageWarmup() {
+    setTimeout(function () {
+      var container = document.getElementById('flipbook-container');
+      if (!container) return;
+      var pages = container.querySelectorAll('.page');
+      var cursor = 0;
+      function step() {
+        if (document.hidden || document.body.classList.contains('is-easter-open')) {
+          setTimeout(step, 400);
+          return;
+        }
+        var end = Math.min(pages.length, cursor + 2);
+        for (var i = cursor; i < end; i++) {
+          warmPageImages(pages[i]);
+        }
+        cursor = end;
+        if (cursor < pages.length) {
+          setTimeout(step, 140);
+        }
+      }
+      step();
+    }, 1100);
+  }
+
+  function toggleFullscreen() {
+    var doc = document;
+    var el = doc.documentElement;
+    var fsEl = doc.fullscreenElement || doc.webkitFullscreenElement;
+    if (!fsEl) {
+      var req = el.requestFullscreen || el.webkitRequestFullscreen;
+      if (req) {
+        req.call(el).catch(function () {
+          showToast('Trình duyệt này không hỗ trợ chế độ toàn màn hình.');
+        });
+      } else {
+        showToast('Thiết bị này không hỗ trợ chế độ toàn màn hình.');
+      }
+    } else {
+      var exit = doc.exitFullscreen || doc.webkitExitFullscreen;
+      if (exit) exit.call(doc).catch(function () {});
+    }
   }
 
   function initBook() {
@@ -449,10 +523,10 @@
       width: 440,
       height: 704,
       size: 'stretch',
-      minWidth: 240,
-      maxWidth: 460,
-      minHeight: 384,
-      maxHeight: 736,
+      minWidth: 165,
+      maxWidth: 540,
+      minHeight: 264,
+      maxHeight: 864,
       maxShadowOpacity: 0.42,
       showCover: true,
       showPageCorners: false,
@@ -514,6 +588,16 @@
       }, 150);
     });
 
+    var resizeTimer = null;
+    window.addEventListener('resize', function () {
+      if (resizeTimer) clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(function () {
+        if (pageFlip && document.body.dataset.scene === 'reading') {
+          pageFlip.update();
+        }
+      }, 140);
+    });
+
     function goPrev() { pageFlip.flipPrev('top'); }
     function goNext() { pageFlip.flipNext('top'); }
 
@@ -541,14 +625,76 @@
 
     document.addEventListener('keydown', function (e) {
       if (document.body.dataset.scene !== 'reading') return;
-      if (e.target instanceof HTMLInputElement) return;
+      if (document.body.classList.contains('is-easter-open')) return;
+      if (e.ctrlKey || e.metaKey || e.altKey) return;
+      if (
+        e.target instanceof HTMLInputElement ||
+        e.target instanceof HTMLTextAreaElement ||
+        (e.target && e.target.isContentEditable)
+      ) {
+        return;
+      }
       if (document.querySelector('.modal-backdrop:not([hidden])')) return;
-      if (e.key === 'ArrowRight') goNext();
-      else if (e.key === 'ArrowLeft') goPrev();
+
+      if (e.key === 'ArrowRight') {
+        goNext();
+      } else if (e.key === 'ArrowLeft') {
+        goPrev();
+      } else if (e.key === 'Home') {
+        e.preventDefault();
+        pageFlip.turnToPage(0);
+      } else if (e.key === 'End') {
+        e.preventDefault();
+        pageFlip.turnToPage(pageFlip.getPageCount() - 1);
+      } else if (e.key === 'f' || e.key === 'F') {
+        e.preventDefault();
+        toggleFullscreen();
+      } else if (e.key === 'm' || e.key === 'M') {
+        e.preventDefault();
+        document.getElementById('btn-lofi')?.click();
+      } else if (
+        e.key === ' ' &&
+        !(e.target instanceof HTMLButtonElement) &&
+        !(e.target instanceof HTMLAnchorElement)
+      ) {
+        e.preventDefault();
+        if (chapterAudio) {
+          if (chapterAudio.activeTrackId) {
+            if (chapterAudio.isPlaying) chapterAudio.pause();
+            else chapterAudio.resume();
+          } else {
+            var pagesList = container.querySelectorAll('.page');
+            var curIdx = pageFlip.getCurrentPageIndex();
+            var candidates = [curIdx, curIdx + 1];
+            var foundBtn = null;
+            for (var c = 0; c < candidates.length; c++) {
+              var pEl = pagesList[candidates[c]];
+              if (pEl) {
+                foundBtn = pEl.querySelector('[data-play-track]');
+                if (foundBtn) break;
+              }
+            }
+            if (foundBtn) foundBtn.click();
+            else chapterAudio.playTrack('loi-mo-dau', 0);
+          }
+        }
+      }
     });
   }
 
   function setupToolbarActions() {
+    var fsBtn = document.getElementById('btn-fullscreen');
+    if (fsBtn) {
+      fsBtn.addEventListener('click', toggleFullscreen);
+      var syncFsState = function () {
+        var isFs = Boolean(document.fullscreenElement || document.webkitFullscreenElement);
+        fsBtn.setAttribute('aria-pressed', String(isFs));
+        fsBtn.classList.toggle('is-on', isFs);
+      };
+      document.addEventListener('fullscreenchange', syncFsState);
+      document.addEventListener('webkitfullscreenchange', syncFsState);
+    }
+
     var soundBtn = document.getElementById('btn-sound');
     var soundSvg = document.getElementById('sound-icon-svg');
     soundBtn?.addEventListener('click', function () {
@@ -649,6 +795,10 @@
     });
 
     function frame() {
+      if (document.hidden || document.body.classList.contains('is-easter-open')) {
+        requestAnimationFrame(frame);
+        return;
+      }
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       var scene = document.body.dataset.scene || 'reading';
 
@@ -798,5 +948,6 @@
     populateModals();
     setupModals();
     setupToolbarActions();
+    scheduleIdleImageWarmup();
   });
 })();

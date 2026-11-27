@@ -82,6 +82,10 @@ window.MuoiCuaRung = window.MuoiCuaRung || {};
     function frame(now) {
       self.rafId = window.requestAnimationFrame(frame);
 
+      if (document.hidden || document.body.classList.contains('is-easter-open')) {
+        return;
+      }
+
       if (document.body.dataset.scene !== 'reading') {
         if (Math.abs(self.curX) > 0.05 || Math.abs(self.curY) > 0.05) {
           self.curX = 0;
