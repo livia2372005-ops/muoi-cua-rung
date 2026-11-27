@@ -227,6 +227,16 @@
   border-color: #38bdf8;
 }
 
+.pg-circle-btn--gold {
+  border-color: rgba(250, 204, 21, 0.52);
+  color: #fde047;
+}
+
+.pg-circle-btn--gold:hover {
+  border-color: #facc15;
+  background: rgba(30, 41, 59, 0.96);
+}
+
 .pg-exit-pill {
   appearance: none;
   padding: 8px 13px;
@@ -439,6 +449,139 @@
   gap: 8px;
 }
 
+.pg-save-form {
+  display: flex;
+  gap: 7px;
+  margin: 0 0 14px;
+}
+
+.pg-save-form--inline {
+  margin: 0 0 10px;
+}
+
+.pg-save-form[hidden] {
+  display: none !important;
+}
+
+/* ==================== LEADERBOARD MODAL ==================== */
+.pg-lb-modal {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 34;
+  width: min(500px, calc(100vw - 24px));
+  max-height: calc(100vh - 36px);
+  display: flex;
+  flex-direction: column;
+  padding: 16px 18px;
+  border-radius: 14px;
+  background: rgba(15, 23, 34, 0.97);
+  border: 2px solid #facc15;
+  color: #f8fafc;
+  font-family: var(--font-sans);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.78);
+}
+
+.pg-lb-modal[hidden] {
+  display: none !important;
+}
+
+.pg-lb-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 11px;
+}
+
+.pg-lb-head h3 {
+  margin: 0 0 2px;
+  font-family: var(--font-display);
+  font-size: 1.18rem;
+  color: #fde047;
+}
+
+.pg-lb-status {
+  font-size: 0.68rem;
+  color: #94a3b8;
+}
+
+.pg-lb-status.is-online {
+  color: #86efac;
+}
+
+.pg-lb-head-actions {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.pg-lb-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  overflow-y: auto;
+  max-height: 330px;
+  padding-right: 2px;
+}
+
+.pg-lb-row {
+  display: grid;
+  grid-template-columns: 38px 1fr auto;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 11px;
+  border-radius: 9px;
+  background: rgba(30, 41, 59, 0.78);
+  border: 1px solid rgba(148, 163, 184, 0.18);
+}
+
+.pg-lb-row.is-top1 {
+  background: linear-gradient(90deg, rgba(234, 179, 8, 0.24), rgba(30, 41, 59, 0.85));
+  border-color: rgba(250, 204, 21, 0.55);
+}
+
+.pg-lb-row.is-mine {
+  border-color: #38bdf8;
+  box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.45);
+}
+
+.pg-lb-rank {
+  font-size: 0.92rem;
+  font-weight: 800;
+  text-align: center;
+  color: #e2e8f0;
+}
+
+.pg-lb-player {
+  min-width: 0;
+}
+
+.pg-lb-name {
+  display: block;
+  font-size: 0.84rem;
+  font-weight: 700;
+  color: #f8fafc;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pg-lb-sub {
+  display: block;
+  font-size: 0.66rem;
+  color: #94a3b8;
+  margin-top: 1px;
+}
+
+.pg-lb-score {
+  font-family: ui-monospace, 'Cascadia Mono', Consolas, monospace;
+  font-size: 0.98rem;
+  font-weight: 800;
+  color: #facc15;
+}
+
 /* ==================== MOBILE TOUCH GAMEPAD ==================== */
 .pg-touch-pad {
   display: none;
@@ -500,7 +643,7 @@
     top: 10px;
     left: 10px;
     padding: 8px 10px;
-    width: min(210px, calc(100vw - 156px));
+    width: min(188px, calc(100vw - 194px));
   }
   .pg-score-big {
     font-size: 1.25rem;

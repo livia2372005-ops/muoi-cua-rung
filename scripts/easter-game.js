@@ -32,6 +32,9 @@ window.MuoiCuaRung = window.MuoiCuaRung || {};
     this.npcCtrl = window.MuoiCuaRung.EasterNpcController
       ? new window.MuoiCuaRung.EasterNpcController()
       : null;
+    this.leaderboard = window.MuoiCuaRung.EasterLeaderboard
+      ? new window.MuoiCuaRung.EasterLeaderboard()
+      : null;
     this.sfx = window.MuoiCuaRung.PixelSfx
       ? new window.MuoiCuaRung.PixelSfx()
       : null;
@@ -60,11 +63,21 @@ window.MuoiCuaRung = window.MuoiCuaRung || {};
     this.npcInput = document.getElementById('pg-npc-input');
     this.npcSend = document.getElementById('pg-npc-send');
 
-    // Banner modal refs
+    // Banner & Leaderboard modal refs
     this.bannerModal = document.getElementById('pg-banner-modal');
     this.bannerTitle = document.getElementById('pg-banner-title');
     this.bannerDesc = document.getElementById('pg-banner-desc');
     this.btnEndless = document.getElementById('pg-btn-endless');
+    this.bannerSaveForm = document.getElementById('pg-banner-save-form');
+    this.playerNameInput = document.getElementById('pg-player-name');
+    this.btnSaveScore = document.getElementById('pg-btn-save-score');
+
+    this.lbModal = document.getElementById('pg-lb-modal');
+    this.lbStatus = document.getElementById('pg-lb-status');
+    this.lbList = document.getElementById('pg-lb-list');
+    this.lbQuickForm = document.getElementById('pg-lb-quick-form');
+    this.lbQuickName = document.getElementById('pg-lb-quick-name');
+    this.lbQuickSubmit = document.getElementById('pg-lb-quick-submit');
 
     this.active = false;
     this.pausedForModal = false;
@@ -134,6 +147,7 @@ window.MuoiCuaRung = window.MuoiCuaRung || {};
     this.maxDist = 0;
     this.victoryShown = false;
     this.endlessMode = false;
+    this.scoreSubmittedForRun = false;
     this.generatedUntilX = 0;
 
     this.pits = [];
@@ -156,6 +170,7 @@ window.MuoiCuaRung = window.MuoiCuaRung || {};
     this.activeNpc = null;
     if (this.npcModal) this.npcModal.hidden = true;
     if (this.bannerModal) this.bannerModal.hidden = true;
+    if (this.lbModal) this.lbModal.hidden = true;
     this.syncHud();
   };
 
@@ -435,7 +450,132 @@ window.MuoiCuaRung = window.MuoiCuaRung || {};
         ' khỉ). Hãy thử sức lại nhé!';
       if (this.btnEndless) this.btnEndless.hidden = true;
     }
+    if (this.bannerSaveForm) {
+      this.bannerSaveForm.hidden = Math.round(this.score) <= 0;
+      if (this.playerNameInput && this.leaderboard) {
+        this.playerNameInput.value = this.leaderboard.getSavedName();
+      }
+      if (this.btnSaveScore) {
+        this.btnSaveScore.disabled = false;
+        this.btnSaveScore.textContent = '🏆 Ghi danh';
+      }
+    }
     this.bannerModal.hidden = false;
+  };
+
+  ForestEasterGame.prototype.renderLeaderboardRows = function (entries, online, highlightName) {
+    if (this.lbStatus) {
+      this.lbStatus.textContent = online
+        ? '🌐 Bảng xếp hạng trực tuyến chung cả lớp (Top 10)'
+        : '💾 Chế độ lưu trên thiết bị (tự đồng bộ khi có mạng)';
+      this.lbStatus.classList.toggle('is-online', Boolean(online));
+    }
+    if (!this.lbList) return;
+    var top10 = (entries || []).slice(0, 10);
+    var medals = ['🥇', '🥈', '🥉'];
+    this.lbList.innerHTML = '';
+
+    top10.forEach(function (row, idx) {
+      var div = document.createElement('div');
+      var isMine = highlightName && row.name.toLowerCase() === highlightName;
+      div.className =
+        'pg-lb-row' +
+        (idx === 0 ? ' is-top1' : '') +
+        (isMine ? ' is-mine' : '');
+
+      var rankSpan = document.createElement('span');
+      rankSpan.className = 'pg-lb-rank';
+      rankSpan.textContent = idx < 3 ? medals[idx] : '#' + (idx + 1);
+
+      var whoDiv = document.createElement('div');
+      whoDiv.className = 'pg-lb-player';
+      var nameStrong = document.createElement('strong');
+      nameStrong.className = 'pg-lb-name';
+      nameStrong.textContent = row.name + (isMine ? ' (Bạn)' : '');
+      var subSpan = document.createElement('span');
+      subSpan.className = 'pg-lb-sub';
+      subSpan.textContent =
+        '🐒 ' + row.monkeys + ' khỉ  •  🪙 ' + row.coins + ' xu  •  ' + row.dist + 'm';
+      whoDiv.appendChild(nameStrong);
+      whoDiv.appendChild(subSpan);
+
+      var scoreSpan = document.createElement('span');
+      scoreSpan.className = 'pg-lb-score';
+      scoreSpan.textContent = String(row.score);
+
+      div.appendChild(rankSpan);
+      div.appendChild(whoDiv);
+      div.appendChild(scoreSpan);
+      this.lbList.appendChild(div);
+    }, this);
+  };
+
+  ForestEasterGame.prototype.openLeaderboard = function (highlightName) {
+    if (!this.lbModal || !this.leaderboard) return;
+    this.pausedForModal = true;
+    this.keys.left = false;
+    this.keys.right = false;
+    if (this.bannerModal) this.bannerModal.hidden = true;
+    this.lbModal.hidden = false;
+
+    var canQuickSave = Math.round(this.score) >= 20 && !this.scoreSubmittedForRun;
+    if (this.lbQuickForm) {
+      this.lbQuickForm.hidden = !canQuickSave;
+      if (canQuickSave && this.lbQuickName) {
+        this.lbQuickName.value = this.leaderboard.getSavedName();
+        this.lbQuickSubmit.textContent = 'Lưu ' + Math.round(this.score) + ' đ';
+        this.lbQuickSubmit.disabled = false;
+      }
+    }
+
+    var savedHighlight =
+      highlightName || (this.leaderboard.getSavedName() || '').toLowerCase();
+    this.renderLeaderboardRows(this.leaderboard.loadLocal(), false, savedHighlight);
+    if (this.lbStatus) this.lbStatus.textContent = '⏳ Đang tải Bảng Vàng cả lớp...';
+
+    var self = this;
+    this.leaderboard.fetchBoard().then(function (res) {
+      if (self.lbModal.hidden) return;
+      self.renderLeaderboardRows(res.entries, res.online, savedHighlight);
+    });
+  };
+
+  ForestEasterGame.prototype.closeLeaderboard = function () {
+    if (!this.lbModal) return;
+    this.lbModal.hidden = true;
+    if (this.hp <= 0) {
+      if (this.bannerModal) this.bannerModal.hidden = false;
+      return;
+    }
+    this.pausedForModal = false;
+    this.lastTs = performance.now();
+  };
+
+  ForestEasterGame.prototype.submitCurrentRunScore = function (rawName, triggerBtn) {
+    if (!this.leaderboard || Math.round(this.score) <= 0) return;
+    var self = this;
+    if (triggerBtn) {
+      triggerBtn.disabled = true;
+      triggerBtn.textContent = 'Đang lưu...';
+    }
+    this.leaderboard
+      .submitScore({
+        name: rawName,
+        score: Math.round(this.score),
+        monkeys: this.monkeysSaved,
+        coins: this.coins,
+        dist: Math.round(this.maxDist)
+      })
+      .then(function (res) {
+        self.scoreSubmittedForRun = true;
+        if (self.bannerModal) self.bannerModal.hidden = true;
+        if (self.lbModal) self.lbModal.hidden = false;
+        if (self.lbQuickForm) self.lbQuickForm.hidden = true;
+        self.renderLeaderboardRows(res.entries, res.online, res.highlightName);
+      })
+      .finally(function () {
+        if (triggerBtn) triggerBtn.disabled = false;
+      });
   };
 
   ForestEasterGame.prototype.isOverPit = function (footX) {
@@ -959,6 +1099,32 @@ window.MuoiCuaRung = window.MuoiCuaRung || {};
       self.open();
     });
 
+    document.getElementById('pg-btn-leaderboard')?.addEventListener('click', function () {
+      if (self.lbModal && !self.lbModal.hidden) self.closeLeaderboard();
+      else self.openLeaderboard();
+    });
+    document.getElementById('pg-btn-open-lb-from-banner')?.addEventListener('click', function () {
+      self.openLeaderboard();
+    });
+    document.getElementById('pg-lb-close')?.addEventListener('click', function () {
+      self.closeLeaderboard();
+    });
+    document.getElementById('pg-lb-refresh')?.addEventListener('click', function () {
+      self.openLeaderboard();
+    });
+
+    this.bannerSaveForm?.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var nameVal = self.playerNameInput ? self.playerNameInput.value : '';
+      self.submitCurrentRunScore(nameVal, self.btnSaveScore);
+    });
+
+    this.lbQuickForm?.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var nameVal = self.lbQuickName ? self.lbQuickName.value : '';
+      self.submitCurrentRunScore(nameVal, self.lbQuickSubmit);
+    });
+
     document.getElementById('pg-btn-exit')?.addEventListener('click', function () {
       self.close();
     });
@@ -1015,12 +1181,16 @@ window.MuoiCuaRung = window.MuoiCuaRung || {};
 
     window.addEventListener('keydown', function (e) {
       if (!self.active) return;
-      if (e.target === self.npcInput) {
-        if (e.key === 'Escape') self.closeNpcChat();
+      if (e.target instanceof HTMLInputElement) {
+        if (e.key === 'Escape') {
+          if (self.activeNpc) self.closeNpcChat();
+          else if (self.lbModal && !self.lbModal.hidden) self.closeLeaderboard();
+        }
         return;
       }
       if (e.key === 'Escape') {
         if (self.activeNpc) self.closeNpcChat();
+        else if (self.lbModal && !self.lbModal.hidden) self.closeLeaderboard();
         else self.close();
         return;
       }

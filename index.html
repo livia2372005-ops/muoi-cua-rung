@@ -1211,6 +1211,7 @@
 
     <!-- Top-Right Controls -->
     <div class="pg-top-right">
+      <button type="button" class="pg-circle-btn pg-circle-btn--gold" id="pg-btn-leaderboard" title="Bảng xếp hạng cả lớp" aria-label="Bảng xếp hạng">🏆</button>
       <button type="button" class="pg-circle-btn" id="pg-btn-restart" title="Chơi lại từ đầu" aria-label="Chơi lại từ đầu">↻</button>
       <button type="button" class="pg-exit-pill" id="pg-btn-exit" title="Thoát về Bìa sau">✕ Về sách</button>
     </div>
@@ -1239,11 +1240,37 @@
     <div class="pg-banner-modal" id="pg-banner-modal" hidden>
       <h3 id="pg-banner-title">Rừng Nở Trắng Hoa Tử Huyền!</h3>
       <p id="pg-banner-desc"></p>
+      <form class="pg-save-form" id="pg-banner-save-form">
+        <input type="text" class="pg-npc-input" id="pg-player-name" placeholder="Nhập tên / biệt danh ghi Bảng Vàng..." maxlength="22" autocomplete="off" />
+        <button type="submit" class="pg-npc-send" id="pg-btn-save-score">🏆 Ghi danh</button>
+      </form>
       <div class="pg-banner-actions">
         <button type="button" class="pg-npc-send" id="pg-btn-endless">Đi tiếp vô tận &rarr;</button>
+        <button type="button" class="pg-chip-btn" id="pg-btn-open-lb-from-banner">Xem Bảng Vàng</button>
         <button type="button" class="pg-chip-btn" id="pg-btn-retry">Chơi lại</button>
         <button type="button" class="pg-npc-close" id="pg-btn-backbook">Về trang sách</button>
       </div>
+    </div>
+
+    <!-- Online Classroom Leaderboard Modal -->
+    <div class="pg-lb-modal" id="pg-lb-modal" hidden>
+      <div class="pg-lb-head">
+        <div>
+          <h3>🏆 Bảng Vàng Rừng Nam Xung</h3>
+          <span class="pg-lb-status" id="pg-lb-status">Đang đồng bộ bảng xếp hạng...</span>
+        </div>
+        <div class="pg-lb-head-actions">
+          <button type="button" class="pg-npc-close" id="pg-lb-refresh" title="Tải lại điểm mới nhất">↻ Làm mới</button>
+          <button type="button" class="pg-npc-close" id="pg-lb-close">Đóng [Esc]</button>
+        </div>
+      </div>
+
+      <form class="pg-save-form pg-save-form--inline" id="pg-lb-quick-form" hidden>
+        <input type="text" class="pg-npc-input" id="pg-lb-quick-name" placeholder="Tên bạn để lưu điểm hiện tại..." maxlength="22" autocomplete="off" />
+        <button type="submit" class="pg-npc-send" id="pg-lb-quick-submit">Lưu điểm ngay</button>
+      </form>
+
+      <div class="pg-lb-list" id="pg-lb-list" role="list"></div>
     </div>
 
     <!-- Touch Gamepad for Mobile -->
@@ -1273,6 +1300,7 @@
   <script defer src="./scripts/parallax.js"></script>
   <script defer src="./scripts/easter-sprites.js"></script>
   <script defer src="./scripts/easter-npc-ai.js"></script>
+  <script defer src="./scripts/easter-leaderboard.js"></script>
   <script defer src="./scripts/easter-game.js"></script>
   <script defer src="./scripts/app.js"></script>
 </body>
